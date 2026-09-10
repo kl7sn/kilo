@@ -130,8 +130,6 @@ $run auto               # 无人值守（硬停仍生效）
             └── spec.md             # 可选
 ```
 
-Review 报告：`Projects/<projectId>/_run-review/YYYY-MM-DD-review.md`
-
 示例：[`examples/01-demo/`](examples/01-demo/) · 模板：[`templates/`](templates/)（中文用 `*.zh.md`）
 
 仓内会话索引（git 根 `.run-state`）：
