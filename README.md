@@ -169,13 +169,13 @@ Use `npx skills add kl7sn/run -g -a <agent>` to pick one. The `install.sh` helpe
 - **Cherry-picks:** [mattpocock/skills](https://github.com/mattpocock/skills) — e.g. `grill-with-docs`, `to-tickets`, `code-review`
 - **Do not** dual-run their `handoff` / `implement` or move durable state out of the workspace
 
-See [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Relationship to other skills*.
+See [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Companion skills*.
 
 ## Documentation
 
 | Document | Purpose |
 | --- | --- |
-| [`skills/run/SKILL.md`](skills/run/SKILL.md) | Full agent protocol |
+| [`skills/run/SKILL.md`](skills/run/SKILL.md) | Entrypoint / short protocol; details in [`skills/run/protocols/`](skills/run/protocols/) |
 | [`skills/up/SKILL.md`](skills/up/SKILL.md) | Skill maintenance skill |
 | [`docs/design.md`](docs/design.md) | Design notes and tradeoffs |
 | [`README_CN.md`](README_CN.md) | 中文说明 |

@@ -169,13 +169,13 @@ repo: .
 - **可选：** [mattpocock/skills](https://github.com/mattpocock/skills) —— 如 `grill-with-docs`、`to-tickets`、`code-review`
 - **不要** 与他们的 `handoff` / `implement` 双跑，不要把 durable state 迁出 workspace
 
-详见 [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Relationship to other skills*。
+详见 [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Companion skills*。
 
 ## 文档
 
 | 文档 | 作用 |
 | --- | --- |
-| [`skills/run/SKILL.md`](skills/run/SKILL.md) | 完整 Agent 协议（英文） |
+| [`skills/run/SKILL.md`](skills/run/SKILL.md) | 入口/精简协议；细节见 [`skills/run/protocols/`](skills/run/protocols/) |
 | [`skills/up/SKILL.md`](skills/up/SKILL.md) | Skill 维护 |
 | [`docs/design.md`](docs/design.md) | 设计与取舍 |
 | [`README.md`](README.md) | English |
