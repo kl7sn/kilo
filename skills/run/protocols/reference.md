@@ -13,7 +13,7 @@ Statuses are `todo`, `ready`, `doing`, `blocked`, `done`.
 ## Worktree enums
 
 ```text
-worktree_status: none | active | smoke_pending | ready_to_merge | pruned
+worktree_status: none | active | missing | smoke_pending | ready_to_merge | pruned
 smoke_status: pending | passed | waived-by-user
 integration_next: none | merge | pr | keep-branch | prune
 worktree_git_status: clean | dirty | unknown | not-applicable
@@ -23,7 +23,7 @@ binding_decision: pending | continue-current | bind-existing | new-workstream
 
 Never encode compound or free-form values in these fields. Automated smoke belongs in `notes` or the execution log.
 
-`worktree_git_status`, `commit_status`, and `binding_decision` are durable decision fields, not prose. `commit_status: uncommitted` blocks close. `binding_decision: pending` blocks adding a task when the fit check found scope drift.
+`worktree_git_status`, `commit_status`, and `binding_decision` are durable decision fields, not prose. `commit_status: uncommitted` blocks close. Keep `binding_decision` values as listed; `binding_decision: pending` blocks add-task and mutation for fit drift, missing worktree, and new-session unbound cases.
 
 ## Progress and integration prompt
 
@@ -43,15 +43,37 @@ The prompt is a hard integration gate. `ready_to_merge` means technically ready,
 
 ## Binding and code-management prompts
 
-When a request does not clearly fit the bound workstream, use this prompt before creating a task or mutating code:
+New session unbound — no restored workstream binding yet:
 
 ```text
-当前绑定：<project>/<workstream>
-发现：<mixed scope / stale backlog / independent deliverable>
+新会话尚未绑定 workstream。
+请选择：
+1. `$run bind` — 绑定已有 active workstream（并校验其 worktree）
+2. `$run new <name>` — 新建 workstream + 对应 worktree
+未绑定前不会恢复或改代码。
+```
+
+Non-continuation / pile-up risk — request does not clearly continue the bound line:
+
+```text
+当前绑定：<project>/<workstream> · worktree：<path|missing>
+当前任务：<doing/ready 摘要>
+本次请求不像续做上述任务。
 请确认：
-1. 继续当前 workstream：<why it still belongs>
-2. `$run bind` 到已有 active workstream
-3. `$run new <name>` 创建新 workstream
+1. 仍属当前线：说明对应哪个任务后继续
+2. 关闭当前 workstream（先走 integration/smoke/disposition）再 `$run new <name>`
+3. `$run bind` 到其它 active workstream
+```
+
+Missing worktree — Handoff path/branch not present in `git worktree list`:
+
+```text
+worktree 缺失：Handoff 登记 <path>@<branch>，git worktree list 无对应。
+请确认：
+1. 按登记重建 worktree
+2. 认领已有路径：<用户给出 path>
+3. 关闭当前线后 `$run new <name>`
+未决前禁止改代码。
 ```
 
 When git reports uncommitted changes at integration, use this prompt:
@@ -80,7 +102,15 @@ Use `verification-before-completion` before every `doing → done`. Evidence mus
 
 ## Hard blocks
 
-Stop and ask/escalate for cross-repo confirmation, true product forks, irreversible operations, state contradiction, recover anomaly, bind ambiguity, missing workstream parent, unbound mutation, parallel merge conflict, subagent workspace writes, unresolved workspace, or premature close. Ordinary test failures are revise-and-fix conditions.
+Stop and ask/escalate for:
+
+- new-session unbound (no bind/new yet — no restore or code mutation)
+- worktree-missing (`worktree_status: missing` unresolved)
+- sole-active silent bind (forbidden — never auto-bind the only active workstream without explicit `$run bind` / user choice)
+- mutation outside primary worktree
+- cross-repo confirmation, true product forks, irreversible operations, state contradiction, recover anomaly, bind ambiguity, missing workstream parent, unbound mutation, parallel merge conflict, subagent workspace writes, unresolved workspace, or premature close
+
+Ordinary test failures are revise-and-fix conditions.
 
 ## Companion boundaries
 
