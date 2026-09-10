@@ -14,8 +14,8 @@
 - blocker: none
 - open_questions: []
 - failed_approaches: []
-- next_action: `/run` 进入 explore / plan
-- resume_hint: `/run`
+- next_action: `$run` 进入 explore / plan
+- resume_hint: `$run`
 - key_paths: []
 - worktree_path: none
 - worktree_branch: -

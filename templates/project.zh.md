@@ -15,7 +15,7 @@ tags:
 
 # {{title}}
 
-`/run` 项目容器。用 `/run init` 创建。
+`$run` 项目容器。用 `$run init` 创建。
 
 ## 下属任务包
 

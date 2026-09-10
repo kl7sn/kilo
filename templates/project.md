@@ -15,7 +15,7 @@ tags:
 
 # {{title}}
 
-Project container for `/run`. Create with `/run init`.
+Project container for `$run`. Create with `$run init`.
 
 ## Workstreams
 
