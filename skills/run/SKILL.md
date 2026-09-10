@@ -112,21 +112,22 @@ Parallel work is legal only for independent tasks in an explicitly recorded wave
 
 ## Status line
 
-Every advancing reply starts with a compact line such as:
+Every advancing reply starts with a compact line that **must** include the primary worktree slot `wt=`:
 
 ```text
-[$run · lang=zh · auto=off · 05-run/05.02-workspace-routing · T04 doing]
+[$run · lang=zh · auto=off · 05-run/05.02-workspace-routing · wt=<short-path|missing|none> · T04 doing]
 ```
+
+`wt` is the primary worktree identity for this binding: a short path/basename when registered and present, `missing` when Handoff records a worktree that git lacks, or `none` for docs-only lines. Do **not** put `dirty`, `branch`, or `primary=` in the compact status line — branch lives in Handoff; dirty git state belongs in the dirty-tree prompt or checkpoint notes only when it blocks work.
 
 Use `design-review: pending|approved|revise|escalate` while an auto design gate is active; use `smoke_pending` until human smoke passes.
 
 During execution, do not provide a bare status line only. Follow it with a concise checkpoint:
 
 ```text
-绑定：<project>/<workstream> · 阶段：execute · worktree：<status/path>
+绑定：<project>/<workstream> · 阶段：execute · wt：<short-path|missing|none>
 进度：T04 done，T05 doing，T06 ready · 下一步：运行 <verification command>
 ```
-
 For session bind, non-continuation fit, and missing-worktree stops, use the three standard prompts in [reference.md](protocols/reference.md) **Binding and code-management prompts** (new-session, non-continuation, missing). Do not invent alternate wording.
 
 At the integration gate, proactively present one decision prompt when the current worktree is not explicitly complete:

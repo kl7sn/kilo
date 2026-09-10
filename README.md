@@ -50,6 +50,7 @@ Frameworks that *own the whole process* (GSD, BMAD, Spec-Kit, issue-tracker agen
 - **One session ↔ one workstream ↔ one primary worktree** — never advance multiple lines in one session
 - **New sessions must bind** — restore or choose a workstream before explore / plan / execute
 - **Missing worktree hard-stop** — `worktree_status: missing` blocks mutation; never fall back to the main checkout
+- **Status line always shows `wt=`** — primary worktree short path, `missing`, or `none` (no `dirty` / `branch` in the compact line)
 
 ## Quick start
 
@@ -92,7 +93,7 @@ $run review             # retro current project + maintain skills via up
 Status line on every advancing reply:
 
 ```text
-[$run · lang=en · auto=off · 01-demo/01.01-hello · T01 ready]
+[$run · lang=en · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
 ```
 
 ## Packaged skills

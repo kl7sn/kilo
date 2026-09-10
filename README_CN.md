@@ -92,7 +92,7 @@ $run review             # 复盘当前 project + up 维护
 状态行（每次推进回复开头）：
 
 ```text
-[$run · lang=zh · auto=off · 01-demo/01.01-hello · T01 ready]
+[$run · lang=zh · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
 ```
 
 ## 包内 skill

@@ -37,13 +37,12 @@ If any check fails, stop and repair accounting before mutating. A later `recover
 
 ## Proactive progress checkpoints
 
-Every advancing turn reports state without waiting for a user prompt. Emit a compact status line plus one checkpoint:
+Every advancing turn reports state without waiting for a user prompt. Emit a compact status line plus one checkpoint. The status line **must** include `wt=<short-path|missing|none>` for the primary worktree; omit `dirty`, `branch`, and `primary=` from the compact line.
 
 ```text
-[$run · lang=<lang> · auto=<on|off> · <project>/<workstream> · <task state>]
-绑定：<workspace/worktree> · 阶段：<explore|plan|execute> · 进度：<done/doing/ready> · 下一步：<one action>
+[$run · lang=<lang> · auto=<on|off> · <project>/<workstream> · wt=<short-path|missing|none> · <task state>]
+绑定：<project>/<workstream> · 阶段：<explore|plan|execute> · wt：<short-path|missing|none> · 进度：<done/doing/ready> · 下一步：<one action>
 ```
-
 Refresh the checkpoint after binding/recovery, each task claim, each verification result, each phase transition, and every stop. Keep it factual and concise; do not claim completion until the integration gate is satisfied.
 
 ## Language-specific preflight

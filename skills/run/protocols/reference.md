@@ -27,7 +27,7 @@ Never encode compound or free-form values in these fields. Automated smoke belon
 
 ## Progress and integration prompt
 
-Every advancing reply starts with a `$run` status line and includes the resolved binding, phase, current task statuses, worktree status/path, and one next action. Emit it after recovery, task transitions, verification, phase changes, and stops; never wait for a user status request.
+Every advancing reply starts with a `$run` status line that includes `wt=<short-path|missing|none>` for the primary worktree, plus the resolved binding, phase, current task statuses, and one next action. Do not put `dirty`, `branch`, or `primary=` in the compact status line. Emit it after recovery, task transitions, verification, phase changes, and stops; never wait for a user status request.
 
 When all task rows are done, tests are fresh, and the worktree is not explicitly disposed, use this prompt:
 
