@@ -45,6 +45,12 @@ GSD、BMAD、Spec-Kit 等「托管全流程」的方案有用，但也容易夺�
 - **`$run auto`** —— 无人值守推进，设计闸双 agent 共识，真硬停仍停
 - **`$run review`** —— 基于 workspace 的协议复盘；内置 **`up`** 维护 skill
 
+### 强绑定
+
+- **一会话 ↔ 一 workstream ↔ 一主 worktree** —— 禁止同会话推进多条线
+- **新会话必须绑定** —— 恢复或选择 workstream 后才能 explore / plan / execute
+- **缺失 worktree 硬停** —— `worktree_status: missing` 禁止改代码；不得回退到主工作区
+
 ## 快速开始
 
 ### 1. 安装

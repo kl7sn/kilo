@@ -45,6 +45,12 @@ Frameworks that *own the whole process* (GSD, BMAD, Spec-Kit, issue-tracker agen
 - **`$run auto`** — unattended advance with dual-agent design gates and real hard stops
 - **`$run review`** — protocol retro over workspace artifacts; bundled **`up`** skill patches the protocol
 
+### Strong binding
+
+- **One session ↔ one workstream ↔ one primary worktree** — never advance multiple lines in one session
+- **New sessions must bind** — restore or choose a workstream before explore / plan / execute
+- **Missing worktree hard-stop** — `worktree_status: missing` blocks mutation; never fall back to the main checkout
+
 ## Quick start
 
 ### 1. Install

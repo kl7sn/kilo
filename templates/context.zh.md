@@ -20,9 +20,10 @@
 - worktree_path: none
 - worktree_branch: -
 - worktree_status: none
+- binding_decision: continue-current
 - smoke_status: pending
 - integration_next: none
-- notes:
+- notes: worktree_status 可为: none|active|missing|smoke_pending|ready_to_merge|pruned
 
 ## Gotchas
 
