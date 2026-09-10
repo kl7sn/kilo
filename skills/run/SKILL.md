@@ -15,17 +15,19 @@ Always show `$run` and `$run <subcommand>` in prompts, status lines, examples, t
 
 1. **No ad-hoc engineering on a bound repo.** Recover the binding, map the request to a task row, claim it, then edit code/config.
 2. **Closed lines stay closed.** If the binding points to a completed/archived workstream, create `$run new <name>` under its parent or bind an active sibling; never reopen it.
-3. **One window, one binding.** Never advance multiple workstreams in one session. Ambiguous candidates require an interactive bind.
-4. **Parent is the workspace writer.** Subagents may edit isolated code, but only the parent updates `.run-state`, `tasks.md`, and `context.md`.
-5. **Fail closed on workspace resolution.** Use `.run-state` `workspace:` first, then non-empty `RUN_WORKSPACE`; if neither resolves, stop before creating directories or durable state. Never silently use `~/run-workspace`.
-6. **Mutation preflight is mandatory.** Before any external mutation, the intent must map to a `doing` task and `context.md` Handoff `current_tasks` must match it.
-7. **Done requires fresh evidence.** Run verification before marking a task `done`; record the command and result in the execution log.
-8. **All tasks done is not closed.** Human smoke and worktree disposition are required before closing a workstream.
-9. **Progress is proactive.** During an advancing turn, report the current binding and the next execution step at each phase or task transition; do not wait for the user to ask for status.
-10. **Worktree decisions are proactive.** When execution reaches the integration gate, determine whether the current worktree is complete. If human smoke or disposition is still pending, ask the user to confirm completion, continue in the current worktree, or request a new worktree before more mutations.
-11. **Workstream fit is proactive.** Before adding a task, check whether the request belongs to the bound workstream. Mixed domains, independent deliverables, stale backlog, or repeated follow-up work require an explicit choice to continue, bind an active sibling, or create `$run new <name>`; never silently pile unrelated work into one line.
-12. **Dirty code is visible.** Before integration or close, inspect git status, branch/upstream, and the latest commit. Uncommitted code is a blocking state for close and must be surfaced with an explicit commit, keep-branch, or continue decision.
-13. **Worktrees are audited.** On recover, bind, new, and integration, compare `git worktree list --porcelain` with Handoff and `.run-state`. Unregistered worktrees require explicit adopt/register, keep for later, or prune authorization; never silently ignore or delete them.
+3. **One session ↔ one workstream ↔ one primary worktree.** Never advance multiple workstreams in one session. Ambiguous candidates require an interactive bind. Subagent isolation worktrees are allowed; they are not the primary binding.
+4. **New session requires explicit bind.** No matching `session_id` → hard stop; require `$run bind` or `$run new`; never auto-bind the sole active line. Do this before recover advance.
+5. **Parent is the workspace writer.** Subagents may edit isolated code, but only the parent updates `.run-state`, `tasks.md`, and `context.md`.
+6. **Fail closed on workspace resolution.** Use `.run-state` `workspace:` first, then non-empty `RUN_WORKSPACE`; if neither resolves, stop before creating directories or durable state. Never silently use `~/run-workspace`.
+7. **Mutation preflight is mandatory.** Before any external mutation, the intent must map to a `doing` task and `context.md` Handoff `current_tasks` must match it.
+8. **Done requires fresh evidence.** Run verification before marking a task `done`; record the command and result in the execution log.
+9. **All tasks done is not closed.** Human smoke and worktree disposition are required before closing a workstream.
+10. **Progress is proactive.** During an advancing turn, report the current binding and the next execution step at each phase or task transition; do not wait for the user to ask for status.
+11. **Worktree decisions are proactive.** When execution reaches the integration gate, determine whether the current worktree is complete. If human smoke or disposition is still pending, ask the user to confirm completion, continue in the current worktree, or request a new worktree before more mutations.
+12. **Strict workstream fit.** Non-continuation requests set `binding_decision: pending` before adding tasks. Mixed domains, independent deliverables, stale backlog, or repeated follow-up work require an explicit choice to continue-current, `$run bind`, or `$run new <name>`; never silently pile unrelated work into one line.
+13. **Dirty code is visible.** Before integration or close, inspect git status, branch/upstream, and the latest commit. Uncommitted code is a blocking state for close and must be surfaced with an explicit commit, keep-branch, or continue decision.
+14. **Bidirectional worktree audit.** On recover, bind, new, and integration, compare `git worktree list --porcelain` with Handoff and `.run-state`. Orphans (git has, state lacks) need adopt/register, keep for later, or prune authorization. **`missing` (state has, git lacks) is a hard stop**: recreate / adopt an existing path / close then `$run new`. Never silently ignore, delete, or recreate.
+15. **Code mutations only in the primary worktree.** Never fall back to the main checkout when `worktree_status` is `missing`.
 
 ## Commands
 
@@ -46,14 +48,15 @@ Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.
 1. Read repo `.run-state` and resolve the workspace; unresolved means hard stop.
 2. Handle an explicit subcommand before normal phase detection.
 3. Resolve `lang`: open Handoff → `.run-state` → `RUN_LANG` → `en`.
-4. Match `CODEX_THREAD_ID`/session id in `.run-state projects[]`; otherwise bind interactively when there is more than one candidate.
-5. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff/Gotchas/log.
-6. If the line is closed and this turn needs durable landing, stop recover and create/bind an active line.
-7. Run a workstream-fit check before mapping the request. If the request is a distinct deliverable/domain, or the line has a stale/mixed backlog, stop for an explicit continue/current, `$run bind`, or `$run new <name>` decision.
-8. Map the current request to an existing task or add a task row before mutation.
-9. Route: missing design → explore; all tasks todo → plan; ready tasks → execute; blocked only → report; all done → integration gate.
-10. Audit git worktrees and dirty/commit state before advancing. Unregistered worktrees or uncommitted carry-over require explicit triage before further mutation.
-11. Emit a status checkpoint containing the resolved binding, phase, task statuses, worktree/git state, and next action before advancing. Emit another checkpoint after each task claim, verification result, phase transition, audit finding, or hard stop.
+4. Match `CODEX_THREAD_ID`/session id in `.run-state projects[]`. **If no `session_id` match → emit the new-session bind prompt (`$run bind` or `$run new`) and stop** before recover advance; never auto-bind the sole active line.
+5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / adopt / close then `$run new`).
+6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff/Gotchas/log.
+7. If the line is closed and this turn needs durable landing, stop recover and create/bind an active line.
+8. Strict workstream-fit before mapping or adding tasks: non-continuation → set `binding_decision: pending` and stop for continue-current / `$run bind` / `$run new <name>`.
+9. Map the current request to an existing task or add a task row only after the binding decision is resolved.
+10. Route: missing design → explore; all tasks todo → plan; ready tasks → execute; blocked only → report; all done → integration gate.
+11. Inspect dirty/commit state before advancing. Uncommitted carry-over requires explicit triage before further mutation.
+12. Emit a status checkpoint containing the resolved binding, phase, task statuses, worktree/git state, and next action before advancing. Emit another checkpoint after each task claim, verification result, phase transition, audit finding, or hard stop.
 
 ## Workspace resolution
 
@@ -123,6 +126,8 @@ During execution, do not provide a bare status line only. Follow it with a conci
 绑定：<project>/<workstream> · 阶段：execute · worktree：<status/path>
 进度：T04 done，T05 doing，T06 ready · 下一步：运行 <verification command>
 ```
+
+For session bind, non-continuation fit, and missing-worktree stops, use the three standard prompts in [reference.md](protocols/reference.md) **Binding and code-management prompts** (new-session, non-continuation, missing). Do not invent alternate wording.
 
 At the integration gate, proactively present one decision prompt when the current worktree is not explicitly complete:
 
