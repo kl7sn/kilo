@@ -43,7 +43,6 @@ GSD、BMAD、Spec-Kit 等「托管全流程」的方案有用，但也容易夺�
 - **集成闸** —— 全部 task `done` ≠ 可关线；须人工冒烟 + worktree 处置
 - **Handoff** —— 从 `context.md` 的 `## Handoff` 续跑，不考古聊天
 - **`$run auto`** —— 无人值守推进，设计闸双 agent 共识，真硬停仍停
-- **`$run review`** —— 基于 workspace 的协议复盘；内置 **`up`** 维护 skill
 
 ### 强绑定
 
@@ -59,7 +58,7 @@ GSD、BMAD、Spec-Kit 等「托管全流程」的方案有用，但也容易夺�
 npx skills add kl7sn/run -g
 ```
 
-会安装 **`run`** + **`up`**。常用参数：
+会安装 **`run`**。常用参数：
 
 ```bash
 npx skills add kl7sn/run -g -y              # 非交互
@@ -86,7 +85,6 @@ $run new hello          # 项目下新建 workstream
 ```text
 $run                    # 推进 explore → plan → execute
 $run auto               # 无人值守（硬停仍生效）
-$run review             # 复盘当前 project + up 维护
 ```
 
 状态行（每次推进回复开头）：
@@ -100,11 +98,10 @@ $run review             # 复盘当前 project + up 维护
 | Skill | 作用 |
 | --- | --- |
 | [`run`](skills/run/SKILL.md) | 流程协议 —— 绑定、阶段、tasks、Handoff、闸门 |
-| [`up`](skills/up/SKILL.md) | Skill 维护 —— `$run review` 第二阶段（默认 apply） |
 
 `$run` **不是**通用 skill 工具集。TDD、grill、领域工具等保持独立、可选。
 
-`run` skill 采用 progressive disclosure：入口 `skills/run/SKILL.md` 保持精简（不超过 500 行），工作区、恢复、执行、auto、review 和参考细节按需放在 `skills/run/protocols/` 下读取。
+`run` skill 采用 progressive disclosure：入口 `skills/run/SKILL.md` 保持精简（不超过 500 行），工作区、恢复、执行、auto 和参考细节按需放在 `skills/run/protocols/` 下读取。
 
 ## 命令
 
@@ -116,8 +113,6 @@ $run review             # 复盘当前 project + up 维护
 | `$run lang` [en\|zh] | 查看或设置文档语言 |
 | `$run` | 推进当前阶段 |
 | `$run auto` | 无人值守推进 |
-| `$run review` [scope] | 协议复盘（默认当前 project）+ `up` |
-| `$run review scan-only` | 只写报告，不 patch skill |
 
 ## Workspace
 
@@ -164,7 +159,7 @@ repo: .
 | --- | --- |
 | ❌ 托管 Agent 平台 | ✅ Markdown workspace + skill 协议 |
 | ❌ 必须常住的 Issue 系统 | ✅ 可 grep 的 `tasks.md` |
-| ❌ 通用 skill 入口 / 注册表 | ✅ 流程助手 + 仅 bundled `up` |
+| ❌ 通用 skill 入口 / 注册表 | ✅ 仅流程助手 |
 | ❌ 「看起来没问题」就完成 | ✅ 验证 + 关线前人工冒烟 |
 
 ## 可选 companion
@@ -182,7 +177,6 @@ repo: .
 | 文档 | 作用 |
 | --- | --- |
 | [`skills/run/SKILL.md`](skills/run/SKILL.md) | 入口/精简协议；细节见 [`skills/run/protocols/`](skills/run/protocols/) |
-| [`skills/up/SKILL.md`](skills/up/SKILL.md) | Skill 维护 |
 | [`docs/design.md`](docs/design.md) | 设计与取舍 |
 | [`README.md`](README.md) | English |
 

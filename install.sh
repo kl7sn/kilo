@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Contributor helper: symlink skills/run + skills/up into agent dirs.
+# Contributor helper: symlink skills/run into agent dirs.
 # End users should prefer: npx skills add kl7sn/run -g
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -16,7 +16,6 @@ install_skill() {
 install_agent() {
   local base="$1"
   install_skill run "$base/run"
-  install_skill up "$base/up"
 }
 
 case "${1:-}" in
@@ -40,7 +39,7 @@ case "${1:-}" in
     ;;
   *)
     echo "Usage: $0 {cursor|claude|codex|agents|all}"
-    echo "Installs skills/run and skills/up as symlinks into the agent skills directory."
+    echo "Installs skills/run as a symlink into the agent skills directory."
     exit 1
     ;;
 esac

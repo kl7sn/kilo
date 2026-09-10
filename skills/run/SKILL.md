@@ -39,9 +39,8 @@ Always show `$run` and `$run <subcommand>` in prompts, status lines, examples, t
 | `$run new <workstream>` | Create a numbered workstream under a project |
 | `$run bind` | Interactively switch to an active workstream/project |
 | `$run lang [en\|zh]` | Show or set durable document language |
-| `$run review [scope]` | Scan bounded workspace artifacts and maintain skills |
 
-Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.md), [execute.md](protocols/execute.md), [auto.md](protocols/auto.md), [review.md](protocols/review.md), [reference.md](protocols/reference.md).
+Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.md), [execute.md](protocols/execute.md), [auto.md](protocols/auto.md), [reference.md](protocols/reference.md).
 
 ## Startup route
 
@@ -142,10 +141,6 @@ At the integration gate, proactively present one decision prompt when the curren
 
 Do not close the workstream, create a new worktree, or start new mutations until the decision is explicit. In `$run auto`, this is still a hard integration stop; auto mode must not guess the worktree disposition.
 
-## Review and maintenance
-
-`$run review` scans only bounded workspace artifacts, writes a report under the current project, then applies the report backlog through `up` unless `scan-only` is requested. It does not reopen workstreams or alter code repos. See [review.md](protocols/review.md).
-
 ## Companion skills
 
 Use phase companions only when needed: brainstorming for explore, writing-plans for plan, TDD/systematic-debugging for execute, `use-modern-go` for Go code changes, verification-before-completion before every done, and using-git-worktrees for isolation. Companions return results; the parent remains the sole workspace writer.
@@ -156,5 +151,4 @@ Use phase companions only when needed: brainstorming for explore, writing-plans 
 - Recover, Handoff, and session sticky: [protocols/recover.md](protocols/recover.md)
 - Explore/plan/execute, waves, verification, integration gate: [protocols/execute.md](protocols/execute.md)
 - Auto mode and dual-agent design gates: [protocols/auto.md](protocols/auto.md)
-- Review scan, report, and `up`: [protocols/review.md](protocols/review.md)
 - File templates, hard blocks, self-review, and cross-references: [protocols/reference.md](protocols/reference.md)

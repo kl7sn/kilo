@@ -43,7 +43,6 @@ Frameworks that *own the whole process* (GSD, BMAD, Spec-Kit, issue-tracker agen
 - **Integration gate** — all tasks `done` ≠ workstream closed; human smoke + worktree disposition required
 - **Handoff block** — resume from `## Handoff` in `context.md`, not chat archaeology
 - **`$run auto`** — unattended advance with dual-agent design gates and real hard stops
-- **`$run review`** — protocol retro over workspace artifacts; bundled **`up`** skill patches the protocol
 
 ### Strong binding
 
@@ -60,7 +59,7 @@ Frameworks that *own the whole process* (GSD, BMAD, Spec-Kit, issue-tracker agen
 npx skills add kl7sn/run -g
 ```
 
-Installs **`run`** + **`up`**. Common flags:
+Installs **`run`**. Common flags:
 
 ```bash
 npx skills add kl7sn/run -g -y              # non-interactive
@@ -87,7 +86,6 @@ Or point `RUN_WORKSPACE` / `.run-state` at an existing workspace folder.
 ```text
 $run                    # advance explore → plan → execute
 $run auto               # unattended (hard stops still apply)
-$run review             # retro current project + maintain skills via up
 ```
 
 Status line on every advancing reply:
@@ -96,16 +94,15 @@ Status line on every advancing reply:
 [$run · lang=en · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
 ```
 
-## Packaged skills
+## Packaged skill
 
 | Skill | Role |
 | --- | --- |
 | [`run`](skills/run/SKILL.md) | Process protocol — bind, phases, tasks, Handoff, gates |
-| [`up`](skills/up/SKILL.md) | Skill maintenance — phase 2 of `$run review` (default apply) |
 
 `$run` is **not** a general skill toolkit. Other skills (TDD, grilling, domain tools) stay separate and optional.
 
-The `run` skill uses progressive disclosure: the entrypoint `skills/run/SKILL.md` is intentionally compact (under 500 lines), while detailed workspace, recovery, execution, auto, review, and reference protocols live under `skills/run/protocols/` and are loaded only when relevant.
+The `run` skill uses progressive disclosure: the entrypoint `skills/run/SKILL.md` is intentionally compact (under 500 lines), while detailed workspace, recovery, execution, auto, and reference protocols live under `skills/run/protocols/` and are loaded only when relevant.
 
 ## Commands
 
@@ -117,8 +114,6 @@ The `run` skill uses progressive disclosure: the entrypoint `skills/run/SKILL.md
 | `$run lang` [en\|zh] | Show or set document language |
 | `$run` | Advance current phase |
 | `$run auto` | Unattended advance |
-| `$run review` [scope] | Protocol retro (default: current project) + `up` |
-| `$run review scan-only` | Report only; skip skill patches |
 
 ## Workspace
 
@@ -136,7 +131,6 @@ Resolution order: `.run-state` → `RUN_WORKSPACE` → explicit setup required. 
             └── spec.md             # optional
 ```
 
-Review reports: `Projects/<projectId>/_run-review/YYYY-MM-DD-review.md`
 
 Sample: [`examples/01-demo/`](examples/01-demo/) · Templates: [`templates/`](templates/) (`*.zh.md` for Chinese)
 
@@ -165,7 +159,7 @@ Use `npx skills add kl7sn/run -g -a <agent>` to pick one. The `install.sh` helpe
 | --- | --- |
 | ❌ Hosted agent platform | ✅ Markdown workspace + skill protocol |
 | ❌ Issue tracker you must live in | ✅ `tasks.md` rows you can grep |
-| ❌ General skill hub / registry | ✅ Process assistant + bundled `up` only |
+| ❌ General skill hub / registry | ✅ Process assistant only |
 | ❌ "Looks good" completion | ✅ Verification + human smoke before close |
 
 ## Optional companions
@@ -183,7 +177,6 @@ See [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Companion skills*.
 | Document | Purpose |
 | --- | --- |
 | [`skills/run/SKILL.md`](skills/run/SKILL.md) | Entrypoint / short protocol; details in [`skills/run/protocols/`](skills/run/protocols/) |
-| [`skills/up/SKILL.md`](skills/up/SKILL.md) | Skill maintenance skill |
 | [`docs/design.md`](docs/design.md) | Design notes and tradeoffs |
 | [`README_CN.md`](README_CN.md) | 中文说明 |
 

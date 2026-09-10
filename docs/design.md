@@ -4,7 +4,7 @@ Public summary of the workflow. Full rules live in `skills/run/SKILL.md`.
 
 ## Identity
 
-`/run` is an **engineering process assistant** (bind → advance → verify → hand off). It is **not** a general skill toolkit or hub for arbitrary local skills. The package also ships **`skills/up`** for `/run review` → protocol self-maintenance — a narrow exception, not a registry for personal tools.
+`/run` is an **engineering process assistant** (bind → advance → verify → hand off). It is **not** a general skill toolkit or hub for arbitrary local skills.
 
 ## Model
 
@@ -62,6 +62,3 @@ Full table: [README § Comparison](../README.md#comparison). Summary:
 
 `/run` orchestrates; it does not replace phase disciplines. Default to local superpowers (`brainstorming`, `writing-plans`, `tdd`, `systematic-debugging`, `verification-before-completion`). Optionally cherry-pick from [mattpocock/skills](https://github.com/mattpocock/skills) (`grill-with-docs`, `to-tickets`, `code-review`) — never dual-run their `handoff`/`implement` or a full pack that moves durable state out of the workspace.
 
-## Review (`/run review`)
-
-Retro over workspace + `.run-state` (not chat transcripts). **Default scope: current project** from `.run-state` bind; `/run review all` scans every project. Findings → `Projects/<projectId>/_run-review/YYYY-MM-DD-review.md`. **Default: integrated `up` phase** (`skills/up`, shipped with this package) patches skills from the report Skill backlog; `scan-only` skips edits. No workstream/code changes.
