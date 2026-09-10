@@ -8,11 +8,27 @@
 - Blocked only → report blockers.
 - All rows done → integration gate; do not auto-close.
 
+## Pre-mutation gates
+
+Before mutation-accounting preflight, adding a task row, or any external mutation:
+
+1. **Primary worktree must be usable.** If `worktree_status` is `missing`, hard-stop with the missing-worktree prompt from [reference.md](reference.md); never fall back to the main checkout. If the task touches code/config and `worktree_status` is `none`, stop and create/register the primary worktree (`$run new` / bind path) before continuing. Code mutations require an `active` (or later integration) primary worktree path—not `missing` or docs-only `none`.
+2. **Strict workstream-fit.** Non-continuation requests must not add a task row or mutate. Set `binding_decision: pending`, emit the non-continuation prompt from [reference.md](reference.md), and stop for continue-current / `$run bind` / `$run new <name>`.
+
+### Continuation check
+
+A request is a continuation only when:
+
+- it clearly targets the current `doing` row or a specific `ready` task (including `Txx`); or
+- it explicitly says continue/finish the current work and exactly one sensible target exists.
+
+Everything else—mixed domains, independent deliverables, stale backlog, “顺便”, “再加一个”, or ambiguous follow-up—is non-continuation and requires an explicit binding decision before add-task or mutate. `$run auto` treats these gates as hard stops (no guessing).
+
 ## Mutation-accounting preflight
 
 Before the first code/config edit, commit, upload, restart, or other external mutation:
 
-1. The request maps to an existing task row (add it first if needed).
+1. The request maps to an existing task row (add it first if needed, only after the pre-mutation gates pass).
 2. That row is `doing`.
 3. Handoff `current_tasks` contains exactly the claimed task or legal parallel wave.
 4. The edit is within the task’s bounds.
