@@ -4,7 +4,7 @@
 
 1. Read `.run-state`; resolve the workspace (fail closed if unresolved).
 2. **Session bind gate:** match `CODEX_THREAD_ID`/session id in `.run-state projects[]`. If no matching `session_id` → emit the new-session bind prompt (`$run bind` or `$run new`) from [reference.md](reference.md) **Binding and code-management prompts** (new-session template); **stop** before recover advance. Never auto-bind the sole active line. Do not enter execute.
-3. After a session match (or after the user completes bind/new), sync the top-level binding; resolve homepage type (`project` or `workstream`) and required parent; read `tasks.md`, then bounded `context.md`: Handoff, Gotchas, recent related log.
+3. After a session match (or after the user completes bind/new), sync the top-level binding; resolve homepage type (`project` or `workstream`) and required parent; read `tasks.md`, then bounded `context.md`: Handoff, Acceptance, ReviewThread, Gotchas, recent related log.
 4. Closed-line check: if the bound workstream is closed (`Handoff status: closed` or index `completed|archived`) and durable work is requested, do not reopen it. Use `$run new` under the parent or bind an active sibling, and link the closed line from the new context.
 5. Run `git worktree list --porcelain` and compare every path/branch with Handoff and `.run-state`. Surface **orphan** and **missing** findings for explicit triage before any further advance or mutation.
 6. Inspect `git status --porcelain=v1`, current branch/upstream, and latest commit. Record `worktree_git_status` and `commit_status`; dirty or uncommitted carry-over is a visible blocker, not a reason to continue silently.
@@ -27,6 +27,7 @@ lang: en|zh
 auto_mode: true|false
 phase: explore|plan|execute
 review_status: good|revise|blocked|escalate
+impl_review_status: none|pending|in_triage|re_review|approved|escalated
 current_tasks: []
 last_completed: <task-id or ->
 blocker: none|<machine-readable short>
@@ -34,7 +35,7 @@ next_action: <one executable step>
 resume_hint: <hint>
 ```
 
-When a code worktree exists, also record `worktree_path`, `worktree_branch`, `worktree_status`, `smoke_status`, and `integration_next` using the exact enums in [reference.md](reference.md). If the worktree is active or smoke is pending, surface that state in the next status checkpoint instead of silently treating the line as complete.
+When a code worktree exists, also record `worktree_path`, `worktree_branch`, `worktree_status`, `smoke_status`, and `integration_next` using the exact enums in [reference.md](reference.md). If Acceptance / ReviewThread sections exist, treat them as authoritative for freeze and review triage; do not reconstruct them from chat. If the worktree is active or smoke is pending, surface that state in the next status checkpoint instead of silently treating the line as complete.
 
 ## Full-stop
 
@@ -42,13 +43,13 @@ For hard blocks or auto stops, update tasks and Handoff with a machine-readable 
 
 ## Proactive worktree decision
 
-When all task rows are `done` and fresh verification exists, recover must route to the integration gate. Inspect the worktree and smoke fields and ask the user to choose one of these explicit outcomes:
+When all task rows are `done` and fresh verification exists, recover must route to the **implementation review gate** first on code workstreams ([execute.md](execute.md)). Only after `impl_review_status: approved` (or docs-only skip) does recover present the integration/smoke decision. Inspect the worktree and smoke fields and ask the user to choose one of these explicit outcomes:
 
 - confirm the current worktree is complete, then provide smoke evidence and an integration disposition;
 - continue in the current worktree with another task;
 - create a new worktree/workstream before any further mutation.
 
-Do not infer completion from `ready_to_merge`, a successful test run, or a prior status message. Do not silently create a fallback worktree. Never silently recreate a worktree or fall back to the main checkout.
+Do not infer completion from `ready_to_merge`, a successful test run, or a prior status message. Do not present the smoke prompt while impl-review is `pending`, `in_triage`, `re_review`, or `escalated`. Do not silently create a fallback worktree. Never silently recreate a worktree or fall back to the main checkout.
 
 ## Orphan worktree triage
 
