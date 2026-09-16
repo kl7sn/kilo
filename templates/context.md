@@ -29,7 +29,9 @@
 
 ## Gotchas
 
-<!-- line-local only; promote repo-wide constraints to project.md ## Gotchas -->
+<!-- Full text lives here, line-local. If a trap reaches sibling lines: first try to
+     mechanize it (test/lint/type); if impossible, add one pointer line to
+     project.md ## Gotcha Index. Never copy this text upward. -->
 
 ## Key Decisions
 

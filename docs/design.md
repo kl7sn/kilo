@@ -56,7 +56,16 @@ Acceptance is per workstream and versioned. Appending in-scope work (finding fix
 
 ## Inherited project knowledge
 
-`## Gotchas` and `## Key Decisions` are two-level: `project.md` holds repo-wide traps and cross-line decisions that every sibling workstream inherits and explore must read; `context.md` holds line-local ones. Entries are promoted upward when they would change how a sibling line is built, tagged with their origin (`- [from 01.03] …`). `project.md` also tracks each workstream's worktree path, branch, and state.
+Project level stores **facts and pointers, never copies**, because "every new line must read the project gotcha list" just relocates context bloat instead of removing it.
+
+- `project.md` `## Stable Facts` — long-lived verifiable facts (build/run commands, directory conventions, external-system contracts). Read on every explore.
+- `project.md` `## Gotcha Index` — one pointer line per topic (`- <topic>: <conclusion> → [[01.03-slug/context]]`). Followed only when the topic touches the current line.
+- `context.md` `## Gotchas` — full text, stays with the line that learned it.
+- `context.md` `## Key Decisions` — line-local, **not** inherited; queried on demand.
+
+Promotion order: mechanize first (test / lint / type / CI beats prose, because a document entry depends on an agent remembering to read it), else one `Stable Facts` line, else one `Gotcha Index` pointer, else keep it local. Uncertainty defaults to *not* promoting. Both project sections are pruned on expiry — a stale entry is worse than a missing one, since agents obey it.
+
+`project.md` also tracks each workstream's worktree path, branch, and state.
 
 `status: closed` ends the workstream. New durable work must **not** reopen it — `/run new` under the parent (or bind another active line). Binding a closed line while needing tasks/decisions/code is an abnormal bind / hard block.
 

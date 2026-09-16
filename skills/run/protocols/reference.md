@@ -116,14 +116,27 @@ Rules: reviewer rounds only append findings; implementer rounds only set disposi
 
 ## Inherited project knowledge
 
-`## Gotchas` and `## Key Decisions` exist at two levels:
+Project level stores **facts and pointers, never copies**. Full gotcha text stays in the workstream that learned it.
 
-| Level | Scope | Read when |
+| Location | Holds | Read when |
 |---|---|---|
-| `project.md` | repo-wide constraints, toolchain traps, decisions outliving one line | every explore/plan, and before the first mutation of a new workstream |
-| `context.md` | this line only | every recover |
+| `project.md` `## Stable Facts` | long-lived verifiable facts every line needs: build/run commands, directory conventions, external-system quirks | every explore/plan, and before the first mutation of a new line |
+| `project.md` `## Gotcha Index` | one pointer line per topic: `- <topic>: <one-line conclusion> → [[01.03-slug/context]]` | same; follow a pointer only when its topic touches this line |
+| `context.md` `## Gotchas` | full text, line-local | every recover |
+| `context.md` `## Key Decisions` | this line's decisions | on demand — **not** inherited, not indexed, not required reading |
 
-Promote upward when a gotcha or decision would change how a **sibling** workstream is built; keep the entry one line, prefixed with its origin (`- [from 01.03] …`), and leave a short pointer in `context.md`. Never copy the whole line-local list up, and never duplicate a promoted entry back down. Project-level lists stay bounded: compress or drop entries that the codebase now enforces on its own.
+### Promotion order
+
+Before writing anything at project level, try to mechanize:
+
+1. Can it become a test, lint rule, type constraint, or CI check? **Do that instead** and record the check in the execution log. A mechanized constraint needs no document entry.
+2. Not mechanizable, and it is a durable fact (command, convention, external contract)? Add one line to `## Stable Facts`.
+3. Not mechanizable, and it is a trap another line could hit? Add one pointer line to `## Gotcha Index`; leave the detail in the origin `context.md`.
+4. Otherwise it stays line-local. Uncertainty is not a reason to promote — the default is *don't*.
+
+Both project-level sections are bounded and pruned: delete a fact the moment it stops being true, and drop an index entry once the codebase enforces it or the origin line is archived. A stale entry is worse than a missing one, because agents obey it.
+
+Never copy `context.md` gotcha text upward, never restate a project fact back down, and never let an index line grow into reproduction steps.
 
 `project.md` also tracks each workstream's worktree (`Worktree`, `Branch`, `State` columns) using the Handoff enums, so sibling lines with an `active` or `smoke_pending` worktree are visible without opening every `context.md`. The parent refreshes those cells on `$run new`, at the integration gate, and on disposition.
 
@@ -266,6 +279,7 @@ Stop and ask/escalate for:
 - Acceptance not frozen on a code workstream when entering execute, `$run review`, or smoke/close
 - unresolved review blockers in `review.md` (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
 - Acceptance or review rounds inlined into `context.md` instead of `review.md`
+- gotcha text copied into `project.md` instead of a pointer, or a mechanizable constraint written as prose without attempting the test/lint route
 - tasks added or reopened after `impl_review_status: approved` without resetting to `re_review`
 - an appended task that widens the deliverable beyond the frozen Acceptance, without an explicit revise or `$run new`
 - cross-repo confirmation, true product forks, irreversible operations, state contradiction, recover anomaly, bind ambiguity, missing workstream parent, unbound mutation, parallel merge conflict, subagent workspace writes, unresolved workspace, or premature close

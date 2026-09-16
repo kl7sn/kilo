@@ -53,7 +53,7 @@ Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.
 3. Resolve `lang`: open Handoff → `.run-state` → `RUN_LANG` → `en`.
 4. Match `CODEX_THREAD_ID`/session id in `.run-state projects[]`. **If no `session_id` match → emit the new-session bind prompt (`$run bind` or `$run new`) and stop** before recover advance; never auto-bind the sole active line.
 5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / adopt / close then `$run new`).
-6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Gotchas / log, plus `project.md` `## Gotchas` / `## Key Decisions` (inherited). Open `review.md` only for freeze/revise, review, triage, or a review-history question.
+6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Gotchas / log, plus `project.md` `## Stable Facts` / `## Gotcha Index` (short, inherited). Open `review.md` only for freeze/revise, review, triage, or a review-history question.
 7. If the line is closed and this turn needs durable landing, stop recover and create/bind an active line.
 8. Strict workstream-fit before mapping or adding tasks: non-continuation → set `binding_decision: pending` and stop for continue-current / `$run bind` / `$run new <name>`.
 9. Map the current request to an existing task or add a task row only after the binding decision is resolved.
@@ -86,7 +86,7 @@ Do not guess, create, select, or write a fallback directory.
 - Tasks: rows in the workstream `tasks.md` (`todo`, `ready`, `doing`, `blocked`, `done`).
 - Runtime truth: the workstream `context.md` `## Handoff` block.
 - Acceptance and review truth: the workstream `review.md` (`## Acceptance`, `## ReviewIndex`, `## Claims`, `## ReviewThread`), mirrored cheaply by Handoff `acceptance_status` / `impl_review_status`.
-- Inherited knowledge: `project.md` `## Gotchas` / `## Key Decisions` apply to every workstream under that project; `context.md` versions stay line-local.
+- Inherited knowledge: `project.md` `## Stable Facts` (durable facts) and `## Gotcha Index` (pointers, not copies) apply to every line under that project. Gotcha full text and `## Key Decisions` stay line-local in `context.md`; mechanize a constraint before writing it anywhere.
 - Sibling worktrees: the `project.md` workstreams table carries each line's `Worktree` / `Branch` / `State`.
 - Session index: repo-root `.run-state`; one repo may list many workstreams, but one session advances one.
 

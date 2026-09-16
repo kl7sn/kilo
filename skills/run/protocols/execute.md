@@ -2,7 +2,7 @@
 
 ## Phase routing
 
-- Missing or incomplete design → explore and write `spec.md`. `spec.md` is the input contract (target state the review compares against), not a running log; evidence goes to `## Execution Log`. Read `project.md` `## Gotchas` / `## Key Decisions` first so a sibling line's trap is not rediscovered.
+- Missing or incomplete design → explore and write `spec.md`. `spec.md` is the input contract (target state the review compares against), not a running log; evidence goes to `## Execution Log`. Read `project.md` `## Stable Facts` and `## Gotcha Index` first, and follow an index pointer only when its topic touches this line, so a sibling's trap is not rediscovered without reading everything it wrote.
 - Design exists and all task rows are todo → plan and create an acyclic task table with at least one ready row.
 - Plan complete / about to enter execute → **Acceptance freeze gate** (code workstreams).
 - Ready rows and Acceptance frozen (or docs-only) → execute.
@@ -170,7 +170,7 @@ base..HEAD: <merge-base>..HEAD
 diff_stat: <git diff --stat>
 key_paths: <Handoff.key_paths>
 gotchas: <Gotchas if any>
-project_gotchas: <project.md ## Gotchas if any>
+project_facts: <project.md ## Stable Facts if any>
 review_file: <abs path to review.md>
 acceptance_version: <## Acceptance.version>
 review_digest: <ReviewIndex + rounds with open/fixed findings; full file only when cycles ≤ 1>
@@ -234,7 +234,7 @@ Automated tests and impl-review satisfy machine gates but cannot close a workstr
 3. User-confirmed smoke (`passed`) or explicit waiver (`waived-by-user`).
 4. `integration_next` set to `merge`, `pr`, `keep-branch`, or `prune`.
 5. Any worktree disposition executed or explicitly deferred with `keep-branch`.
-6. The `project.md` workstream row refreshed (`Worktree` / `Branch` / `State`), and any gotcha or decision with cross-line reach promoted to `project.md`.
+6. The `project.md` workstream row refreshed (`Worktree` / `Branch` / `State`). For anything learned that reaches sibling lines, run the promotion order in [reference.md](reference.md): mechanize first, else one `## Stable Facts` line or one `## Gotcha Index` pointer. Decisions stay line-local.
 
 Until then keep Handoff open with `smoke_status: pending` and, when applicable, `worktree_status: smoke_pending`.
 

@@ -19,10 +19,10 @@ tags:
 | --- | --- | --- | --- | --- |
 | [[01.01-hello/workstream]] | Hello workstream | - | - | none |
 
-## Gotchas
+## Stable Facts
 
-- [from 01.01] Example only: project-wide constraints inherited by every workstream go here.
+- Build: `./install.sh all` symlinks the skill into agent dirs.
 
-## Key Decisions
+## Gotcha Index
 
-- [from 01.01] 2026-08-21: docs example project; decisions that outlive one workstream go here.
+- example topic: one-line conclusion → [[01.01-hello/context]]

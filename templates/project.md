@@ -32,10 +32,14 @@ Project container for `$run`. Create with `$run init`.
 | --- | --- |
 | | |
 
-## Gotchas
+## Stable Facts
 
-<!-- project-wide constraints and traps; inherited by every workstream. Format: - [from 01.03] <constraint> -->
+<!-- Long-lived, verifiable facts every workstream needs: build/run commands, directory
+     conventions, quirks of external systems. One line each. Delete on expiry.
+     Not for transient traps — those stay in the workstream context.md. -->
 
-## Key Decisions
+## Gotcha Index
 
-<!-- decisions that outlive one workstream. Format: - [from 01.03] <decision> · <why> -->
+<!-- Pointers, not copies. One line per topic:
+     - <topic>: <one-line conclusion> → [[01.03-slug/context]]
+     Add an entry only when the trap cannot be mechanized as a test/lint/type rule. -->

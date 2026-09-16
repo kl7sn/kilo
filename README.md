@@ -43,7 +43,7 @@ Frameworks that *own the whole process* (GSD, BMAD, Spec-Kit, issue-tracker agen
 - **Acceptance freeze** — confirm the pass bar before execute; later chat cannot soften it
 - **Implementation review** — read-only reviewer audits code against Acceptance before human smoke
 - **Separate review file** — Acceptance + rounds live in `review.md`; `context.md` keeps only status mirrors
-- **Inherited project knowledge** — `project.md` `## Gotchas` / `## Key Decisions` carry across sibling workstreams
+- **Inherited project knowledge** — `project.md` keeps durable facts plus a gotcha *index*; details stay where they were learned
 - **Integration gate** — all tasks `done` ≠ workstream closed; human smoke + worktree disposition required
 - **Handoff block** — resume from `## Handoff` in `context.md`, not chat archaeology
 - **`$run auto`** — unattended advance with dual-agent design gates and real hard stops
@@ -127,7 +127,7 @@ Resolution order: `.run-state` → `RUN_WORKSPACE` → explicit setup required. 
 <workspace>/
 └── Projects/
     └── 01-demo/                    # project  NN-<slug>
-        ├── project.md              # workstreams+worktrees · shared Gotchas · Key Decisions
+        ├── project.md              # workstreams+worktrees · Stable Facts · Gotcha Index
         └── 01.01-hello/            # workstream  NN.MM-<slug>
             ├── workstream.md
             ├── tasks.md
