@@ -48,11 +48,15 @@ Public summary of the workflow. Full rules live in `skills/run/SKILL.md`.
 
 `context.md` uses **`## Handoff` as the only runtime section** (no separate “Current status”). Optional `## Gotchas` for long-lived constraints; `## Key Decisions` for decision history; `## Execution Log` for evidence.
 
-## Acceptance and review files
+## Acceptance and review file
 
-`## Acceptance` holds the frozen pass bar; it is confirmed before execute on code lines and is not softened by later chat.
+The frozen pass bar and the rounds that audit it share one file, **`review.md`** (`## Acceptance`, `## ReviewIndex`, `## Claims`, `## ReviewThread`): the reviewer gets a single attachment, and `context.md` stays cheap to reload. Handoff carries only `acceptance_status` / `impl_review_status` mirrors, so gates fire without opening the file; `review.md` is loaded at freeze/revise, during review/triage, or when answering a finding/task history question.
 
-Implementation review is verbose and grows per cycle, so it lives in a sibling **`reviews.md`** (`## ReviewIndex`, `## Claims`, `## ReviewThread`). `context.md` carries only a bounded `## ReviewPointer` so recover stays cheap; `reviews.md` is loaded during review/triage or when answering a finding/task history question.
+Acceptance is per workstream and versioned. Appending in-scope work (finding fixes, tests) keeps the same `version` but resets an `approved` review to `re_review`; work that widens the deliverable needs an explicit revise (`version+1`) or a new line.
+
+## Inherited project knowledge
+
+`## Gotchas` and `## Key Decisions` are two-level: `project.md` holds repo-wide traps and cross-line decisions that every sibling workstream inherits and explore must read; `context.md` holds line-local ones. Entries are promoted upward when they would change how a sibling line is built, tagged with their origin (`- [from 01.03] …`). `project.md` also tracks each workstream's worktree path, branch, and state.
 
 `status: closed` ends the workstream. New durable work must **not** reopen it — `/run new` under the parent (or bind another active line). Binding a closed line while needing tasks/decisions/code is an abnormal bind / hard block.
 

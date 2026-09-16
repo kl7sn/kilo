@@ -1,3 +1,17 @@
+## Acceptance
+
+- status: missing
+- version: 1
+- supersedes: -
+- updated: "{{date}}"
+- user_prompt: |
+  <verbatim acceptance from the user; freeze before the first execute mutation>
+- spec_anchors:
+  - path: "spec.md"
+    note: "<sheet / section>"
+- constraints: []
+- pass_bar: -
+
 ## ReviewIndex
 
 | Finding | Severity | Task | Commit | Status | Round |
@@ -22,6 +36,7 @@
 
 - at: "{{date}}"
 - commit: -
+- acceptance_version: 1
 - acceptance_result: partial
 - summary: "<one line>"
 - findings:

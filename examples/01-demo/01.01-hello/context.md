@@ -8,6 +8,8 @@
 - auto_mode: false
 - phase: plan
 - review_status: good
+- acceptance_status: missing
+- impl_review_status: none
 - parallel_wave: false
 - current_tasks: []
 - last_completed: -
@@ -26,7 +28,7 @@
 
 ## Gotchas
 
-- Example only: replace with real long-lived constraints for your project.
+- Example only: line-local constraints here; promote project-wide ones to `project.md`.
 
 ## Key Decisions
 

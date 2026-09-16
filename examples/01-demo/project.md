@@ -15,6 +15,14 @@ tags:
 
 ## Workstreams
 
-| Workstream | Notes |
-| --- | --- |
-| [[01.01-hello/workstream]] | Hello workstream |
+| Workstream | Notes | Worktree | Branch | State |
+| --- | --- | --- | --- | --- |
+| [[01.01-hello/workstream]] | Hello workstream | - | - | none |
+
+## Gotchas
+
+- [from 01.01] Example only: project-wide constraints inherited by every workstream go here.
+
+## Key Decisions
+
+- [from 01.01] 2026-08-21: docs example project; decisions that outlive one workstream go here.

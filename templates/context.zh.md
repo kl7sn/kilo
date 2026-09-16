@@ -8,6 +8,7 @@
 - auto_mode: false
 - phase: explore
 - review_status: good
+- acceptance_status: missing
 - impl_review_status: none
 - parallel_wave: false
 - current_tasks: []
@@ -24,30 +25,11 @@
 - binding_decision: continue-current
 - smoke_status: pending
 - integration_next: none
-- notes: worktree_status 可为: none|active|missing|smoke_pending|ready_to_merge|pruned
-
-## Acceptance
-
-- status: missing
-- updated: "{{date}}"
-- user_prompt: |
-  <用户验收原话；代码线进入 execute 前必须冻结>
-- spec_anchors: []
-- constraints: []
-- pass_bar: -
-
-## ReviewPointer
-
-- file: reviews.md
-- cycle: 0
-- latest_round: -
-- latest_verdict: none
-- open_findings: []
-- ask_user_pending: false
-- updated: "{{date}}"
-- notes: 审核回合写在 reviews.md，本区块只保留指针
+- notes: 验收与审核回合写在 review.md；worktree_status 可为 none|active|missing|smoke_pending|ready_to_merge|pruned
 
 ## Gotchas
+
+<!-- 只放本条线的坑；影响整个项目的上提到 project.md ## Gotchas -->
 
 ## 关键决策
 

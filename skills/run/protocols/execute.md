@@ -2,7 +2,7 @@
 
 ## Phase routing
 
-- Missing or incomplete design → explore and write `spec.md`.
+- Missing or incomplete design → explore and write `spec.md`. `spec.md` is the input contract (target state the review compares against), not a running log; evidence goes to `## Execution Log`. Read `project.md` `## Gotchas` / `## Key Decisions` first so a sibling line's trap is not rediscovered.
 - Design exists and all task rows are todo → plan and create an acyclic task table with at least one ready row.
 - Plan complete / about to enter execute → **Acceptance freeze gate** (code workstreams).
 - Ready rows and Acceptance frozen (or docs-only) → execute.
@@ -14,15 +14,17 @@
 
 Code workstreams (`worktree_status` not `none`) must freeze acceptance **before the first execute mutation**. Do not mine the chat transcript for acceptance after the fact.
 
+`## Acceptance` lives in the workstream `review.md`, next to the rounds that audit it; create that file at the first draft. Handoff keeps only the `acceptance_status` mirror.
+
 ### Capture moments
 
 | Moment | Action |
 |---|---|
-| `$run new` / first demand mapping | Draft `## Acceptance` from **this turn's** user message and/or plan success criteria (`status: draft`) |
+| `$run new` / first demand mapping | Draft `## Acceptance` in `review.md` from **this turn's** user message and/or plan success criteria (`status: draft`) |
 | explore→plan / design settle | Refresh draft from approved success criteria; still `draft` |
 | **plan→execute** | Emit the freeze prompt; user confirms or edits → `status: frozen` |
 | Later chat | **Do not** update Acceptance |
-| Explicit revise | Only `$run accept …` or clear「验收改成…」→ back to `draft`, then re-freeze |
+| Explicit revise | Only `$run accept …` or clear「验收改成…」→ back to `draft`, bump `version`, set `supersedes`, then re-freeze |
 
 `worktree_path` / `worktree_branch` always come from Handoff, never from chat.
 
@@ -43,6 +45,8 @@ In `$run auto`, freeze from the design-approved success criteria without waiting
 ```yaml
 ## Acceptance
 status: missing|draft|frozen
+version: <int>
+supersedes: <prior version or ->
 updated: <iso>
 user_prompt: |
   <verbatim short acceptance; do not soften>
@@ -55,7 +59,19 @@ pass_bar: "<one line>"
 
 Hard-stop execute mutation, `$run review`, and smoke/close when Acceptance is `missing` or `draft` on a code workstream. Softening `user_prompt` after freeze is forbidden; reopen via explicit revise only.
 
-Optional implementer self-attestations (`## Claims` in `reviews.md`) may support Acceptance but must not replace it.
+Optional implementer self-attestations (`## Claims` in `review.md`) may support Acceptance but must not replace it.
+
+### Appended tasks vs a frozen Acceptance
+
+Acceptance is per workstream, not per task, so appending work does **not** mint a new Acceptance by default:
+
+| Appended work | Acceptance | Review |
+|---|---|---|
+| Fixing a finding, adding tests/docs, refactor inside the same deliverable | unchanged, same `version` | reset `impl_review_status` to `re_review`; re-audit against the same bar |
+| New capability or deliverable beyond the frozen bar, still this line | explicit revise: `draft` → bump `version` → re-freeze | new review cycle against the new `version` |
+| New capability that is really a different line | untouched | `$run new` under the parent (strict workstream fit) |
+
+Any task added or reopened after `impl_review_status: approved` invalidates that approval — set `re_review` in the same turn. An approval recorded against `acceptance_version: 1` never covers `version: 2`.
 
 ## Pre-mutation gates
 
@@ -120,22 +136,22 @@ Evidence shape:
 - T01 done: <summary> | paths: <paths> | guidance: <use-modern-go command> → <result> | verify: <command> → <result>
 ```
 
-When useful, append a falsifiable entry to `reviews.md` `## Claims` (task id, claim sentence, `must_trace`, `disproof_hint`). Claims serve Acceptance; tests alone are not a claim.
+When useful, append a falsifiable entry to `review.md` `## Claims` (task id, claim sentence, `must_trace`, `disproof_hint`). Claims serve Acceptance; tests alone are not a claim.
 
 ## Implementation review gate
 
 For code workstreams, after all tasks are `done` with fresh evidence (or on `$run review`), run an adversarial review **before** the human smoke prompt. Docs-only lines (`worktree_status: none`) skip this gate.
 
-Parent is the sole writer of workspace files. Cross-agent review state lives in the workstream `reviews.md` — never ask the user to copy-paste long reports between agents.
+Parent is the sole writer of workspace files. Cross-agent review state lives in the workstream `review.md` — never ask the user to copy-paste long reports between agents.
 
 ### Review file separation
 
-Review rounds are verbose and grow every cycle, so they do **not** live in `context.md`.
+Acceptance plus rounds are the audit contract and its history; they grow every cycle, so they do **not** live in `context.md`.
 
-- `reviews.md` (same workstream folder) holds `## ReviewIndex`, `## Claims`, and `## ReviewThread` rounds. Create it lazily on the first review or first claim.
-- `context.md` keeps only a bounded pointer block `## ReviewPointer` (file path, cycle count, latest verdict, open finding ids, pending human asks). Never inline round bodies, findings prose, or reviewer reports into `context.md`.
-- Normal recover reads only the pointer. Load `reviews.md` when the phase is review/triage, when `$run review` runs, or when the user asks about a finding/task history. Prefer reading the index plus the rounds still `open`/`fixed`, not the whole file.
-- If pointer and `reviews.md` disagree, `reviews.md` wins; refresh the pointer instead of editing history.
+- `review.md` (same workstream folder) holds `## Acceptance`, `## ReviewIndex`, `## Claims`, and `## ReviewThread` rounds.
+- `context.md` gets no pointer block. Handoff `acceptance_status` and `impl_review_status` are the cheap signals; never inline Acceptance text, round bodies, findings prose, or reviewer reports into `context.md`.
+- Open `review.md` when a freeze/revise is due, when `impl_review_status` is `pending|in_triage|re_review`, when `$run review` runs, or when the user asks about a finding or a task's review history. Prefer Acceptance + index + rounds still `open`/`fixed`, not the whole file.
+- If a Handoff mirror and `review.md` disagree, `review.md` wins; refresh the mirror instead of editing history.
 
 ### Dispatch (`$run review`)
 
@@ -154,19 +170,22 @@ base..HEAD: <merge-base>..HEAD
 diff_stat: <git diff --stat>
 key_paths: <Handoff.key_paths>
 gotchas: <Gotchas if any>
-review_file: <abs path to reviews.md>
+project_gotchas: <project.md ## Gotchas if any>
+review_file: <abs path to review.md>
+acceptance_version: <## Acceptance.version>
 review_digest: <ReviewIndex + rounds with open/fixed findings; full file only when cycles ≤ 1>
 implementer_claims: <## Claims if any>
 note: 测试全绿不能单独视为 Acceptance 通过；请对照 spec 证伪。有历史回合时优先复核 open/fixed 项，勿从零另起炉灶；需要更多上下文时自行读取 review_file。
 ```
 
-4. Dispatch a **read-only** reviewer subagent. It must not edit `.run-state`, `tasks.md`, `context.md`, `reviews.md`, or product code.
-5. Append a `role: reviewer` round to `reviews.md` `## ReviewThread` from the returned YAML, update `## ReviewIndex`, then refresh the `context.md` pointer. Do not rewrite prior finding dispositions in place.
+4. Dispatch a **read-only** reviewer subagent. It must not edit `.run-state`, `tasks.md`, `context.md`, `review.md`, or product code.
+5. Append a `role: reviewer` round to `review.md` `## ReviewThread` from the returned YAML (including the audited `acceptance_version`), update `## ReviewIndex`, then refresh the Handoff mirror. Do not rewrite prior finding dispositions in place.
 
 ### Reviewer return schema
 
 ```yaml
 verdict: approve | revise | escalate
+acceptance_version: <int audited>
 acceptance_result: supported | partial | refuted
 claim_results: []   # optional: id, status, note
 findings:
@@ -183,7 +202,7 @@ summary: "one line"
 
 ### Triage (parent / implementer)
 
-After a reviewer round, set `impl_review_status: in_triage` and append a `role: implementer` round to `reviews.md`:
+After a reviewer round, set `impl_review_status: in_triage` and append a `role: implementer` round to `review.md`:
 
 | disposition | Action |
 |---|---|
@@ -215,6 +234,7 @@ Automated tests and impl-review satisfy machine gates but cannot close a workstr
 3. User-confirmed smoke (`passed`) or explicit waiver (`waived-by-user`).
 4. `integration_next` set to `merge`, `pr`, `keep-branch`, or `prune`.
 5. Any worktree disposition executed or explicitly deferred with `keep-branch`.
+6. The `project.md` workstream row refreshed (`Worktree` / `Branch` / `State`), and any gotcha or decision with cross-line reach promoted to `project.md`.
 
 Until then keep Handoff open with `smoke_status: pending` and, when applicable, `worktree_status: smoke_pending`.
 

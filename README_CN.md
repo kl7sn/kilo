@@ -42,7 +42,8 @@ GSD、BMAD、Spec-Kit 等「托管全流程」的方案有用，但也容易夺�
 - **验证门禁** —— `doing → done` 须在执行日志留证据
 - **验收冻结** —— 进 execute 前确认通过线，之后闲聊不得改软
 - **实现审核** —— 只读审核 agent 对照 Acceptance 证伪，通过后才进人工冒烟
-- **审核独立成文** —— 回合写在 `reviews.md`，`context.md` 只留 `## ReviewPointer`
+- **审核独立成文** —— 验收与回合都写在 `review.md`，`context.md` 只留状态镜像
+- **项目级知识继承** —— `project.md` 的 `## Gotchas` / `## 关键决策` 对同项目所有任务包生效
 - **集成闸** —— 全部 task `done` ≠ 可关线；须人工冒烟 + worktree 处置
 - **Handoff** —— 从 `context.md` 的 `## Handoff` 续跑，不考古聊天
 - **`$run auto`** —— 无人值守推进，设计闸双 agent 共识，真硬停仍停
@@ -125,13 +126,13 @@ $run auto               # 无人值守（硬停仍生效）
 <workspace>/
 └── Projects/
     └── 01-demo/                    # 项目  NN-<slug>
-        ├── project.md
+        ├── project.md              # 任务包+worktree · 共享 Gotchas · 关键决策
         └── 01.01-hello/            # 任务包  NN.MM-<slug>
             ├── workstream.md
             ├── tasks.md
-            ├── context.md          # Handoff · Acceptance · ReviewPointer · Gotchas
-            ├── reviews.md          # 审核回合（首次审核时创建）
-            └── spec.md             # 可选
+            ├── context.md          # Handoff · Gotchas · 关键决策 · 执行日志
+            ├── review.md           # Acceptance · ReviewIndex · Claims · ReviewThread
+            └── spec.md             # 可选，输入契约
 ```
 
 示例：[`examples/01-demo/`](examples/01-demo/) · 模板：[`templates/`](templates/)（中文用 `*.zh.md`）

@@ -21,7 +21,7 @@ After `$run init`, `$run new`, or `$run bind`, persist the resolved absolute bou
     ├── workstream.md
     ├── tasks.md
     ├── context.md
-    ├── reviews.md (created on first review/claim)
+    ├── review.md (Acceptance + review rounds; created at first draft)
     └── spec.md (optional)
 ```
 
@@ -33,9 +33,9 @@ Resolve the workspace first. Create only `Projects/<projectId>/project.md`; do n
 
 ## `$run new`
 
-Resolve the parent project from an active workstream, project homepage, or explicit user target. Allocate `NN.MM-slug`, create the homepage plus empty `tasks.md` and `context.md`, append the parent workstreams link, and bind the session to the new workstream. Do not pre-create `reviews.md`; it is created on the first review round or claim. Do not auto-execute by default. Before allocating a worktree, surface active/smoke-pending sibling worktrees.
+Resolve the parent project from an active workstream, project homepage, or explicit user target. Allocate `NN.MM-slug`, create the homepage plus empty `tasks.md` and `context.md`, append the parent workstreams row (notes plus `Worktree` / `Branch` / `State`), and bind the session to the new workstream. Do not pre-create `review.md`; it appears with the first Acceptance draft. Carry the parent `project.md` `## Gotchas` / `## Key Decisions` into explore rather than rediscovering them. Do not auto-execute by default. Before allocating a worktree, surface active/smoke-pending sibling worktrees.
 
-For code repos: allocate the primary worktree, write `worktree_path` / `worktree_branch` into Handoff (and the matching `.run-state` entry), and set `worktree_status: active`. Record `worktree_status: none` only for pure-docs lines that never touch code. When the creating turn states a pass bar or spec path, seed `## Acceptance` as `draft` from that turn only (do not mine prior chat). After bind/new completes, run the bidirectional worktree audit (orphan + missing) from [recover.md](recover.md) before recover advance or mutation.
+For code repos: allocate the primary worktree, write `worktree_path` / `worktree_branch` into Handoff (and the matching `.run-state` entry), and set `worktree_status: active`. Record `worktree_status: none` only for pure-docs lines that never touch code. When the creating turn states a pass bar or spec path, seed `review.md` `## Acceptance` as `draft` (`version: 1`) from that turn only (do not mine prior chat). After bind/new completes, run the bidirectional worktree audit (orphan + missing) from [recover.md](recover.md) before recover advance or mutation.
 
 ## `$run bind`
 

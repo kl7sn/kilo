@@ -1,3 +1,17 @@
+## Acceptance
+
+- status: missing
+- version: 1
+- supersedes: -
+- updated: "{{date}}"
+- user_prompt: |
+  <用户验收原话；首次 execute 改动前必须冻结>
+- spec_anchors:
+  - path: "spec.md"
+    note: "<sheet / 章节>"
+- constraints: []
+- pass_bar: -
+
 ## ReviewIndex
 
 | Finding | 严重度 | 任务 | Commit | 状态 | 回合 |
@@ -22,6 +36,7 @@
 
 - at: "{{date}}"
 - commit: -
+- acceptance_version: 1
 - acceptance_result: partial
 - summary: "<一句话结论>"
 - findings:

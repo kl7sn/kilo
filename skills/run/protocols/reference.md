@@ -27,55 +27,35 @@ Never encode compound or free-form values in these fields. Automated smoke belon
 
 `worktree_git_status`, `commit_status`, and `binding_decision` are durable decision fields, not prose. `commit_status: uncommitted` blocks close. Keep `binding_decision` values as listed; `binding_decision: pending` blocks add-task and mutation for fit drift, missing worktree, and new-session unbound cases.
 
-`impl_review_status: none` is for docs-only lines. Code workstreams use the other values per [execute.md](execute.md) implementation review gate. `acceptance_status` mirrors `## Acceptance.status` for Handoff convenience when useful; `## Acceptance` remains authoritative.
+`impl_review_status: none` is for docs-only lines. Code workstreams use the other values per [execute.md](execute.md) implementation review gate. `acceptance_status` mirrors `review.md` `## Acceptance.status` so gates can fire without opening that file; `review.md` remains authoritative.
 
-## Acceptance and ReviewThread
+## Acceptance and review file
 
-Parent writes every durable file; reviewers read only. Review rounds live in their own file so `context.md` stays small enough to reload each turn.
+Parent writes every durable file; reviewers read only. Acceptance is the audit contract and the rounds audit it, so both live in `review.md` — one attachment for the reviewer, and `context.md` stays small enough to reload every turn.
 
 ```text
-context.md
-├── ## Handoff
-├── ## Acceptance
-├── ## ReviewPointer     # bounded pointer into reviews.md
-└── ## Gotchas
+context.md               # reloaded every turn
+├── ## Handoff           # includes acceptance_status + impl_review_status mirrors
+├── ## Gotchas           # line-local
+├── ## Key Decisions
+└── ## Execution Log
 
-reviews.md               # created lazily on first review/claim
+review.md                # created at Acceptance freeze (or first review/claim)
+├── ## Acceptance        # frozen pass bar, versioned
 ├── ## ReviewIndex       # finding → task → commit → status
 ├── ## Claims            # optional
 └── ## ReviewThread      # reviewer / implementer rounds
 ```
 
-### ReviewPointer template (in `context.md`)
+`context.md` has no pointer block. Handoff `acceptance_status` and `impl_review_status` are the only cheap signals: read `review.md` when `acceptance_status` is not `frozen` and a freeze/revise is due, when `impl_review_status` is `pending|in_triage|re_review`, when `$run review` runs, or when the user asks about a finding or a task's review history. `review.md` always wins over a stale mirror; refresh the mirror instead of editing history.
 
-```yaml
-## ReviewPointer
-file: reviews.md
-cycle: <int>
-latest_round: <id or ->
-latest_verdict: none|approve|revise|escalate
-open_findings: []
-ask_user_pending: true|false
-updated: <iso>
-```
-
-Keep it to these fields. Round summaries, finding text, risks, and reviewer prose belong in `reviews.md`.
-
-### ReviewIndex template (in `reviews.md`)
-
-```markdown
-| Finding | Severity | Task | Commit | Status | Round |
-|---|---|---|---|---|---|
-| F1 | high | T06 | <sha> | fixed | R1 → R2 |
-```
-
-This table is the lookup path for "what did review say about `Txx`, and what changed"; keep one row per finding and update it whenever a disposition changes.
-
-### Acceptance template
+### Acceptance template (in `review.md`)
 
 ```yaml
 ## Acceptance
 status: missing|draft|frozen
+version: <int>
+supersedes: <prior version or ->
 updated: <iso>
 user_prompt: |
   <verbatim>
@@ -86,7 +66,19 @@ constraints: []
 pass_bar: "<one line>"
 ```
 
-### ReviewThread template (in `reviews.md`)
+`version` starts at 1 and increments only on an explicit revise (`$run accept …` / 「验收改成…」). Each reviewer round records the `acceptance_version` it audited, so an approval never silently covers a later, wider bar.
+
+### ReviewIndex template (in `review.md`)
+
+```markdown
+| Finding | Severity | Task | Commit | Status | Round |
+|---|---|---|---|---|---|
+| F1 | high | T06 | <sha> | fixed | R1 → R2 |
+```
+
+This table is the lookup path for "what did review say about `Txx`, and what changed"; keep one row per finding and update it whenever a disposition changes.
+
+### ReviewThread template (in `review.md`)
 
 ```yaml
 ## ReviewThread
@@ -98,6 +90,7 @@ rounds:
     role: reviewer
     at: <iso>
     commit: <optional>
+    acceptance_version: <int>
     acceptance_result: supported|partial|refuted
     summary: "<one line>"
     findings:
@@ -120,6 +113,19 @@ rounds:
 ```
 
 Rules: reviewer rounds only append findings; implementer rounds only set dispositions via `responses`, and each response names the fixing task plus commit. Do not paste Thread contents through the user as the transport — the parent passes `review_file` and a digest into the next `$run review` prompt. Append rounds; never rewrite or compact history in place.
+
+## Inherited project knowledge
+
+`## Gotchas` and `## Key Decisions` exist at two levels:
+
+| Level | Scope | Read when |
+|---|---|---|
+| `project.md` | repo-wide constraints, toolchain traps, decisions outliving one line | every explore/plan, and before the first mutation of a new workstream |
+| `context.md` | this line only | every recover |
+
+Promote upward when a gotcha or decision would change how a **sibling** workstream is built; keep the entry one line, prefixed with its origin (`- [from 01.03] …`), and leave a short pointer in `context.md`. Never copy the whole line-local list up, and never duplicate a promoted entry back down. Project-level lists stay bounded: compress or drop entries that the codebase now enforces on its own.
+
+`project.md` also tracks each workstream's worktree (`Worktree`, `Branch`, `State` columns) using the Handoff enums, so sibling lines with an `active` or `smoke_pending` worktree are visible without opening every `context.md`. The parent refreshes those cells on `$run new`, at the integration gate, and on disposition.
 
 ### Acceptance freeze prompt
 
@@ -247,7 +253,7 @@ auto_mode: true | false
 
 Use `verification-before-completion` before every `doing → done`. Evidence must be fresh in the same turn; tests, lint, or build output are not a substitute for user smoke at the integration gate.
 
-Parent-chain self-review (`review_status`) is **not** a substitute for the implementation review gate (`impl_review_status` + `reviews.md`). Self-review cannot approve smoke entry alone on code workstreams.
+Parent-chain self-review (`review_status`) is **not** a substitute for the implementation review gate (`impl_review_status` + `review.md`). Self-review cannot approve smoke entry alone on code workstreams.
 
 ## Hard blocks
 
@@ -258,12 +264,14 @@ Stop and ask/escalate for:
 - sole-active silent bind (forbidden — never auto-bind the only active workstream without explicit `$run bind` / user choice)
 - mutation outside primary worktree
 - Acceptance not frozen on a code workstream when entering execute, `$run review`, or smoke/close
-- unresolved review blockers in `reviews.md` (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
-- review rounds inlined into `context.md` instead of `reviews.md`, or a `## ReviewPointer` that contradicts `reviews.md`
+- unresolved review blockers in `review.md` (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
+- Acceptance or review rounds inlined into `context.md` instead of `review.md`
+- tasks added or reopened after `impl_review_status: approved` without resetting to `re_review`
+- an appended task that widens the deliverable beyond the frozen Acceptance, without an explicit revise or `$run new`
 - cross-repo confirmation, true product forks, irreversible operations, state contradiction, recover anomaly, bind ambiguity, missing workstream parent, unbound mutation, parallel merge conflict, subagent workspace writes, unresolved workspace, or premature close
 
 Ordinary test failures are revise-and-fix conditions.
 
 ## Companion boundaries
 
-Companions provide phase discipline only. They do not own a second workflow, write workspace state, skip task accounting, or close workstreams. The parent `$run` remains the sole writer for `.run-state`, `tasks.md`, `context.md`, and `reviews.md`.
+Companions provide phase discipline only. They do not own a second workflow, write workspace state, skip task accounting, or close workstreams. The parent `$run` remains the sole writer for `.run-state`, `tasks.md`, `context.md`, and `review.md`.
