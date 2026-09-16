@@ -29,17 +29,17 @@ On design `approve`, write or refresh `## Acceptance` from the approved success 
 When all tasks are `done` (or an explicit `$run review` is in flight):
 
 1. Set `impl-review: pending` / `re_review` on the status tail.
-2. Dispatch the read-only implementation reviewer per [execute.md](execute.md) (Acceptance + ReviewThread + git attachments).
-3. Parent appends the reviewer round to `## ReviewThread`.
+2. Dispatch the read-only implementation reviewer per [execute.md](execute.md) (Acceptance + `reviews.md` digest/path + git attachments).
+3. Parent appends the reviewer round to `reviews.md` and refreshes the `context.md` pointer.
 4. `verdict: approve` with no blocking open findings → `impl_review_status: approved`, then the normal integration/smoke hard-stop (auto must not guess disposition).
 5. `revise` → parent writes implementer triage, opens/reopens tasks, fixes, re-reviews (maximum two cycles after the first finding round), then escalate.
 6. `escalate`, or any `deferred`/`disagreed` needing human authority → full-stop with `ask_user` populated; do not enter smoke.
 
-Auto mode must not ask the user to paste review text between agents; Thread is the transport.
+Auto mode must not ask the user to paste review text between agents; `reviews.md` is the transport.
 
 ## True forks and hard stops
 
-Escalate only when the decision changes target user, business goal, non-goals, capability, irreversible release/data/compliance policy, or requires new authority. Also stop for unresolved workspace, bind ambiguity, illegal multi-doing, state contradiction, impossible verification, Acceptance not frozen on code lines, unresolved ReviewThread human asks, or irreversible git/production operations.
+Escalate only when the decision changes target user, business goal, non-goals, capability, irreversible release/data/compliance policy, or requires new authority. Also stop for unresolved workspace, bind ambiguity, illegal multi-doing, state contradiction, impossible verification, Acceptance not frozen on code lines, unresolved review human asks in `reviews.md`, or irreversible git/production operations.
 
 ## Status and exit
 

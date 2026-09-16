@@ -8,6 +8,7 @@
 - auto_mode: false
 - phase: explore
 - review_status: good
+- impl_review_status: none
 - parallel_wave: false
 - current_tasks: []
 - last_completed: -
@@ -24,6 +25,27 @@
 - smoke_status: pending
 - integration_next: none
 - notes: worktree_status 可为: none|active|missing|smoke_pending|ready_to_merge|pruned
+
+## Acceptance
+
+- status: missing
+- updated: "{{date}}"
+- user_prompt: |
+  <用户验收原话；代码线进入 execute 前必须冻结>
+- spec_anchors: []
+- constraints: []
+- pass_bar: -
+
+## ReviewPointer
+
+- file: reviews.md
+- cycle: 0
+- latest_round: -
+- latest_verdict: none
+- open_findings: []
+- ask_user_pending: false
+- updated: "{{date}}"
+- notes: 审核回合写在 reviews.md，本区块只保留指针
 
 ## Gotchas
 

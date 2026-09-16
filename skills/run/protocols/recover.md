@@ -4,7 +4,7 @@
 
 1. Read `.run-state`; resolve the workspace (fail closed if unresolved).
 2. **Session bind gate:** match `CODEX_THREAD_ID`/session id in `.run-state projects[]`. If no matching `session_id` → emit the new-session bind prompt (`$run bind` or `$run new`) from [reference.md](reference.md) **Binding and code-management prompts** (new-session template); **stop** before recover advance. Never auto-bind the sole active line. Do not enter execute.
-3. After a session match (or after the user completes bind/new), sync the top-level binding; resolve homepage type (`project` or `workstream`) and required parent; read `tasks.md`, then bounded `context.md`: Handoff, Acceptance, ReviewThread, Gotchas, recent related log.
+3. After a session match (or after the user completes bind/new), sync the top-level binding; resolve homepage type (`project` or `workstream`) and required parent; read `tasks.md`, then bounded `context.md`: Handoff, Acceptance, ReviewPointer, Gotchas, recent related log. Do not load `reviews.md` on every recover — open it only when the phase is review/triage, `$run review` runs, or the user asks about a finding or a task's review history.
 4. Closed-line check: if the bound workstream is closed (`Handoff status: closed` or index `completed|archived`) and durable work is requested, do not reopen it. Use `$run new` under the parent or bind an active sibling, and link the closed line from the new context.
 5. Run `git worktree list --porcelain` and compare every path/branch with Handoff and `.run-state`. Surface **orphan** and **missing** findings for explicit triage before any further advance or mutation.
 6. Inspect `git status --porcelain=v1`, current branch/upstream, and latest commit. Record `worktree_git_status` and `commit_status`; dirty or uncommitted carry-over is a visible blocker, not a reason to continue silently.
@@ -35,7 +35,7 @@ next_action: <one executable step>
 resume_hint: <hint>
 ```
 
-When a code worktree exists, also record `worktree_path`, `worktree_branch`, `worktree_status`, `smoke_status`, and `integration_next` using the exact enums in [reference.md](reference.md). If Acceptance / ReviewThread sections exist, treat them as authoritative for freeze and review triage; do not reconstruct them from chat. If the worktree is active or smoke is pending, surface that state in the next status checkpoint instead of silently treating the line as complete.
+When a code worktree exists, also record `worktree_path`, `worktree_branch`, `worktree_status`, `smoke_status`, and `integration_next` using the exact enums in [reference.md](reference.md). Treat `## Acceptance` and `reviews.md` as authoritative for freeze and review triage; do not reconstruct them from chat, and refresh `## ReviewPointer` rather than inlining rounds when they drift. If the worktree is active or smoke is pending, surface that state in the next status checkpoint instead of silently treating the line as complete.
 
 ## Full-stop
 

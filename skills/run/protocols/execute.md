@@ -55,7 +55,7 @@ pass_bar: "<one line>"
 
 Hard-stop execute mutation, `$run review`, and smoke/close when Acceptance is `missing` or `draft` on a code workstream. Softening `user_prompt` after freeze is forbidden; reopen via explicit revise only.
 
-Optional `## Claims` (implementer self-attestations on task `done`) may support Acceptance but must not replace it.
+Optional implementer self-attestations (`## Claims` in `reviews.md`) may support Acceptance but must not replace it.
 
 ## Pre-mutation gates
 
@@ -120,13 +120,22 @@ Evidence shape:
 - T01 done: <summary> | paths: <paths> | guidance: <use-modern-go command> → <result> | verify: <command> → <result>
 ```
 
-When useful, append a falsifiable entry under `## Claims` (task id, claim sentence, `must_trace`, `disproof_hint`). Claims serve Acceptance; tests alone are not a claim.
+When useful, append a falsifiable entry to `reviews.md` `## Claims` (task id, claim sentence, `must_trace`, `disproof_hint`). Claims serve Acceptance; tests alone are not a claim.
 
 ## Implementation review gate
 
 For code workstreams, after all tasks are `done` with fresh evidence (or on `$run review`), run an adversarial review **before** the human smoke prompt. Docs-only lines (`worktree_status: none`) skip this gate.
 
-Parent is the sole writer of `context.md`. Cross-agent review state lives in `## ReviewThread` — never ask the user to copy-paste long reports between agents.
+Parent is the sole writer of workspace files. Cross-agent review state lives in the workstream `reviews.md` — never ask the user to copy-paste long reports between agents.
+
+### Review file separation
+
+Review rounds are verbose and grow every cycle, so they do **not** live in `context.md`.
+
+- `reviews.md` (same workstream folder) holds `## ReviewIndex`, `## Claims`, and `## ReviewThread` rounds. Create it lazily on the first review or first claim.
+- `context.md` keeps only a bounded pointer block `## ReviewPointer` (file path, cycle count, latest verdict, open finding ids, pending human asks). Never inline round bodies, findings prose, or reviewer reports into `context.md`.
+- Normal recover reads only the pointer. Load `reviews.md` when the phase is review/triage, when `$run review` runs, or when the user asks about a finding/task history. Prefer reading the index plus the rounds still `open`/`fixed`, not the whole file.
+- If pointer and `reviews.md` disagree, `reviews.md` wins; refresh the pointer instead of editing history.
 
 ### Dispatch (`$run review`)
 
@@ -145,13 +154,14 @@ base..HEAD: <merge-base>..HEAD
 diff_stat: <git diff --stat>
 key_paths: <Handoff.key_paths>
 gotchas: <Gotchas if any>
+review_file: <abs path to reviews.md>
+review_digest: <ReviewIndex + rounds with open/fixed findings; full file only when cycles ≤ 1>
 implementer_claims: <## Claims if any>
-review_thread: <full ## ReviewThread if any>
-note: 测试全绿不能单独视为 Acceptance 通过；请对照 spec 证伪。有 Thread 时优先复核 open/fixed 项，勿从零另起炉灶。
+note: 测试全绿不能单独视为 Acceptance 通过；请对照 spec 证伪。有历史回合时优先复核 open/fixed 项，勿从零另起炉灶；需要更多上下文时自行读取 review_file。
 ```
 
-4. Dispatch a **read-only** reviewer subagent. It must not edit `.run-state`, `tasks.md`, `context.md`, or product code.
-5. Append a `role: reviewer` round to `## ReviewThread` from the returned YAML. Do not rewrite prior finding dispositions in place.
+4. Dispatch a **read-only** reviewer subagent. It must not edit `.run-state`, `tasks.md`, `context.md`, `reviews.md`, or product code.
+5. Append a `role: reviewer` round to `reviews.md` `## ReviewThread` from the returned YAML, update `## ReviewIndex`, then refresh the `context.md` pointer. Do not rewrite prior finding dispositions in place.
 
 ### Reviewer return schema
 
@@ -173,7 +183,7 @@ summary: "one line"
 
 ### Triage (parent / implementer)
 
-After a reviewer round, set `impl_review_status: in_triage` and append a `role: implementer` round:
+After a reviewer round, set `impl_review_status: in_triage` and append a `role: implementer` round to `reviews.md`:
 
 | disposition | Action |
 |---|---|
@@ -182,7 +192,9 @@ After a reviewer round, set `impl_review_status: in_triage` and append a `role: 
 | `disagreed` | Put in `ask_user`; user adjudicates before re-review or smoke |
 | `waived` | Only after explicit user waiver; record who/when |
 
-Then either continue execute on new/reopened tasks, or `$run review` again with the **full** Thread attached. Maximum **two** full review cycles after the first finding round; then `escalate` / `impl_review_status: escalated` unless the user extends.
+Every implementer response must name the task that carried the fix and the commit, so `## ReviewIndex` can answer "what did review say about T06 and what changed" without replaying chat.
+
+Then either continue execute on new/reopened tasks, or `$run review` again with the digest plus `review_file` attached. Maximum **two** full review cycles after the first finding round; then `escalate` / `impl_review_status: escalated` unless the user extends.
 
 ### Entering human smoke
 

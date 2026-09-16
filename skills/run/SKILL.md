@@ -17,13 +17,13 @@ Always show `$run` and `$run <subcommand>` in prompts, status lines, examples, t
 2. **Closed lines stay closed.** If the binding points to a completed/archived workstream, create `$run new <name>` under its parent or bind an active sibling; never reopen it.
 3. **One session ↔ one workstream ↔ one primary worktree.** Never advance multiple workstreams in one session. Ambiguous candidates require an interactive bind. Subagent isolation worktrees are allowed; they are not the primary binding.
 4. **New session requires explicit bind.** No matching `session_id` → hard stop; require `$run bind` or `$run new`; never auto-bind the sole active line. Do this before recover advance.
-5. **Parent is the workspace writer.** Subagents may edit isolated code, but only the parent updates `.run-state`, `tasks.md`, and `context.md`.
+5. **Parent is the workspace writer.** Subagents may edit isolated code, but only the parent updates `.run-state`, `tasks.md`, `context.md`, and `reviews.md`.
 6. **Fail closed on workspace resolution.** Use `.run-state` `workspace:` first, then non-empty `RUN_WORKSPACE`; if neither resolves, stop before creating directories or durable state. Never silently use `~/run-workspace`.
 7. **Mutation preflight is mandatory.** Before any external mutation, the intent must map to a `doing` task and `context.md` Handoff `current_tasks` must match it.
 8. **Done requires fresh evidence.** Run verification before marking a task `done`; record the command and result in the execution log.
-9. **All tasks done is not closed.** Code lines need implementation review (`## ReviewThread`) then human smoke and worktree disposition before close.
+9. **All tasks done is not closed.** Code lines need implementation review (`reviews.md`) then human smoke and worktree disposition before close.
 10. **Acceptance is frozen, not mined.** Freeze `## Acceptance` before execute on code lines; do not scrape long chat for the pass bar. Explicit `$run accept` / 「验收改成…」only to revise.
-11. **ReviewThread is the cross-agent bus.** Reviewer and implementer rounds append to `## ReviewThread`; never ask the user to paste long review/fix text between agents.
+11. **ReviewThread is the cross-agent bus, in its own file.** Reviewer and implementer rounds append to the workstream `reviews.md`; `context.md` keeps only a bounded `## ReviewPointer`. Never inline rounds into `context.md`, and never ask the user to paste long review/fix text between agents.
 12. **Progress is proactive.** During an advancing turn, report the current binding and the next execution step at each phase or task transition; do not wait for the user to ask for status.
 13. **Worktree decisions are proactive.** When execution reaches the integration gate, determine whether the current worktree is complete. If human smoke or disposition is still pending, ask the user to confirm completion, continue in the current worktree, or request a new worktree before more mutations.
 14. **Strict workstream fit.** Non-continuation requests set `binding_decision: pending` before adding tasks. Mixed domains, independent deliverables, stale backlog, or repeated follow-up work require an explicit choice to continue-current, `$run bind`, or `$run new <name>`; never silently pile unrelated work into one line.
@@ -37,7 +37,7 @@ Always show `$run` and `$run <subcommand>` in prompts, status lines, examples, t
 |---|---|
 | `$run` | Recover and advance the current workstream |
 | `$run auto` | Unattended advance with design-gate and impl-review gates |
-| `$run review` | Dispatch read-only impl review (Acceptance + ReviewThread + git) |
+| `$run review` | Dispatch read-only impl review (Acceptance + `reviews.md` + git) |
 | `$run accept …` | Draft or revise `## Acceptance` (re-freeze before execute/review) |
 | `$run init <project>` | Create a numbered project container |
 | `$run new <workstream>` | Create a numbered workstream under a project |
@@ -53,7 +53,7 @@ Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.
 3. Resolve `lang`: open Handoff → `.run-state` → `RUN_LANG` → `en`.
 4. Match `CODEX_THREAD_ID`/session id in `.run-state projects[]`. **If no `session_id` match → emit the new-session bind prompt (`$run bind` or `$run new`) and stop** before recover advance; never auto-bind the sole active line.
 5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / adopt / close then `$run new`).
-6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Acceptance / ReviewThread / Gotchas / log.
+6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Acceptance / ReviewPointer / Gotchas / log. Open `reviews.md` only for review, triage, or a review-history question.
 7. If the line is closed and this turn needs durable landing, stop recover and create/bind an active line.
 8. Strict workstream-fit before mapping or adding tasks: non-continuation → set `binding_decision: pending` and stop for continue-current / `$run bind` / `$run new <name>`.
 9. Map the current request to an existing task or add a task row only after the binding decision is resolved.
@@ -85,7 +85,8 @@ Do not guess, create, select, or write a fallback directory.
 - Workstream: `Projects/NN-slug/NN.MM-slug/workstream.md`, `type: workstream`, with full `parent`.
 - Tasks: rows in the workstream `tasks.md` (`todo`, `ready`, `doing`, `blocked`, `done`).
 - Runtime truth: the workstream `context.md` `## Handoff` block.
-- Acceptance / review truth: `## Acceptance` (frozen pass bar) and `## ReviewThread` (reviewer↔implementer rounds).
+- Acceptance truth: `context.md` `## Acceptance` (frozen pass bar).
+- Review truth: the workstream `reviews.md` (`## ReviewIndex`, `## Claims`, `## ReviewThread`), pointed at by `context.md` `## ReviewPointer`.
 - Session index: repo-root `.run-state`; one repo may list many workstreams, but one session advances one.
 
 Number new entities. `NN` is the project number; workstream `MM` increments under that project. Do not rename unnumbered legacy folders unless requested.
@@ -94,7 +95,7 @@ Number new entities. `NN` is the project number; workstream `MM` increments unde
 
 Keep one bounded `## Handoff` section with `status`, `updated`, `workstream`, `parent_project`, `lang`, `auto_mode`, `phase`, `review_status`, `impl_review_status`, `current_tasks`, `last_completed`, `blocker`, `next_action`, `resume_hint`, `key_paths`, and integration fields (`worktree_path`, `worktree_branch`, `worktree_status`, `smoke_status`, `integration_next`).
 
-Also keep `## Acceptance` and, once review starts, `## ReviewThread` per [execute.md](protocols/execute.md) / [reference.md](protocols/reference.md).
+Also keep `## Acceptance` and, once review starts, a bounded `## ReviewPointer` into `reviews.md` per [execute.md](protocols/execute.md) / [reference.md](protocols/reference.md).
 
 `status: closed` requires all tasks done, fresh evidence, impl-review approved on code lines, explicit human smoke (`passed` or `waived-by-user`), and a recorded integration disposition. See [reference.md](protocols/reference.md).
 
@@ -116,7 +117,7 @@ Parallel work is legal only for independent tasks in an explicitly recorded wave
 
 ## Auto contract
 
-`$run auto` sets `auto_mode: true` and keeps ready tasks flowing. Design gates and implementation-review gates both dispatch read-only reviewers (`verdict: approve|revise|escalate`); ReviewThread is the durable transport. True product forks, irreversible operations, bind ambiguity, illegal multi-`doing`, unresolved workspace, undecided deferred/disagree asks, and impossible verification remain hard stops. See [auto.md](protocols/auto.md).
+`$run auto` sets `auto_mode: true` and keeps ready tasks flowing. Design gates and implementation-review gates both dispatch read-only reviewers (`verdict: approve|revise|escalate`); `reviews.md` is the durable transport. True product forks, irreversible operations, bind ambiguity, illegal multi-`doing`, unresolved workspace, undecided deferred/disagree asks, and impossible verification remain hard stops. See [auto.md](protocols/auto.md).
 
 ## Status line
 
@@ -159,6 +160,6 @@ Use phase companions only when needed: brainstorming for explore, writing-plans 
 
 - Workspace setup, init/new/bind, numbering, language: [protocols/workspace.md](protocols/workspace.md)
 - Recover, Handoff, and session sticky: [protocols/recover.md](protocols/recover.md)
-- Explore/plan/execute, Acceptance freeze, ReviewThread, impl-review, integration gate: [protocols/execute.md](protocols/execute.md)
+- Explore/plan/execute, Acceptance freeze, `reviews.md` separation, impl-review, integration gate: [protocols/execute.md](protocols/execute.md)
 - Auto mode, design gates, and impl-review gates: [protocols/auto.md](protocols/auto.md)
 - Templates, enums, hard blocks, self-review: [protocols/reference.md](protocols/reference.md)

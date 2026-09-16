@@ -40,6 +40,9 @@ GSD、BMAD、Spec-Kit 等「托管全流程」的方案有用，但也容易夺�
 - **会话粘性** —— 已绑定仓必须走 `$run`，禁止静默局部改代码
 - **单写者** —— 只有父 `$run` 写 workspace；subagent 可改代码（优先 worktree）
 - **验证门禁** —— `doing → done` 须在执行日志留证据
+- **验收冻结** —— 进 execute 前确认通过线，之后闲聊不得改软
+- **实现审核** —— 只读审核 agent 对照 Acceptance 证伪，通过后才进人工冒烟
+- **审核独立成文** —— 回合写在 `reviews.md`，`context.md` 只留 `## ReviewPointer`
 - **集成闸** —— 全部 task `done` ≠ 可关线；须人工冒烟 + worktree 处置
 - **Handoff** —— 从 `context.md` 的 `## Handoff` 续跑，不考古聊天
 - **`$run auto`** —— 无人值守推进，设计闸双 agent 共识，真硬停仍停
@@ -126,7 +129,8 @@ $run auto               # 无人值守（硬停仍生效）
         └── 01.01-hello/            # 任务包  NN.MM-<slug>
             ├── workstream.md
             ├── tasks.md
-            ├── context.md          # Handoff · Gotchas · 证据
+            ├── context.md          # Handoff · Acceptance · ReviewPointer · Gotchas
+            ├── reviews.md          # 审核回合（首次审核时创建）
             └── spec.md             # 可选
 ```
 

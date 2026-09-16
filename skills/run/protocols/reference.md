@@ -31,15 +31,45 @@ Never encode compound or free-form values in these fields. Automated smoke belon
 
 ## Acceptance and ReviewThread
 
-`context.md` durable sections (parent writes; reviewers read-only):
+Parent writes every durable file; reviewers read only. Review rounds live in their own file so `context.md` stays small enough to reload each turn.
 
 ```text
-## Handoff
-## Acceptance
-## ReviewThread
-## Claims          # optional
-## Gotchas
+context.md
+├── ## Handoff
+├── ## Acceptance
+├── ## ReviewPointer     # bounded pointer into reviews.md
+└── ## Gotchas
+
+reviews.md               # created lazily on first review/claim
+├── ## ReviewIndex       # finding → task → commit → status
+├── ## Claims            # optional
+└── ## ReviewThread      # reviewer / implementer rounds
 ```
+
+### ReviewPointer template (in `context.md`)
+
+```yaml
+## ReviewPointer
+file: reviews.md
+cycle: <int>
+latest_round: <id or ->
+latest_verdict: none|approve|revise|escalate
+open_findings: []
+ask_user_pending: true|false
+updated: <iso>
+```
+
+Keep it to these fields. Round summaries, finding text, risks, and reviewer prose belong in `reviews.md`.
+
+### ReviewIndex template (in `reviews.md`)
+
+```markdown
+| Finding | Severity | Task | Commit | Status | Round |
+|---|---|---|---|---|---|
+| F1 | high | T06 | <sha> | fixed | R1 → R2 |
+```
+
+This table is the lookup path for "what did review say about `Txx`, and what changed"; keep one row per finding and update it whenever a disposition changes.
 
 ### Acceptance template
 
@@ -56,7 +86,7 @@ constraints: []
 pass_bar: "<one line>"
 ```
 
-### ReviewThread template
+### ReviewThread template (in `reviews.md`)
 
 ```yaml
 ## ReviewThread
@@ -89,7 +119,7 @@ rounds:
     ask_user: []
 ```
 
-Rules: reviewer rounds only append findings; implementer rounds only set dispositions via `responses`. Do not paste Thread contents through the user as the transport — the parent loads Thread into the next `$run review` prompt.
+Rules: reviewer rounds only append findings; implementer rounds only set dispositions via `responses`, and each response names the fixing task plus commit. Do not paste Thread contents through the user as the transport — the parent passes `review_file` and a digest into the next `$run review` prompt. Append rounds; never rewrite or compact history in place.
 
 ### Acceptance freeze prompt
 
@@ -217,7 +247,7 @@ auto_mode: true | false
 
 Use `verification-before-completion` before every `doing → done`. Evidence must be fresh in the same turn; tests, lint, or build output are not a substitute for user smoke at the integration gate.
 
-Parent-chain self-review (`review_status`) is **not** a substitute for the implementation review gate (`impl_review_status` + `## ReviewThread`). Self-review cannot approve smoke entry alone on code workstreams.
+Parent-chain self-review (`review_status`) is **not** a substitute for the implementation review gate (`impl_review_status` + `reviews.md`). Self-review cannot approve smoke entry alone on code workstreams.
 
 ## Hard blocks
 
@@ -228,11 +258,12 @@ Stop and ask/escalate for:
 - sole-active silent bind (forbidden — never auto-bind the only active workstream without explicit `$run bind` / user choice)
 - mutation outside primary worktree
 - Acceptance not frozen on a code workstream when entering execute, `$run review`, or smoke/close
-- unresolved ReviewThread blockers (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
+- unresolved review blockers in `reviews.md` (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
+- review rounds inlined into `context.md` instead of `reviews.md`, or a `## ReviewPointer` that contradicts `reviews.md`
 - cross-repo confirmation, true product forks, irreversible operations, state contradiction, recover anomaly, bind ambiguity, missing workstream parent, unbound mutation, parallel merge conflict, subagent workspace writes, unresolved workspace, or premature close
 
 Ordinary test failures are revise-and-fix conditions.
 
 ## Companion boundaries
 
-Companions provide phase discipline only. They do not own a second workflow, write workspace state, skip task accounting, or close workstreams. The parent `$run` remains the sole writer for `.run-state`, `tasks.md`, and `context.md`.
+Companions provide phase discipline only. They do not own a second workflow, write workspace state, skip task accounting, or close workstreams. The parent `$run` remains the sole writer for `.run-state`, `tasks.md`, `context.md`, and `reviews.md`.

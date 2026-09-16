@@ -40,6 +40,9 @@ Frameworks that *own the whole process* (GSD, BMAD, Spec-Kit, issue-tracker agen
 - **Session sticky** — bound repos must stay on `$run`; no silent ad-hoc coding
 - **Single writer** — only parent `$run` updates workspace state; subagents may edit code (prefer worktrees)
 - **Verification gate** — `doing → done` requires evidence in the execution log
+- **Acceptance freeze** — confirm the pass bar before execute; later chat cannot soften it
+- **Implementation review** — read-only reviewer audits code against Acceptance before human smoke
+- **Separate review file** — rounds live in `reviews.md`; `context.md` keeps a bounded `## ReviewPointer`
 - **Integration gate** — all tasks `done` ≠ workstream closed; human smoke + worktree disposition required
 - **Handoff block** — resume from `## Handoff` in `context.md`, not chat archaeology
 - **`$run auto`** — unattended advance with dual-agent design gates and real hard stops
@@ -127,7 +130,8 @@ Resolution order: `.run-state` → `RUN_WORKSPACE` → explicit setup required. 
         └── 01.01-hello/            # workstream  NN.MM-<slug>
             ├── workstream.md
             ├── tasks.md
-            ├── context.md          # Handoff · Gotchas · evidence
+            ├── context.md          # Handoff · Acceptance · ReviewPointer · Gotchas
+            ├── reviews.md          # review rounds (created on first review)
             └── spec.md             # optional
 ```
 

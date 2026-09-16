@@ -48,6 +48,12 @@ Public summary of the workflow. Full rules live in `skills/run/SKILL.md`.
 
 `context.md` uses **`## Handoff` as the only runtime section** (no separate “Current status”). Optional `## Gotchas` for long-lived constraints; `## Key Decisions` for decision history; `## Execution Log` for evidence.
 
+## Acceptance and review files
+
+`## Acceptance` holds the frozen pass bar; it is confirmed before execute on code lines and is not softened by later chat.
+
+Implementation review is verbose and grows per cycle, so it lives in a sibling **`reviews.md`** (`## ReviewIndex`, `## Claims`, `## ReviewThread`). `context.md` carries only a bounded `## ReviewPointer` so recover stays cheap; `reviews.md` is loaded during review/triage or when answering a finding/task history question.
+
 `status: closed` ends the workstream. New durable work must **not** reopen it — `/run new` under the parent (or bind another active line). Binding a closed line while needing tasks/decisions/code is an abnormal bind / hard block.
 
 ## Comparison
