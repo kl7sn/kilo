@@ -86,7 +86,7 @@ Do not guess, create, select, or write a fallback directory.
 - Tasks: rows in the workstream `tasks.md` (`todo`, `ready`, `doing`, `blocked`, `done`).
 - Runtime truth: the workstream `context.md` `## Handoff` block.
 - Acceptance and review truth: the workstream `review.md` (`## Acceptance`, `## ReviewIndex`, `## Claims`, `## ReviewThread`), mirrored cheaply by Handoff `acceptance_status` / `impl_review_status`.
-- Inherited knowledge: `project.md` `## Stable Facts` (durable facts) and `## Gotcha Index` (pointers, not copies) apply to every line under that project. Gotcha full text and `## Key Decisions` stay line-local in `context.md`; mechanize a constraint before writing it anywhere.
+- Inherited knowledge: `project.md` `## Stable Facts` (durable facts) and `## Gotcha Index` (pointers, not copies) apply to every line under that project. Gotcha full text and `## Key Decisions` stay line-local in `context.md`; mechanize a constraint before writing it anywhere. Project entries are current truth: a line that invalidates one must update it in place before close, not diverge silently.
 - Sibling worktrees: the `project.md` workstreams table carries each line's `Worktree` / `Branch` / `State`.
 - Session index: repo-root `.run-state`; one repo may list many workstreams, but one session advances one.
 

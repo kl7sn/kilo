@@ -138,6 +138,22 @@ Both project-level sections are bounded and pruned: delete a fact the moment it 
 
 Never copy `context.md` gotcha text upward, never restate a project fact back down, and never let an index line grow into reproduction steps.
 
+### Fact drift and conflict
+
+A landed fact is only "current truth", not settled history. Later lines change requirements, so a fact will eventually contradict the work in hand. Silent coexistence is the failure mode: this line builds on the new understanding while `project.md` keeps teaching the next line the old concept.
+
+When explore/plan finds that this line will change or invalidate a project-level fact or index conclusion:
+
+1. **Do not route around it.** Record the conflict as a task row (or an explicit plan decision naming the entry), so the update is accounted for instead of remembered.
+2. **Check who is mid-flight.** If any sibling row in the workstreams table is `active` or `smoke_pending`, that line may be building on the old fact — surface the conflict and ask the user before changing shared truth.
+3. **Update in place at close.** Replace the entry with the new current value and re-tag its origin line. `## Stable Facts` and `## Gotcha Index` hold only what is true now; do not accumulate a changelog there.
+4. **Put the history where history lives.** Why it changed (old → new, trigger) goes into this line's `context.md` `## Key Decisions`.
+5. **Check Acceptance.** If the invalidated fact is referenced by this line's `spec_anchors` or `constraints`, the frozen bar no longer describes reality: revise Acceptance explicitly (`version+1`) rather than reinterpreting it.
+
+An index conclusion that this line disproved must be rewritten or deleted in the same turn — never left pointing at a `context.md` whose conclusion no longer holds.
+
+A fact entry may carry an optional `check:` (command or path) that makes it cheaply falsifiable. Verify it only when that fact bears on the current task; a `check:` that now fails is a drift signal, not a blocker to work around.
+
 `project.md` also tracks each workstream's worktree (`Worktree`, `Branch`, `State` columns) using the Handoff enums, so sibling lines with an `active` or `smoke_pending` worktree are visible without opening every `context.md`. The parent refreshes those cells on `$run new`, at the integration gate, and on disposition.
 
 ### Acceptance freeze prompt
@@ -280,6 +296,7 @@ Stop and ask/escalate for:
 - unresolved review blockers in `review.md` (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
 - Acceptance or review rounds inlined into `context.md` instead of `review.md`
 - gotcha text copied into `project.md` instead of a pointer, or a mechanizable constraint written as prose without attempting the test/lint route
+- a known conflict with a project-level fact or index conclusion left unrecorded and unresolved at close (silent divergence), or shared truth rewritten while a sibling line is `active`/`smoke_pending` without asking the user
 - tasks added or reopened after `impl_review_status: approved` without resetting to `re_review`
 - an appended task that widens the deliverable beyond the frozen Acceptance, without an explicit revise or `$run new`
 - cross-repo confirmation, true product forks, irreversible operations, state contradiction, recover anomaly, bind ambiguity, missing workstream parent, unbound mutation, parallel merge conflict, subagent workspace writes, unresolved workspace, or premature close

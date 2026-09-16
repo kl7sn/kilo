@@ -39,7 +39,7 @@ Auto mode must not ask the user to paste review text between agents; `review.md`
 
 ## True forks and hard stops
 
-Escalate only when the decision changes target user, business goal, non-goals, capability, irreversible release/data/compliance policy, or requires new authority. Also stop for unresolved workspace, bind ambiguity, illegal multi-doing, state contradiction, impossible verification, Acceptance not frozen on code lines, unresolved review human asks in `review.md`, or irreversible git/production operations.
+Escalate only when the decision changes target user, business goal, non-goals, capability, irreversible release/data/compliance policy, or requires new authority. Also stop for unresolved workspace, bind ambiguity, illegal multi-doing, state contradiction, impossible verification, Acceptance not frozen on code lines, unresolved review human asks in `review.md`, or irreversible git/production operations. Auto may update a project-level fact it invalidated, but not while a sibling line is `active`/`smoke_pending` on the old truth — that needs the user.
 
 ## Status and exit
 

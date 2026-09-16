@@ -21,7 +21,7 @@ tags:
 
 ## Stable Facts
 
-- Build: `./install.sh all` symlinks the skill into agent dirs.
+- Build: `./install.sh all` symlinks the skill into agent dirs. · check: `./install.sh --help`
 
 ## Gotcha Index
 

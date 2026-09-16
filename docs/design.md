@@ -65,6 +65,8 @@ Project level stores **facts and pointers, never copies**, because "every new li
 
 Promotion order: mechanize first (test / lint / type / CI beats prose, because a document entry depends on an agent remembering to read it), else one `Stable Facts` line, else one `Gotcha Index` pointer, else keep it local. Uncertainty defaults to *not* promoting. Both project sections are pruned on expiry — a stale entry is worse than a missing one, since agents obey it.
 
+**Fact drift.** A landed fact is current truth, not settled history; later requirements will contradict it. When a line invalidates an entry it must record the conflict as accountable work, ask the user first if a sibling line is `active`/`smoke_pending` on the old truth, update the entry in place at close, and put the reason in its own `## Key Decisions`. If the invalidated fact was referenced by the frozen Acceptance, the bar is revised (`version+1`) rather than reinterpreted. A line cannot close leaving a known contradiction in `project.md`.
+
 `project.md` also tracks each workstream's worktree path, branch, and state.
 
 `status: closed` ends the workstream. New durable work must **not** reopen it — `/run new` under the parent (or bind another active line). Binding a closed line while needing tasks/decisions/code is an abnormal bind / hard block.
