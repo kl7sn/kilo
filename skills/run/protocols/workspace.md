@@ -44,3 +44,5 @@ Match `session_id` → may resume that binding after the bidirectional worktree 
 ## Language
 
 Resolve `lang` from open Handoff, `.run-state`, `RUN_LANG`, then `en`. `$run lang en|zh` updates the repo default and an open Handoff; historical entries are not bulk-translated. Keep machine literals and parser headings stable.
+
+When writing **user-facing Chinese** (prompts, status explanations, README-style notes, Handoff prose): use everyday words only. **Do not invent shorthand** (关线、先冻后干、状态单写). Call the Markdown files **状态文档**. Prefer `kaola-writing` when polishing Chinese prose.

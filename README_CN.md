@@ -1,58 +1,81 @@
-# $run
+<p align="center">
+  <img src="docs/images/run-mark.svg" width="72" height="72" alt="run" />
+</p>
 
-> 面向 Coding Agent 的可恢复执行协议：绑定 workstream、状态落在 Markdown、`done` 前验证、从有界 Handoff 续跑——而不是翻昨天的聊天记录。
+<h1 align="center">run</h1>
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![Install](https://img.shields.io/badge/install-npx%20skills-6366f1?style=flat-square)](https://skills.sh/kl7sn/run)
-[![Agents](https://img.shields.io/badge/agents-Cursor%20%7C%20Claude%20%7C%20Codex-555?style=flat-square)](#支持的-agent)
-[![State](https://img.shields.io/badge/state-Markdown%20workspace-lightgrey?style=flat-square)](#workspace)
-[![English](https://img.shields.io/badge/docs-English-informational?style=flat-square)](README.md)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT" /></a>
+  <a href="https://skills.sh/kl7sn/run"><img src="https://img.shields.io/badge/install-npx%20skills-6366f1?style=flat-square" alt="Install" /></a>
+  <a href="#支持的-agent"><img src="https://img.shields.io/badge/agents-Cursor%20%7C%20Claude%20%7C%20Codex-555?style=flat-square" alt="Agents" /></a>
+  <a href="#workspace"><img src="https://img.shields.io/badge/state-Markdown%20workspace-lightgrey?style=flat-square" alt="State" /></a>
+</p>
 
-遵循 [Agent Skills](https://agentskills.io/) 格式，通过 [skills.sh](https://skills.sh) 安装。
+<p align="center">
+  <a href="README.md">English</a>
+</p>
+
+<p align="center"><strong>给 Coding Agent 用的执行协议。</strong></p>
+
+<p align="center">
+  绑一条 workstream，把状态写在 Markdown 里；没有验证依据不标 <code>done</code>；<br />
+  下次从 Handoff 接着做，不用翻旧聊天记录。
+</p>
+
+<p align="center">
+  <a href="https://skills.sh/kl7sn/run"><strong>安装 run</strong></a>
+  · 按
+  <a href="https://agentskills.io/">Agent Skills</a>
+  格式，经
+  <a href="https://skills.sh">skills.sh</a>
+  安装
+</p>
 
 ## 是什么
 
-`$run` 是 **工程流程助手** —— 给 Cursor、Claude Code、Codex 用的 skill 协议。
+`/run` 是给 Cursor、Claude Code、Codex 用的工程流程 skill。
 
-把多步工程收成可恢复闭环：
+多步任务可以中断，也可以接着做：
 
 ```text
 绑定 workstream → explore / plan / execute → 验证 → 交接 → 继续
 ```
 
-账本落在 **Obsidian Markdown 库**；每个代码仓根目录只保留小型 `.run-state` 会话索引，并指向该库。无控制面，无 SaaS。
+![/run main flow](docs/images/run-readme-main-flow.svg)
+
+状态文档放在 **Obsidian Markdown 库**；代码仓根目录只留一个小 `.run-state`，指向这个库。没有控制面，也不是 SaaS。
 
 ## 为什么需要
 
-Agent 擅长写代码，弱在：
+Agent 写代码很强，容易出问题的是：
 
-- **连续性** —— 换窗口、换工具、隔几天就丢线
-- **可追责** —— 没有证据就标 `done`
-- **范围控制** —— 偏离计划或漏记 task
+- **连续性** —— 换窗口、换工具、隔几天，上下文就断了
+- **可核对** —— 没有证据也标 `done`
+- **范围** —— 计划跑偏，或漏记 task
 
-GSD、BMAD、Spec-Kit 等「托管全流程」的方案有用，但也容易夺走控制权，流程 bug 难修。
+GSD、BMAD、Spec-Kit 这类「托管全流程」的方案能用，但常常喧宾夺主，流程出了问题不好修。
 
-`$run` 让你掌控：**纯文件、显式阶段、该停就停**。
+`/run` 把状态记在文件里，阶段划分清楚；该停的地方会停，不会闷头往下跑。
 
-## 核心能力
+## 它能干什么
 
-- **三层模型** —— project → workstream → tasks（`tasks.md` 行）
-- **会话粘性** —— 已绑定仓必须走 `$run`，禁止静默局部改代码
-- **单写者** —— 只有父 `$run` 写 workspace；subagent 可改代码（优先 worktree）
-- **验证门禁** —— `doing → done` 须在执行日志留证据
-- **验收冻结** —— 进 execute 前确认通过线，之后闲聊不得改软
-- **实现审核** —— 只读审核 agent 对照 Acceptance 证伪，通过后才进人工冒烟
-- **审核独立成文** —— 验收与回合都写在 `review.md`，`context.md` 只留状态镜像
-- **项目级知识继承** —— `project.md` 只存稳定事实和坑位*索引*，细节留在踩坑的那条线
-- **集成闸** —— 全部 task `done` ≠ 可关线；须人工冒烟 + worktree 处置
-- **Handoff** —— 从 `context.md` 的 `## Handoff` 续跑，不考古聊天
-- **`$run auto`** —— 无人值守推进，设计闸双 agent 共识，真硬停仍停
+- **三层结构** —— project → workstream → tasks（`tasks.md` 里一行一项）
+- **会话绑定** —— 仓库绑定后必须走 `/run`，不能绕过协议改代码
+- **状态文档只由父 `/run` 写入** —— subagent 可以改代码（优先用 worktree）
+- **完成须有证据** —— `doing → done` 要在执行日志里留下验证记录
+- **先冻结验收再执行** —— 进入 execute 前先定死通过标准，之后闲聊不能放宽
+- **先实现审核再人工冒烟** —— 只读审核对照 Acceptance，通过后再做人工冒烟
+- **验收与审核分开存放** —— 验收和审核回合写在 `review.md`；`context.md` 只保留状态镜像
+- **项目级知识可继承** —— `project.md` 留稳定事实和已知问题索引；细节仍在原 workstream
+- **任务全完成不等于可以关闭 workstream** —— 还要人工冒烟，并处理 worktree（合并 / 保留 / 清理等）
+- **从 Handoff 续跑** —— 读 `context.md` 的 `## Handoff`，不翻旧聊天
+- **`/run auto`** —— 可以无人值守推进；设计评审需要双 agent 达成共识；碰到硬停止条件仍会停
 
-### 强绑定
+### 绑定规则（必须遵守）
 
-- **一会话 ↔ 一 workstream ↔ 一主 worktree** —— 禁止同会话推进多条线
-- **新会话必须绑定** —— 恢复或选择 workstream 后才能 explore / plan / execute
-- **缺失 worktree 硬停** —— `worktree_status: missing` 禁止改代码；不得回退到主工作区
+- **一个会话只绑一条 workstream、一个主 worktree** —— 同一会话里不要同时推进多条
+- **先绑定再推进** —— 还没恢复或还没选定 workstream，就不要做 explore / plan / execute
+- **worktree 缺失则停止** —— `worktree_status: missing` 时禁止改代码，也不要退回主工作区凑合
 
 ## 快速开始
 
@@ -62,72 +85,72 @@ GSD、BMAD、Spec-Kit 等「托管全流程」的方案有用，但也容易夺�
 npx skills add kl7sn/run -g
 ```
 
-会安装 **`run`**。常用参数：
+装上的是 **`run`**。常用参数：
 
 ```bash
 npx skills add kl7sn/run -g -y              # 非交互
-npx skills add kl7sn/run -g -a cursor       # 仅 Cursor
-npx skills add kl7sn/run --list             # 预览包内 skill
+npx skills add kl7sn/run -g -a cursor       # 只给 Cursor
+npx skills add kl7sn/run --list             # 看包里有什么
 npx skills update                           # 之后更新
 ```
 
-本地 clone 贡献者：`./install.sh all`。
+### 2. 指向 Obsidian 库，再新建 workstream
 
-### 2. 指向 Obsidian 库，再创建 workstream
-
-账本写在 Obsidian 库里（`RUN_WORKSPACE` 或 `.run-state` 的 `workspace:`）。在已绑定的代码仓里：
+状态文档写在 Obsidian 库里（`RUN_WORKSPACE`，或 `.run-state` 的 `workspace:`）。在已绑定的代码仓里：
 
 ```text
-$run init demo          # 在库里建项目容器（一次）
-$run new hello          # 项目下新建 workstream
+/run init demo          # 在库里建项目（做一次即可）
+/run new hello          # 在项目下新建 workstream
 ```
 
-`.run-state` 写在**代码仓** git 根；`project.md` / `tasks.md` / … 落在 Obsidian 库。
+`.run-state` 在**代码仓**的 git 根目录；`project.md` / `tasks.md` 等落在 Obsidian 库。
 
-### 3. 运行
+### 3. 开始使用
 
 ```text
-$run                    # 推进 explore → plan → execute
-$run auto               # 无人值守（硬停仍生效）
+/run                    # 推进 explore → plan → execute
+/run auto               # 无人值守（硬停止条件仍然生效）
 ```
 
-状态行（每次推进回复开头）：
+每次推进时，回复开头会有状态行：
 
 ```text
-[$run · lang=zh · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
+[/run · lang=zh · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
 ```
 
 ## 包内 skill
 
 | Skill | 作用 |
 | --- | --- |
-| [`run`](skills/run/SKILL.md) | 流程协议 —— 绑定、阶段、tasks、Handoff、闸门 |
+| [`run`](skills/run/SKILL.md) | 流程协议：绑定、阶段、tasks、Handoff、检查点 |
 
-`$run` **不是**通用 skill 工具集。TDD、grill、领域工具等保持独立、可选。
+`/run` **不是**万能工具箱。TDD、grill、领域工具各自独立。
 
-`run` skill 采用 progressive disclosure：入口 `skills/run/SKILL.md` 保持精简（不超过 500 行），工作区、恢复、执行、auto 和参考细节按需放在 `skills/run/protocols/` 下读取。
+入口 `skills/run/SKILL.md` 写得较短（不超过 500 行）；细节需要时再读 `skills/run/protocols/`。
 
 ## 命令
 
 | 命令 | 说明 |
 | --- | --- |
-| `$run init` [projectId] | 在 Obsidian 库创建项目容器 |
-| `$run new` [workstreamId] | 创建嵌套 workstream |
-| `$run bind` | 交互重绑本会话 |
-| `$run accept` … | 起草或修订冻结验收 |
-| `$run review` | 发起只读实现审核 |
-| `$run lang` [en\|zh] | 查看或设置文档语言 |
-| `$run` | 推进当前阶段 |
-| `$run auto` | 无人值守推进 |
+| `/run init` [projectId] | 在库里创建项目 |
+| `/run new` [workstreamId] | 创建嵌套 workstream |
+| `/run bind` | 重新绑定当前会话 |
+| `/run accept` … | 起草或修订已冻结的验收标准 |
+| `/run review` | 发起只读实现审核 |
+| `/run lang` [en\|zh] | 查看或设置文档语言 |
+| `/run` | 推进当前阶段 |
+| `/run auto` | 无人值守推进 |
 
 ## Workspace
 
-状态分两处落地，不要混：
+状态分两处存放，不要混用：
 
-- **代码仓库（git 根）**：只放 `.run-state` 会话索引（绑定哪条任务包、哪个 worktree）。
-- **Obsidian 工作区（Markdown 库）**：放全部账本（`project.md` / `tasks.md` / `context.md` / `review.md` 等）。`.run-state` 的 `workspace:` 指向这个库。
+- **代码仓（git 根）**：只有 `.run-state`——记录绑了哪条 workstream、哪个 worktree。
+- **Obsidian 库**：全部状态文档（`project.md` / `tasks.md` / `context.md` / `review.md` 等）。`.run-state` 的 `workspace:` 指向这里。
 
-路径优先级：`.run-state` → `RUN_WORKSPACE` → 必须显式配置。协议不再隐式回退到 `~/run-workspace`。
+![Two landing places: code repo vs Obsidian vault](docs/images/run-readme-two-places.png)
+
+路径怎么找：先看 `.run-state`，再看 `RUN_WORKSPACE`；都没有就需要显式配置。不会悄悄落到 `~/run-workspace`。
 
 ```text
 <code-repo>/.run-state              # 仅会话索引，在 git 仓根
@@ -135,18 +158,18 @@ $run auto               # 无人值守（硬停仍生效）
 <obsidian-vault>/                   # Obsidian 库 = RUN_WORKSPACE
 └── Projects/
     └── 01-demo/                    # 项目  NN-<slug>
-        ├── project.md              # 任务包+worktree · 稳定事实 · 坑位索引
-        └── 01.01-hello/            # 任务包  NN.MM-<slug>
+        ├── project.md              # workstream 与 worktree · 稳定事实 · 已知问题索引
+        └── 01.01-hello/            # workstream  NN.MM-<slug>
             ├── workstream.md
             ├── tasks.md
             ├── context.md          # Handoff · Gotchas · 关键决策 · 执行日志
             ├── review.md           # Acceptance · ReviewIndex · Claims · ReviewThread
-            └── spec.md             # 可选，输入契约
+            └── spec.md             # 可选的输入约定
 ```
 
 示例：[`examples/01-demo/`](examples/01-demo/) · 模板：[`templates/`](templates/)（中文用 `*.zh.md`）
 
-仓内会话索引（git 根 `.run-state`）示例：
+`.run-state` 大致如下：
 
 ```yaml
 workspace: /absolute/path/to/obsidian-vault/Projects/01-demo/01.01-hello
@@ -163,24 +186,24 @@ repo: .
 | Claude Code | `~/.claude/skills/` |
 | Codex | `~/.codex/skills/` |
 
-`npx skills add kl7sn/run -g -a <agent>` 可指定端。`install.sh` 也支持 `~/.agents/skills/`。
+只要某一个端：`npx skills add kl7sn/run -g -a <agent>`。
 
-## $run 不是什么
+## /run 不是什么
 
 | | |
 | --- | --- |
 | ❌ 托管 Agent 平台 | ✅ Markdown workspace + skill 协议 |
-| ❌ 必须常住的 Issue 系统 | ✅ 可 grep 的 `tasks.md` |
-| ❌ 通用 skill 入口 / 注册表 | ✅ 仅流程助手 |
-| ❌ 「看起来没问题」就完成 | ✅ 验证 + 关线前人工冒烟 |
+| ❌ 必须天天打开的 Issue 系统 | ✅ 能用 grep 搜的 `tasks.md` |
+| ❌ 通用 skill 入口 | ✅ 只管流程 |
+| ❌ 「看起来没问题」就算完 | ✅ 验证 + 关闭 workstream 前做人工冒烟 |
 
 ## 可选 companion
 
-`$run` 负责编排；阶段纪律 skill 可选：
+`/run` 负责编排；阶段纪律类 skill 可选：
 
 - **默认：** superpowers（`brainstorming`、`writing-plans`、TDD、`verification-before-completion`）
-- **可选：** [mattpocock/skills](https://github.com/mattpocock/skills) —— 如 `grill-with-docs`、`to-tickets`、`code-review`
-- **不要** 与他们的 `handoff` / `implement` 双跑，不要把 durable state 迁出 workspace
+- **按需：** [mattpocock/skills](https://github.com/mattpocock/skills) —— 例如 `grill-with-docs`、`to-tickets`、`code-review`
+- **不要** 和他们的 `handoff` / `implement` 同时开；也不要把 durable state 挪出 workspace
 
 详见 [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Companion skills*。
 
@@ -188,8 +211,8 @@ repo: .
 
 | 文档 | 作用 |
 | --- | --- |
-| [`skills/run/SKILL.md`](skills/run/SKILL.md) | 入口/精简协议；细节见 [`skills/run/protocols/`](skills/run/protocols/) |
-| [`docs/design.md`](docs/design.md) | 设计与取舍 |
+| [`skills/run/SKILL.md`](skills/run/SKILL.md) | 入口；细节见 [`protocols/`](skills/run/protocols/) |
+| [`docs/design.md`](docs/design.md) | 设计取舍 |
 | [`README.md`](README.md) | English |
 
 ## License

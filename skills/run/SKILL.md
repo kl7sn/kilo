@@ -157,6 +157,8 @@ Do not close the workstream, create a new worktree, or start new mutations until
 
 Use phase companions only when needed: brainstorming for explore, writing-plans for plan, TDD/systematic-debugging for execute, `use-modern-go` for Go code changes, verification-before-completion before every done, and using-git-worktrees for isolation. Companions return results; the parent remains the sole workspace writer.
 
+For user-facing Chinese polish (README, prompts, notes), prefer `kaola-writing`: everyday words only; **never invent shorthand slogans**; call durable Markdown files **状态文档** (not 账本 / 关线-style coinages).
+
 ## Progressive disclosure map
 
 - Workspace setup, init/new/bind, numbering, language: [protocols/workspace.md](protocols/workspace.md)

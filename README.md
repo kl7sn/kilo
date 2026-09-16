@@ -1,59 +1,80 @@
-# $run
+<p align="center">
+  <img src="docs/images/run-mark.svg" width="72" height="72" alt="run" />
+</p>
 
-> Durable execution for coding agents. Bind a workstream, keep state in Markdown, verify before `done`, and resume from a bounded Handoff — not from yesterday's chat.
+<h1 align="center">run</h1>
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![Install](https://img.shields.io/badge/install-npx%20skills-6366f1?style=flat-square)](https://skills.sh/kl7sn/run)
-[![Agents](https://img.shields.io/badge/agents-Cursor%20%7C%20Claude%20%7C%20Codex-555?style=flat-square)](#supported-agents)
-[![State](https://img.shields.io/badge/state-Markdown%20workspace-lightgrey?style=flat-square)](#workspace)
-[![中文](https://img.shields.io/badge/docs-中文-informational?style=flat-square)](README_CN.md)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT" /></a>
+  <a href="https://skills.sh/kl7sn/run"><img src="https://img.shields.io/badge/install-npx%20skills-6366f1?style=flat-square" alt="Install" /></a>
+  <a href="#supported-agents"><img src="https://img.shields.io/badge/agents-Cursor%20%7C%20Claude%20%7C%20Codex-555?style=flat-square" alt="Agents" /></a>
+  <a href="#workspace"><img src="https://img.shields.io/badge/state-Markdown%20workspace-lightgrey?style=flat-square" alt="State" /></a>
+</p>
 
-Skills follow the [Agent Skills](https://agentskills.io/) format and install via [skills.sh](https://skills.sh).
+<p align="center">
+  <a href="README_CN.md">中文</a>
+</p>
+
+<p align="center"><strong>Durable execution for coding agents.</strong></p>
+
+<p align="center">
+  Bind a workstream, keep state docs in Markdown, no <code>done</code> without evidence,<br />
+  and continue from Handoff — not from old chat history.
+</p>
+
+<p align="center">
+  <a href="https://skills.sh/kl7sn/run"><strong>Install run</strong></a>
+  · follows
+  <a href="https://agentskills.io/">Agent Skills</a>
+  via
+  <a href="https://skills.sh">skills.sh</a>
+</p>
 
 ## What it is
 
-`$run` is an **engineering process assistant** — a skill protocol for Cursor, Claude Code, and Codex.
+`/run` is a process skill for Cursor, Claude Code, and Codex.
 
-It turns multi-step work into a recoverable loop:
+Multi-step work you can pause and resume:
 
 ```text
 bind workstream → explore / plan / execute → verify → hand off → continue
 ```
 
-Durable ledgers live in an **Obsidian Markdown vault**; each code repo keeps only a small `.run-state` session index that points at that vault. No control plane. No SaaS.
+![/run main flow](docs/images/run-readme-main-flow.svg)
+
+State docs live in an **Obsidian Markdown vault**. The code repo only keeps a small `.run-state` pointer. No control plane. No SaaS.
 
 ## Why it exists
 
-Coding agents are good at writing code. They are weak at:
+Agents write code well. They struggle with:
 
-- **Continuity** — losing the thread between chats, tools, and weekends
-- **Accountability** — marking work `done` without evidence
-- **Scope control** — drifting off-plan or skipping task accounting
+- **Continuity** — lose the thread across chats, tools, weekends
+- **Evidence** — mark `done` with nothing to show
+- **Scope** — drift off-plan or skip task rows
 
-Frameworks that *own the whole process* (GSD, BMAD, Spec-Kit, issue-tracker agents) can help — but they also take away control and make process bugs hard to fix.
+Full-process frameworks (GSD, BMAD, Spec-Kit, …) can help, but they often take over the process — and then process bugs are hard to fix.
 
-`$run` keeps **you** in charge: plain files, explicit phases, hard stops where it matters.
+`/run` keeps state in files, keeps phases explicit, and stops when it should instead of pushing ahead.
 
-## Key features
+## What it does
 
-- **Three-layer model** — project → workstream → tasks (`tasks.md` rows)
-- **Session sticky** — bound repos must stay on `$run`; no silent ad-hoc coding
-- **Single writer** — only parent `$run` updates workspace state; subagents may edit code (prefer worktrees)
-- **Verification gate** — `doing → done` requires evidence in the execution log
-- **Acceptance freeze** — confirm the pass bar before execute; later chat cannot soften it
-- **Implementation review** — read-only reviewer audits code against Acceptance before human smoke
-- **Separate review file** — Acceptance + rounds live in `review.md`; `context.md` keeps only status mirrors
-- **Inherited project knowledge** — `project.md` keeps durable facts plus a gotcha *index*; details stay where they were learned
-- **Integration gate** — all tasks `done` ≠ workstream closed; human smoke + worktree disposition required
-- **Handoff block** — resume from `## Handoff` in `context.md`, not chat archaeology
-- **`$run auto`** — unattended advance with dual-agent design gates and real hard stops
+- **Three layers** — project → workstream → tasks (`tasks.md` rows)
+- **Sticky session** — once a repo is bound, stay on `/run`; no silent ad-hoc edits
+- **Single writer** — only parent `/run` updates workspace; subagents may edit code (prefer worktrees)
+- **Verification gate** — `doing → done` needs evidence in the execution log
+- **Acceptance freeze** — lock the pass criteria before execute; later chat can't soften it
+- **Implementation review** — a read-only reviewer checks code against Acceptance before human smoke
+- **Separate review file** — Acceptance + rounds live in `review.md`; `context.md` only mirrors status
+- **Project knowledge** — `project.md` keeps durable facts plus a gotcha *index*; details stay where you learned them
+- **Integration gate** — all tasks `done` ≠ workstream closed; you still need human smoke + worktree disposition
+- **Handoff** — resume from `## Handoff` in `context.md`, not from old chats
+- **`/run auto`** — unattended advance; design reviews need dual-agent consensus; hard-stop conditions still stop
 
-### Strong binding
+### Hard binding rules
 
-- **One session ↔ one workstream ↔ one primary worktree** — never advance multiple lines in one session
-- **New sessions must bind** — restore or choose a workstream before explore / plan / execute
-- **Missing worktree hard-stop** — `worktree_status: missing` blocks mutation; never fall back to the main checkout
-- **Status line always shows `wt=`** — primary worktree short path, `missing`, or `none` (no `dirty` / `branch` in the compact line)
+- **One session ↔ one workstream ↔ one primary worktree** — don't advance multiple workstreams in one session
+- **New sessions must bind first** — restore or pick a workstream before explore / plan / execute
+- **Missing worktree = hard stop** — `worktree_status: missing` blocks code changes; don't fall back to the main checkout
 
 ## Quick start
 
@@ -63,72 +84,72 @@ Frameworks that *own the whole process* (GSD, BMAD, Spec-Kit, issue-tracker agen
 npx skills add kl7sn/run -g
 ```
 
-Installs **`run`**. Common flags:
+That installs **`run`**. Common flags:
 
 ```bash
 npx skills add kl7sn/run -g -y              # non-interactive
 npx skills add kl7sn/run -g -a cursor       # Cursor only
-npx skills add kl7sn/run --list             # preview packaged skills
+npx skills add kl7sn/run --list             # see what's in the package
 npx skills update                           # refresh later
 ```
 
-Contributors with a clone: `./install.sh all` (symlink into agent dirs).
-
 ### 2. Point at an Obsidian vault, then create a workstream
 
-Ledgers are written under the Obsidian vault (`RUN_WORKSPACE` or `.run-state` `workspace:`). From a bound code repo:
+State docs go under the vault (`RUN_WORKSPACE` or `.run-state` `workspace:`). From a bound code repo:
 
 ```text
-$run init demo          # project container in the vault (once)
-$run new hello          # nested workstream under the project
+/run init demo          # project container in the vault (once)
+/run new hello          # nested workstream under the project
 ```
 
-`.run-state` is created/updated at the **code repo** git root; `project.md` / `tasks.md` / … land in the vault.
+`.run-state` lives at the **code repo** git root; `project.md` / `tasks.md` / … land in the vault.
 
 ### 3. Run
 
 ```text
-$run                    # advance explore → plan → execute
-$run auto               # unattended (hard stops still apply)
+/run                    # advance explore → plan → execute
+/run auto               # unattended (hard stops still apply)
 ```
 
-Status line on every advancing reply:
+Every advancing reply starts with a status line:
 
 ```text
-[$run · lang=en · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
+[/run · lang=en · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
 ```
 
-## Packaged skill
+## What's in the package
 
 | Skill | Role |
 | --- | --- |
 | [`run`](skills/run/SKILL.md) | Process protocol — bind, phases, tasks, Handoff, gates |
 
-`$run` is **not** a general skill toolkit. Other skills (TDD, grilling, domain tools) stay separate and optional.
+`/run` is **not** a general skill toolkit. TDD, grilling, domain tools stay separate and optional.
 
-The `run` skill uses progressive disclosure: the entrypoint `skills/run/SKILL.md` is intentionally compact (under 500 lines), while detailed workspace, recovery, execution, auto, and reference protocols live under `skills/run/protocols/` and are loaded only when relevant.
+The entrypoint `skills/run/SKILL.md` stays short (under 500 lines). Workspace, recovery, execution, auto, and reference details live under `skills/run/protocols/` and load only when needed.
 
 ## Commands
 
 | Command | Description |
 | --- | --- |
-| `$run init` [projectId] | Create project container in the Obsidian vault |
-| `$run new` [workstreamId] | Create nested workstream |
-| `$run bind` | Rebind this session interactively |
-| `$run accept` … | Draft or revise frozen Acceptance |
-| `$run review` | Dispatch read-only implementation review |
-| `$run lang` [en\|zh] | Show or set document language |
-| `$run` | Advance current phase |
-| `$run auto` | Unattended advance |
+| `/run init` [projectId] | Create project container in the Obsidian vault |
+| `/run new` [workstreamId] | Create nested workstream |
+| `/run bind` | Rebind this session interactively |
+| `/run accept` … | Draft or revise frozen Acceptance |
+| `/run review` | Dispatch read-only implementation review |
+| `/run lang` [en\|zh] | Show or set document language |
+| `/run` | Advance current phase |
+| `/run auto` | Unattended advance |
 
 ## Workspace
 
-State lands in two places — do not mix them:
+State lands in two places — don't mix them:
 
-- **Code repo (git root):** only `.run-state` — session index (which workstream / worktree this repo is bound to).
-- **Obsidian vault (Markdown workspace):** all ledgers (`project.md` / `tasks.md` / `context.md` / `review.md`, …). `.run-state` `workspace:` points at this vault.
+- **Code repo (git root):** only `.run-state` — which workstream / worktree this session is bound to.
+- **Obsidian vault:** all state docs (`project.md` / `tasks.md` / `context.md` / `review.md`, …). `.run-state` `workspace:` points here.
 
-Resolution order: `.run-state` → `RUN_WORKSPACE` → explicit setup required. There is no implicit `~/run-workspace` fallback.
+![Two landing places: code repo vs Obsidian vault](docs/images/run-readme-two-places.png)
+
+Resolution order: `.run-state` → `RUN_WORKSPACE` → you must set it up. No silent fallback to `~/run-workspace`.
 
 ```text
 <code-repo>/.run-state              # session index only, at git root
@@ -145,10 +166,9 @@ Resolution order: `.run-state` → `RUN_WORKSPACE` → explicit setup required. 
             └── spec.md             # optional input contract
 ```
 
-
 Sample: [`examples/01-demo/`](examples/01-demo/) · Templates: [`templates/`](templates/) (`*.zh.md` for Chinese)
 
-Repo session index (`.run-state` at git root):
+`.run-state` looks roughly like:
 
 ```yaml
 workspace: /absolute/path/to/obsidian-vault/Projects/01-demo/01.01-hello
@@ -165,9 +185,9 @@ repo: .
 | Claude Code | `~/.claude/skills/` |
 | Codex | `~/.codex/skills/` |
 
-Use `npx skills add kl7sn/run -g -a <agent>` to pick one. The `install.sh` helper also covers `~/.agents/skills/`.
+One agent only: `npx skills add kl7sn/run -g -a <agent>`.
 
-## What $run is not
+## What /run is not
 
 | | |
 | --- | --- |
@@ -178,11 +198,11 @@ Use `npx skills add kl7sn/run -g -a <agent>` to pick one. The `install.sh` helpe
 
 ## Optional companions
 
-`$run` orchestrates; phase discipline skills are optional:
+`/run` orchestrates; phase-discipline skills are optional:
 
 - **Defaults:** superpowers (`brainstorming`, `writing-plans`, TDD, `verification-before-completion`)
 - **Cherry-picks:** [mattpocock/skills](https://github.com/mattpocock/skills) — e.g. `grill-with-docs`, `to-tickets`, `code-review`
-- **Do not** dual-run their `handoff` / `implement` or move durable state out of the workspace
+- **Don't** dual-run their `handoff` / `implement`, or move durable state out of the workspace
 
 See [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Companion skills*.
 
@@ -190,7 +210,7 @@ See [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Companion skills*.
 
 | Document | Purpose |
 | --- | --- |
-| [`skills/run/SKILL.md`](skills/run/SKILL.md) | Entrypoint / short protocol; details in [`skills/run/protocols/`](skills/run/protocols/) |
+| [`skills/run/SKILL.md`](skills/run/SKILL.md) | Entrypoint; details in [`skills/run/protocols/`](skills/run/protocols/) |
 | [`docs/design.md`](docs/design.md) | Design notes and tradeoffs |
 | [`README_CN.md`](README_CN.md) | 中文说明 |
 
