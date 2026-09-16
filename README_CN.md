@@ -20,7 +20,7 @@
 绑定 workstream → explore / plan / execute → 验证 → 交接 → 继续
 ```
 
-Durable state 在 **Markdown workspace**（Obsidian 可选）。每个 git 仓根目录保留小型 `.run-state` 会话索引。无控制面，无 SaaS。
+账本落在 **Obsidian Markdown 库**；每个代码仓根目录只保留小型 `.run-state` 会话索引，并指向该库。无控制面，无 SaaS。
 
 ## 为什么需要
 
@@ -73,16 +73,16 @@ npx skills update                           # 之后更新
 
 本地 clone 贡献者：`./install.sh all`。
 
-### 2. 创建 workstream
+### 2. 指向 Obsidian 库，再创建 workstream
 
-在工程仓里：
+账本写在 Obsidian 库里（`RUN_WORKSPACE` 或 `.run-state` 的 `workspace:`）。在已绑定的代码仓里：
 
 ```text
-$run init demo          # 项目容器（一次）
+$run init demo          # 在库里建项目容器（一次）
 $run new hello          # 项目下新建 workstream
 ```
 
-或配置 `RUN_WORKSPACE` / `.run-state` 指向已有 workspace。
+`.run-state` 写在**代码仓** git 根；`project.md` / `tasks.md` / … 落在 Obsidian 库。
 
 ### 3. 运行
 
@@ -111,19 +111,28 @@ $run auto               # 无人值守（硬停仍生效）
 
 | 命令 | 说明 |
 | --- | --- |
-| `$run init` [projectId] | 创建项目容器 |
+| `$run init` [projectId] | 在 Obsidian 库创建项目容器 |
 | `$run new` [workstreamId] | 创建嵌套 workstream |
 | `$run bind` | 交互重绑本会话 |
+| `$run accept` … | 起草或修订冻结验收 |
+| `$run review` | 发起只读实现审核 |
 | `$run lang` [en\|zh] | 查看或设置文档语言 |
 | `$run` | 推进当前阶段 |
 | `$run auto` | 无人值守推进 |
 
 ## Workspace
 
+状态分两处落地，不要混：
+
+- **代码仓库（git 根）**：只放 `.run-state` 会话索引（绑定哪条任务包、哪个 worktree）。
+- **Obsidian 工作区（Markdown 库）**：放全部账本（`project.md` / `tasks.md` / `context.md` / `review.md` 等）。`.run-state` 的 `workspace:` 指向这个库。
+
 路径优先级：`.run-state` → `RUN_WORKSPACE` → 必须显式配置。协议不再隐式回退到 `~/run-workspace`。
 
 ```text
-<workspace>/
+<code-repo>/.run-state              # 仅会话索引，在 git 仓根
+
+<obsidian-vault>/                   # Obsidian 库 = RUN_WORKSPACE
 └── Projects/
     └── 01-demo/                    # 项目  NN-<slug>
         ├── project.md              # 任务包+worktree · 稳定事实 · 坑位索引
@@ -137,10 +146,10 @@ $run auto               # 无人值守（硬停仍生效）
 
 示例：[`examples/01-demo/`](examples/01-demo/) · 模板：[`templates/`](templates/)（中文用 `*.zh.md`）
 
-仓内会话索引（git 根 `.run-state`）：
+仓内会话索引（git 根 `.run-state`）示例：
 
 ```yaml
-workspace: /absolute/path/to/workspace/Projects/01-demo/01.01-hello
+workspace: /absolute/path/to/obsidian-vault/Projects/01-demo/01.01-hello
 lang: zh
 project: 01.01-hello
 repo: .

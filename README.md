@@ -20,7 +20,7 @@ It turns multi-step work into a recoverable loop:
 bind workstream → explore / plan / execute → verify → hand off → continue
 ```
 
-Durable state lives in a **Markdown workspace** (Obsidian optional). Each git repo keeps a small `.run-state` index for session binding. No control plane. No SaaS.
+Durable ledgers live in an **Obsidian Markdown vault**; each code repo keeps only a small `.run-state` session index that points at that vault. No control plane. No SaaS.
 
 ## Why it exists
 
@@ -74,16 +74,16 @@ npx skills update                           # refresh later
 
 Contributors with a clone: `./install.sh all` (symlink into agent dirs).
 
-### 2. Create a workstream
+### 2. Point at an Obsidian vault, then create a workstream
 
-In your project repo:
+Ledgers are written under the Obsidian vault (`RUN_WORKSPACE` or `.run-state` `workspace:`). From a bound code repo:
 
 ```text
-$run init demo          # project container (once)
+$run init demo          # project container in the vault (once)
 $run new hello          # nested workstream under the project
 ```
 
-Or point `RUN_WORKSPACE` / `.run-state` at an existing workspace folder.
+`.run-state` is created/updated at the **code repo** git root; `project.md` / `tasks.md` / … land in the vault.
 
 ### 3. Run
 
@@ -112,19 +112,28 @@ The `run` skill uses progressive disclosure: the entrypoint `skills/run/SKILL.md
 
 | Command | Description |
 | --- | --- |
-| `$run init` [projectId] | Create project container |
+| `$run init` [projectId] | Create project container in the Obsidian vault |
 | `$run new` [workstreamId] | Create nested workstream |
 | `$run bind` | Rebind this session interactively |
+| `$run accept` … | Draft or revise frozen Acceptance |
+| `$run review` | Dispatch read-only implementation review |
 | `$run lang` [en\|zh] | Show or set document language |
 | `$run` | Advance current phase |
 | `$run auto` | Unattended advance |
 
 ## Workspace
 
+State lands in two places — do not mix them:
+
+- **Code repo (git root):** only `.run-state` — session index (which workstream / worktree this repo is bound to).
+- **Obsidian vault (Markdown workspace):** all ledgers (`project.md` / `tasks.md` / `context.md` / `review.md`, …). `.run-state` `workspace:` points at this vault.
+
 Resolution order: `.run-state` → `RUN_WORKSPACE` → explicit setup required. There is no implicit `~/run-workspace` fallback.
 
 ```text
-<workspace>/
+<code-repo>/.run-state              # session index only, at git root
+
+<obsidian-vault>/                   # Obsidian vault = RUN_WORKSPACE
 └── Projects/
     └── 01-demo/                    # project  NN-<slug>
         ├── project.md              # workstreams+worktrees · Stable Facts · Gotcha Index
@@ -142,7 +151,7 @@ Sample: [`examples/01-demo/`](examples/01-demo/) · Templates: [`templates/`](te
 Repo session index (`.run-state` at git root):
 
 ```yaml
-workspace: /absolute/path/to/workspace/Projects/01-demo/01.01-hello
+workspace: /absolute/path/to/obsidian-vault/Projects/01-demo/01.01-hello
 lang: en
 project: 01.01-hello
 repo: .
