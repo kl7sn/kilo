@@ -28,7 +28,7 @@ Always show `$kilo` and `$kilo <subcommand>` in prompts, status lines, examples,
 13. **Worktree decisions are proactive.** When execution reaches the integration gate, determine whether the current worktree is complete. If human smoke or disposition is still pending, ask the user to confirm completion, continue in the current worktree, or request a new worktree before more mutations.
 14. **Strict workstream fit.** Non-continuation requests set `binding_decision: pending` before adding tasks. Mixed domains, independent deliverables, stale backlog, or repeated follow-up work require an explicit choice to continue-current, `$kilo bind`, or `$kilo new <name>`; never silently pile unrelated work into one line.
 15. **Dirty code is visible.** Before integration or close, inspect git status, branch/upstream, and the latest commit. Uncommitted code is a blocking state for close and must be surfaced with an explicit commit, keep-branch, or continue decision.
-16. **Bidirectional worktree audit.** On recover, bind, new, and integration, compare `git worktree list --porcelain` with Handoff and `.kilo-state`. Orphans (git has, state lacks) need adopt/register, keep for later, or prune authorization. **`missing` (state has, git lacks) is a hard stop**: recreate / adopt an existing path / close then `$kilo new`. Never silently ignore, delete, or recreate.
+16. **Bidirectional worktree audit.** On recover, bind, new, adopt, and integration, compare `git worktree list --porcelain` with Handoff and `.kilo-state`. Orphans (git has, state lacks) need `$kilo adopt <path>` when this line is missing/none/pruned, else keep for later, or prune authorization. **`missing` (state has, git lacks) is a hard stop**: recreate / `$kilo adopt <path>` / close then `$kilo new`. Never silently ignore, delete, or recreate.
 17. **Code mutations only in the primary worktree.** Never fall back to the main checkout when `worktree_status` is `missing`.
 
 ## Commands
@@ -42,6 +42,7 @@ Always show `$kilo` and `$kilo <subcommand>` in prompts, status lines, examples,
 | `$kilo init <project>` | Create a numbered project container |
 | `$kilo new <workstream>` | Create a numbered workstream under a project |
 | `$kilo bind` | Interactively switch to an active workstream/project |
+| `$kilo adopt <path>` | Register an existing git worktree as this line's primary (only if missing/none/pruned) |
 | `$kilo lang [en\|zh]` | Show or set durable document language |
 
 Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.md), [execute.md](protocols/execute.md), [auto.md](protocols/auto.md), [reference.md](protocols/reference.md).
@@ -49,10 +50,10 @@ Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.
 ## Startup route
 
 1. Read repo `.kilo-state` and resolve the workspace; unresolved means hard stop.
-2. Handle an explicit subcommand before normal phase detection.
+2. Handle an explicit subcommand before normal phase detection (`$kilo bind` / `$kilo new` / `$kilo adopt` / `$kilo auto` / `$kilo review` / `$kilo accept` / `$kilo lang` / `$kilo init`).
 3. Resolve `lang`: open Handoff → `.kilo-state` → `KILO_LANG` → `en`.
 4. Match `CODEX_THREAD_ID`/session id in `.kilo-state projects[]`. **If no `session_id` match → emit the new-session bind prompt (`$kilo bind` or `$kilo new`) and stop** before recover advance; never auto-bind the sole active line.
-5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / adopt / close then `$kilo new`).
+5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / `$kilo adopt <path>` / close then `$kilo new`).
 6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Gotchas / log, plus `project.md` `## Stable Facts` / `## Gotcha Index` (short, inherited). Open `review.md` only for freeze/revise, review, triage, or a review-history question.
 7. If the line is closed and this turn needs durable landing, stop recover and create/bind an active line.
 8. Strict workstream-fit before mapping or adding tasks: non-continuation → set `binding_decision: pending` and stop for continue-current / `$kilo bind` / `$kilo new <name>`.
@@ -69,7 +70,7 @@ Resolution order is exactly:
 .kilo-state workspace: → KILO_WORKSPACE → explicit setup required
 ```
 
-The workspace variable points to the workspace root. Project and workstream files live below `Projects/<projectId>/<workstreamId>/`. A successful `$kilo init`, `$kilo new`, or `$kilo bind` persists the absolute bound path in `.kilo-state`.
+The workspace variable points to the workspace root. Project and workstream files live below `Projects/<projectId>/<workstreamId>/`. A successful `$kilo init`, `$kilo new`, `$kilo bind`, or `$kilo adopt` persists the absolute bound path in `.kilo-state`.
 
 If unresolved, stop with an actionable instruction such as:
 
@@ -148,7 +149,7 @@ At the integration gate (only after impl-review is approved on code lines), proa
 请确认下一步：
 1. 当前 worktree 已完成：进行人工 smoke，并选择 merge / pr / keep-branch / prune
 2. 继续当前 worktree：提出下一项任务
-3. 新建 worktree：指定新 workstream 或确认 `$kilo new <name>`
+3. 新建 worktree：指定新 workstream 或确认 `$kilo new <name>`。树已 prune、线仍 open 时，下一棵树用 `$kilo adopt <path>`，不必 `$kilo new`
 ```
 
 Do not close the workstream, create a new worktree, or start new mutations until the decision is explicit. In `$kilo auto`, this is still a hard integration stop; auto mode must not guess the worktree disposition.
@@ -161,7 +162,7 @@ For user-facing Chinese polish (README, prompts, notes), prefer `kaola-writing`:
 
 ## Progressive disclosure map
 
-- Workspace setup, init/new/bind, numbering, language: [protocols/workspace.md](protocols/workspace.md)
+- Workspace setup, init/new/bind/adopt, numbering, language: [protocols/workspace.md](protocols/workspace.md)
 - Recover, Handoff, and session sticky: [protocols/recover.md](protocols/recover.md)
 - Explore/plan/execute, Acceptance freeze and versioning, `review.md` separation, impl-review, integration gate: [protocols/execute.md](protocols/execute.md)
 - Auto mode, design gates, and impl-review gates: [protocols/auto.md](protocols/auto.md)

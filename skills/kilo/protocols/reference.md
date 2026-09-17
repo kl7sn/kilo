@@ -190,6 +190,7 @@ When all task rows are done, tests are fresh, **impl-review is approved** (code 
 1. 当前 worktree 已完成，并提供人工 smoke + integration disposition；
 2. 继续当前 worktree；或
 3. 新建 worktree/workstream 后再继续。
+树已 prune、线仍 open 时，下一棵树用 `$kilo adopt <path>`，不必 `$kilo new`。
 ```
 
 The prompt is a hard integration gate. `ready_to_merge` means technically ready, not human-confirmed complete. Never infer a new worktree request or close disposition from silence. Do not show this prompt while `impl_review_status` is `pending`, `in_triage`, `re_review`, or `escalated`.
@@ -224,7 +225,7 @@ Missing worktree — Handoff path/branch not present in `git worktree list`:
 worktree 缺失：Handoff 登记 <path>@<branch>，git worktree list 无对应。
 请确认：
 1. 按登记重建 worktree
-2. 认领已有路径：<用户给出 path>
+2. `$kilo adopt <path>`（path 已在 git worktree list）
 3. 关闭当前线后 `$kilo new <name>`
 未决前禁止改代码。
 ```
@@ -290,6 +291,7 @@ Stop and ask/escalate for:
 
 - new-session unbound (no bind/new yet — no restore or code mutation)
 - worktree-missing (`worktree_status: missing` unresolved)
+- `$kilo adopt` when `worktree_status` is `active` / `smoke_pending` / `ready_to_merge`, or when `<path>` is not in this repo's `git worktree list`, or when `<path>` is another line's current primary
 - sole-active silent bind (forbidden — never auto-bind the only active workstream without explicit `$kilo bind` / user choice)
 - mutation outside primary worktree
 - Acceptance not frozen on a code workstream when entering execute, `$kilo review`, or smoke/close

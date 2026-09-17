@@ -135,6 +135,7 @@ npx skills update                           # 之后更新
 | `/kilo init` [projectId] | 在库里创建项目 |
 | `/kilo new` [workstreamId] | 创建嵌套 workstream |
 | `/kilo bind` | 重新绑定当前会话 |
+| `/kilo adopt` [path] | 把已有 git worktree 登记成当前线主树（仅 `missing` / `none` / `pruned`） |
 | `/kilo accept` … | 起草或修订已冻结的验收标准 |
 | `/kilo review` | 发起只读实现审核 |
 | `/kilo lang` [en\|zh] | 查看或设置文档语言 |

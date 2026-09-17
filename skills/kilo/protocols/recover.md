@@ -49,17 +49,19 @@ When all task rows are `done` and fresh verification exists, recover must route 
 - continue in the current worktree with another task;
 - create a new worktree/workstream before any further mutation.
 
+If the tree is already `pruned` and the line is still open, attach the next tree with `$kilo adopt <path>` instead of `$kilo new`.
+
 Do not infer completion from `ready_to_merge`, a successful test run, or a prior status message. Do not present the smoke prompt while impl-review is `pending`, `in_triage`, `re_review`, or `escalated`. Do not silently create a fallback worktree. Never silently recreate a worktree or fall back to the main checkout.
 
 ## Orphan worktree triage
 
 An **orphan** is a worktree path/branch returned by `git worktree list --porcelain` that is not represented by the current Handoff or any matching `.kilo-state projects[]` entry (git has, state lacks). Stop before mutation and list each orphan with path, branch, dirty state, and last commit. Ask the user to:
 
-- adopt/register it to an existing workstream;
+- `$kilo adopt <path>` onto the **current** line only when its `worktree_status` ∈ `{missing, none, pruned}`;
 - keep it for later investigation (record `binding_decision: pending` and leave it untouched); or
 - prune it only after explicit authorization and a separate safety check.
 
-Never infer ownership from a folder name and never remove an orphan during recover.
+If the current line already has an `active` / `smoke_pending` / `ready_to_merge` primary, do not offer adopt onto this line — keep, prune (explicit), or bind/adopt onto another line. Never infer ownership from a folder name and never remove an orphan during recover.
 
 ## Missing worktree triage
 
@@ -71,7 +73,7 @@ On `missing`:
 2. Emit the missing-worktree prompt from [reference.md](reference.md) **Binding and code-management prompts**.
 3. Ask the user to choose exactly one of:
    - recreate the worktree at the recorded path/branch (explicit only; never silent);
-   - adopt an existing path that already holds the intended branch/commits;
+   - `$kilo adopt <path>` for a path that already appears in `git worktree list`;
    - close the current line, then `$kilo new` under the parent (or bind an active sibling).
 4. Do not mutate code, add tasks, or advance into execute until the decision is resolved.
 5. When useful, surface stranded-commit hints (branch tip, reflog, or last known commit on `worktree_branch`) so the user can decide recreate vs adopt vs close.

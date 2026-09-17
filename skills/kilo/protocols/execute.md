@@ -77,7 +77,7 @@ Any task added or reopened after `impl_review_status: approved` invalidates that
 
 Before mutation-accounting preflight, adding a task row, or any external mutation:
 
-1. **Primary worktree must be usable.** If `worktree_status` is `missing`, hard-stop with the missing-worktree prompt from [reference.md](reference.md); never fall back to the main checkout. If the task touches code/config and `worktree_status` is `none`, stop and create/register the primary worktree (`$kilo new` / bind path) before continuing. Code mutations require an `active` (or later integration) primary worktree path—not `missing` or docs-only `none`.
+1. **Primary worktree must be usable.** If `worktree_status` is `missing`, hard-stop with the missing-worktree prompt from [reference.md](reference.md); never fall back to the main checkout. If the task touches code/config and `worktree_status` ∈ `{none, pruned, missing}`, stop and register a primary that already exists in `git worktree list` via `$kilo adopt <path>`. Do **not** implement same-line reattach as `$kilo new`. `$kilo new` is only for a new workstream. Code mutations require an `active` (or later integration) primary worktree path—not `missing`, `pruned`, or docs-only `none`.
 2. **Strict workstream-fit.** Non-continuation requests must not add a task row or mutate. Set `binding_decision: pending`, emit the non-continuation prompt from [reference.md](reference.md), and stop for continue-current / `$kilo bind` / `$kilo new <name>`.
 
 ### Continuation check
@@ -244,6 +244,8 @@ After impl-review is approved, proactively inspect the worktree rather than wait
 1. finish the current worktree (then provide smoke evidence and choose `merge`, `pr`, `keep-branch`, or `prune`);
 2. continue with another task in the current worktree; or
 3. create a new worktree/workstream before further mutations.
+
+If the tree is already `pruned` and the line is still open, the next tree on this line is `$kilo adopt <path>` — not `$kilo new`.
 
 This prompt is required in normal and auto mode. Auto mode may not guess the answer or close the line on the user's behalf.
 
