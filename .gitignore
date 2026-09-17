@@ -6,3 +6,5 @@
 .claude/
 
 .worktrees/
+.kilo-state
+.run-state

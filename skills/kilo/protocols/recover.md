@@ -1,14 +1,14 @@
-# $run recover and Handoff protocol
+# $kilo recover and Handoff protocol
 
 ## Recover order
 
-1. Read `.run-state`; resolve the workspace (fail closed if unresolved).
-2. **Session bind gate:** match `CODEX_THREAD_ID`/session id in `.run-state projects[]`. If no matching `session_id` → emit the new-session bind prompt (`$run bind` or `$run new`) from [reference.md](reference.md) **Binding and code-management prompts** (new-session template); **stop** before recover advance. Never auto-bind the sole active line. Do not enter execute.
-3. After a session match (or after the user completes bind/new), sync the top-level binding; resolve homepage type (`project` or `workstream`) and required parent; read `tasks.md`, then bounded `context.md`: Handoff, Gotchas, recent related log. Also read the parent `project.md` `## Stable Facts` and `## Gotcha Index` — both are short and inherited by every line under that project. Follow an index pointer into a sibling `context.md` only when its topic touches this line; sibling `## Key Decisions` are not inherited. Do not load `review.md` on every recover; open it only when a freeze/revise is due, when `impl_review_status` is `pending|in_triage|re_review`, when `$run review` runs, or when the user asks about a finding or a task's review history.
-4. Closed-line check: if the bound workstream is closed (`Handoff status: closed` or index `completed|archived`) and durable work is requested, do not reopen it. Use `$run new` under the parent or bind an active sibling, and link the closed line from the new context.
-5. Run `git worktree list --porcelain` and compare every path/branch with Handoff and `.run-state`. Surface **orphan** and **missing** findings for explicit triage before any further advance or mutation.
+1. Read `.kilo-state`; resolve the workspace (fail closed if unresolved).
+2. **Session bind gate:** match `CODEX_THREAD_ID`/session id in `.kilo-state projects[]`. If no matching `session_id` → emit the new-session bind prompt (`$kilo bind` or `$kilo new`) from [reference.md](reference.md) **Binding and code-management prompts** (new-session template); **stop** before recover advance. Never auto-bind the sole active line. Do not enter execute.
+3. After a session match (or after the user completes bind/new), sync the top-level binding; resolve homepage type (`project` or `workstream`) and required parent; read `tasks.md`, then bounded `context.md`: Handoff, Gotchas, recent related log. Also read the parent `project.md` `## Stable Facts` and `## Gotcha Index` — both are short and inherited by every line under that project. Follow an index pointer into a sibling `context.md` only when its topic touches this line; sibling `## Key Decisions` are not inherited. Do not load `review.md` on every recover; open it only when a freeze/revise is due, when `impl_review_status` is `pending|in_triage|re_review`, when `$kilo review` runs, or when the user asks about a finding or a task's review history.
+4. Closed-line check: if the bound workstream is closed (`Handoff status: closed` or index `completed|archived`) and durable work is requested, do not reopen it. Use `$kilo new` under the parent or bind an active sibling, and link the closed line from the new context.
+5. Run `git worktree list --porcelain` and compare every path/branch with Handoff and `.kilo-state`. Surface **orphan** and **missing** findings for explicit triage before any further advance or mutation.
 6. Inspect `git status --porcelain=v1`, current branch/upstream, and latest commit. Record `worktree_git_status` and `commit_status`; dirty or uncommitted carry-over is a visible blocker, not a reason to continue silently.
-7. **Strict workstream-fit.** A request may proceed without a binding decision only if it clearly targets the current `doing` or a specific `ready` task (including `Txx`), or explicitly says continue/finish the current task when exactly one sensible target exists. Everything else (mixed domains, independent deliverables, stale backlog, “顺便”, “再加一个”, or ambiguous follow-up) is non-continuation: set `binding_decision: pending`, emit the non-continuation prompt from [reference.md](reference.md), and stop for continue-current / `$run bind` / `$run new <name>` before adding a task.
+7. **Strict workstream-fit.** A request may proceed without a binding decision only if it clearly targets the current `doing` or a specific `ready` task (including `Txx`), or explicitly says continue/finish the current task when exactly one sensible target exists. Everything else (mixed domains, independent deliverables, stale backlog, “顺便”, “再加一个”, or ambiguous follow-up) is non-continuation: set `binding_decision: pending`, emit the non-continuation prompt from [reference.md](reference.md), and stop for continue-current / `$kilo bind` / `$kilo new <name>` before adding a task.
 8. Map the current request to a task row; create one only after the binding decision is resolved.
 9. Run mutation preflight, then continue from the breakpoint. Before continuing, emit a recovery checkpoint with the bound project/workstream, phase, task statuses, worktree/git state, blocker, and exactly one next action. Do this proactively; a user status request is not required.
 
@@ -53,7 +53,7 @@ Do not infer completion from `ready_to_merge`, a successful test run, or a prior
 
 ## Orphan worktree triage
 
-An **orphan** is a worktree path/branch returned by `git worktree list --porcelain` that is not represented by the current Handoff or any matching `.run-state projects[]` entry (git has, state lacks). Stop before mutation and list each orphan with path, branch, dirty state, and last commit. Ask the user to:
+An **orphan** is a worktree path/branch returned by `git worktree list --porcelain` that is not represented by the current Handoff or any matching `.kilo-state projects[]` entry (git has, state lacks). Stop before mutation and list each orphan with path, branch, dirty state, and last commit. Ask the user to:
 
 - adopt/register it to an existing workstream;
 - keep it for later investigation (record `binding_decision: pending` and leave it untouched); or
@@ -63,7 +63,7 @@ Never infer ownership from a folder name and never remove an orphan during recov
 
 ## Missing worktree triage
 
-A **missing** worktree is recorded in Handoff (`worktree_path` / `worktree_branch`) or the matching `.run-state` entry, but absent from `git worktree list --porcelain` (state has, git lacks). This is a hard stop.
+A **missing** worktree is recorded in Handoff (`worktree_path` / `worktree_branch`) or the matching `.kilo-state` entry, but absent from `git worktree list --porcelain` (state has, git lacks). This is a hard stop.
 
 On `missing`:
 
@@ -72,7 +72,7 @@ On `missing`:
 3. Ask the user to choose exactly one of:
    - recreate the worktree at the recorded path/branch (explicit only; never silent);
    - adopt an existing path that already holds the intended branch/commits;
-   - close the current line, then `$run new` under the parent (or bind an active sibling).
+   - close the current line, then `$kilo new` under the parent (or bind an active sibling).
 4. Do not mutate code, add tasks, or advance into execute until the decision is resolved.
 5. When useful, surface stranded-commit hints (branch tip, reflog, or last known commit on `worktree_branch`) so the user can decide recreate vs adopt vs close.
 

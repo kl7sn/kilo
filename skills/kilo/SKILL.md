@@ -1,63 +1,63 @@
 ---
-name: run
-description: "Use when a coding task needs a durable project/workstream binding, explicit phase routing, task accounting, recovery, verification gates, or unattended execution through the $run protocol."
+name: kilo
+description: "Use when a coding task needs a durable project/workstream binding, explicit phase routing, task accounting, recovery, verification gates, or unattended execution through the $kilo protocol."
 ---
 
-# $run — durable engineering workflow
+# $kilo — durable engineering workflow
 
-`$run` is the process entry for multi-step engineering work. It binds one repository session to one active workstream, routes the task through explore/plan/execute/recover, and records durable state in Markdown.
+`$kilo` is the process entry for multi-step engineering work. It binds one repository session to one active workstream, routes the task through explore/plan/execute/recover, and records durable state in Markdown.
 
 ## Codex-facing syntax
 
-Always show `$run` and `$run <subcommand>` in prompts, status lines, examples, templates, and replies. Do not expose the legacy slash spelling as a user command.
+Always show `$kilo` and `$kilo <subcommand>` in prompts, status lines, examples, templates, and replies. Do not expose `/run`, `$run`, or other legacy spellings as user commands.
 
 ## Critical rules
 
 1. **No ad-hoc engineering on a bound repo.** Recover the binding, map the request to a task row, claim it, then edit code/config.
-2. **Closed lines stay closed.** If the binding points to a completed/archived workstream, create `$run new <name>` under its parent or bind an active sibling; never reopen it.
+2. **Closed lines stay closed.** If the binding points to a completed/archived workstream, create `$kilo new <name>` under its parent or bind an active sibling; never reopen it.
 3. **One session ↔ one workstream ↔ one primary worktree.** Never advance multiple workstreams in one session. Ambiguous candidates require an interactive bind. Subagent isolation worktrees are allowed; they are not the primary binding.
-4. **New session requires explicit bind.** No matching `session_id` → hard stop; require `$run bind` or `$run new`; never auto-bind the sole active line. Do this before recover advance.
-5. **Parent is the workspace writer.** Subagents may edit isolated code, but only the parent updates `.run-state`, `tasks.md`, `context.md`, and `review.md`.
-6. **Fail closed on workspace resolution.** Use `.run-state` `workspace:` first, then non-empty `RUN_WORKSPACE`; if neither resolves, stop before creating directories or durable state. Never silently use `~/run-workspace`.
+4. **New session requires explicit bind.** No matching `session_id` → hard stop; require `$kilo bind` or `$kilo new`; never auto-bind the sole active line. Do this before recover advance.
+5. **Parent is the workspace writer.** Subagents may edit isolated code, but only the parent updates `.kilo-state` (session index), `tasks.md`, `context.md`, and `review.md`.
+6. **Fail closed on workspace resolution.** Use `.kilo-state` `workspace:` first; else legacy `.run-state`; then non-empty `KILO_WORKSPACE`, else legacy `RUN_WORKSPACE`; if none resolve, stop before creating directories or durable state. Never silently use `~/run-workspace`. On the next successful session write, persist `.kilo-state`.
 7. **Mutation preflight is mandatory.** Before any external mutation, the intent must map to a `doing` task and `context.md` Handoff `current_tasks` must match it.
 8. **Done requires fresh evidence.** Run verification before marking a task `done`; record the command and result in the execution log.
 9. **All tasks done is not closed.** Code lines need implementation review (`review.md`) then human smoke and worktree disposition before close.
-10. **Acceptance is frozen, not mined.** Freeze `## Acceptance` before execute on code lines; do not scrape long chat for the pass bar. Explicit `$run accept` / 「验收改成…」only to revise, which bumps `version`. Tasks added or reopened after `approved` reset impl-review to `re_review`; work that widens the deliverable needs a revise or `$run new`.
+10. **Acceptance is frozen, not mined.** Freeze `## Acceptance` before execute on code lines; do not scrape long chat for the pass bar. Explicit `$kilo accept` / 「验收改成…」only to revise, which bumps `version`. Tasks added or reopened after `approved` reset impl-review to `re_review`; work that widens the deliverable needs a revise or `$kilo new`.
 11. **Acceptance and review live in `review.md`.** The frozen bar and the reviewer↔implementer rounds share one file; `context.md` keeps only the `acceptance_status` / `impl_review_status` mirrors. Never inline them into `context.md`, and never ask the user to paste long review/fix text between agents.
 12. **Progress is proactive.** During an advancing turn, report the current binding and the next execution step at each phase or task transition; do not wait for the user to ask for status.
 13. **Worktree decisions are proactive.** When execution reaches the integration gate, determine whether the current worktree is complete. If human smoke or disposition is still pending, ask the user to confirm completion, continue in the current worktree, or request a new worktree before more mutations.
-14. **Strict workstream fit.** Non-continuation requests set `binding_decision: pending` before adding tasks. Mixed domains, independent deliverables, stale backlog, or repeated follow-up work require an explicit choice to continue-current, `$run bind`, or `$run new <name>`; never silently pile unrelated work into one line.
+14. **Strict workstream fit.** Non-continuation requests set `binding_decision: pending` before adding tasks. Mixed domains, independent deliverables, stale backlog, or repeated follow-up work require an explicit choice to continue-current, `$kilo bind`, or `$kilo new <name>`; never silently pile unrelated work into one line.
 15. **Dirty code is visible.** Before integration or close, inspect git status, branch/upstream, and the latest commit. Uncommitted code is a blocking state for close and must be surfaced with an explicit commit, keep-branch, or continue decision.
-16. **Bidirectional worktree audit.** On recover, bind, new, and integration, compare `git worktree list --porcelain` with Handoff and `.run-state`. Orphans (git has, state lacks) need adopt/register, keep for later, or prune authorization. **`missing` (state has, git lacks) is a hard stop**: recreate / adopt an existing path / close then `$run new`. Never silently ignore, delete, or recreate.
+16. **Bidirectional worktree audit.** On recover, bind, new, and integration, compare `git worktree list --porcelain` with Handoff and `.kilo-state`. Orphans (git has, state lacks) need adopt/register, keep for later, or prune authorization. **`missing` (state has, git lacks) is a hard stop**: recreate / adopt an existing path / close then `$kilo new`. Never silently ignore, delete, or recreate.
 17. **Code mutations only in the primary worktree.** Never fall back to the main checkout when `worktree_status` is `missing`.
 
 ## Commands
 
 | Command | Purpose |
 |---|---|
-| `$run` | Recover and advance the current workstream |
-| `$run auto` | Unattended advance with design-gate and impl-review gates |
-| `$run review` | Dispatch read-only impl review (Acceptance + `review.md` + git) |
-| `$run accept …` | Draft or revise `## Acceptance` (re-freeze before execute/review) |
-| `$run init <project>` | Create a numbered project container |
-| `$run new <workstream>` | Create a numbered workstream under a project |
-| `$run bind` | Interactively switch to an active workstream/project |
-| `$run lang [en\|zh]` | Show or set durable document language |
+| `$kilo` | Recover and advance the current workstream |
+| `$kilo auto` | Unattended advance with design-gate and impl-review gates |
+| `$kilo review` | Dispatch read-only impl review (Acceptance + `review.md` + git) |
+| `$kilo accept …` | Draft or revise `## Acceptance` (re-freeze before execute/review) |
+| `$kilo init <project>` | Create a numbered project container |
+| `$kilo new <workstream>` | Create a numbered workstream under a project |
+| `$kilo bind` | Interactively switch to an active workstream/project |
+| `$kilo lang [en\|zh]` | Show or set durable document language |
 
 Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.md), [execute.md](protocols/execute.md), [auto.md](protocols/auto.md), [reference.md](protocols/reference.md).
 
 ## Startup route
 
-1. Read repo `.run-state` and resolve the workspace; unresolved means hard stop.
+1. Read repo `.kilo-state` and resolve the workspace; unresolved means hard stop.
 2. Handle an explicit subcommand before normal phase detection.
-3. Resolve `lang`: open Handoff → `.run-state` → `RUN_LANG` → `en`.
-4. Match `CODEX_THREAD_ID`/session id in `.run-state projects[]`. **If no `session_id` match → emit the new-session bind prompt (`$run bind` or `$run new`) and stop** before recover advance; never auto-bind the sole active line.
-5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / adopt / close then `$run new`).
+3. Resolve `lang`: open Handoff → `.kilo-state` → `KILO_LANG` → `en`.
+4. Match `CODEX_THREAD_ID`/session id in `.kilo-state projects[]`. **If no `session_id` match → emit the new-session bind prompt (`$kilo bind` or `$kilo new`) and stop** before recover advance; never auto-bind the sole active line.
+5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / adopt / close then `$kilo new`).
 6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Gotchas / log, plus `project.md` `## Stable Facts` / `## Gotcha Index` (short, inherited). Open `review.md` only for freeze/revise, review, triage, or a review-history question.
 7. If the line is closed and this turn needs durable landing, stop recover and create/bind an active line.
-8. Strict workstream-fit before mapping or adding tasks: non-continuation → set `binding_decision: pending` and stop for continue-current / `$run bind` / `$run new <name>`.
+8. Strict workstream-fit before mapping or adding tasks: non-continuation → set `binding_decision: pending` and stop for continue-current / `$kilo bind` / `$kilo new <name>`.
 9. Map the current request to an existing task or add a task row only after the binding decision is resolved.
-10. Route: missing design → explore; all tasks todo → plan; plan→execute needs Acceptance freeze; ready tasks → execute; blocked only → report; all done → impl-review gate then integration gate; `$run review` → impl-review on demand.
+10. Route: missing design → explore; all tasks todo → plan; plan→execute needs Acceptance freeze; ready tasks → execute; blocked only → report; all done → impl-review gate then integration gate; `$kilo review` → impl-review on demand.
 11. Inspect dirty/commit state before advancing. Uncommitted carry-over requires explicit triage before further mutation.
 12. Emit a status checkpoint containing the resolved binding, phase, task statuses, worktree/git state, Acceptance/impl-review state, and next action before advancing. Emit another checkpoint after each task claim, verification result, phase transition, audit finding, or hard stop.
 
@@ -66,15 +66,15 @@ Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.
 Resolution order is exactly:
 
 ```text
-.run-state workspace: → RUN_WORKSPACE → explicit setup required
+.kilo-state workspace: → KILO_WORKSPACE → explicit setup required
 ```
 
-The workspace variable points to the workspace root. Project and workstream files live below `Projects/<projectId>/<workstreamId>/`. A successful `$run init`, `$run new`, or `$run bind` persists the absolute bound path in `.run-state`.
+The workspace variable points to the workspace root. Project and workstream files live below `Projects/<projectId>/<workstreamId>/`. A successful `$kilo init`, `$kilo new`, or `$kilo bind` persists the absolute bound path in `.kilo-state`.
 
 If unresolved, stop with an actionable instruction such as:
 
 ```zsh
-export RUN_WORKSPACE='/absolute/path/to/workspace'
+export KILO_WORKSPACE='/absolute/path/to/workspace'
 ```
 
 Do not guess, create, select, or write a fallback directory.
@@ -88,7 +88,7 @@ Do not guess, create, select, or write a fallback directory.
 - Acceptance and review truth: the workstream `review.md` (`## Acceptance`, `## ReviewIndex`, `## Claims`, `## ReviewThread`), mirrored cheaply by Handoff `acceptance_status` / `impl_review_status`.
 - Inherited knowledge: `project.md` `## Stable Facts` (durable facts) and `## Gotcha Index` (pointers, not copies) apply to every line under that project. Gotcha full text and `## Key Decisions` stay line-local in `context.md`; mechanize a constraint before writing it anywhere. Project entries are current truth: a line that invalidates one must update it in place before close, not diverge silently.
 - Sibling worktrees: the `project.md` workstreams table carries each line's `Worktree` / `Branch` / `State`.
-- Session index: repo-root `.run-state`; one repo may list many workstreams, but one session advances one.
+- Session index: repo-root `.kilo-state`; one repo may list many workstreams, but one session advances one.
 
 Number new entities. `NN` is the project number; workstream `MM` increments under that project. Do not rename unnumbered legacy folders unless requested.
 
@@ -118,14 +118,14 @@ Parallel work is legal only for independent tasks in an explicitly recorded wave
 
 ## Auto contract
 
-`$run auto` sets `auto_mode: true` and keeps ready tasks flowing. Design gates and implementation-review gates both dispatch read-only reviewers (`verdict: approve|revise|escalate`); `review.md` is the durable transport. True product forks, irreversible operations, bind ambiguity, illegal multi-`doing`, unresolved workspace, undecided deferred/disagree asks, and impossible verification remain hard stops. See [auto.md](protocols/auto.md).
+`$kilo auto` sets `auto_mode: true` and keeps ready tasks flowing. Design gates and implementation-review gates both dispatch read-only reviewers (`verdict: approve|revise|escalate`); `review.md` is the durable transport. True product forks, irreversible operations, bind ambiguity, illegal multi-`doing`, unresolved workspace, undecided deferred/disagree asks, and impossible verification remain hard stops. See [auto.md](protocols/auto.md).
 
 ## Status line
 
 Every advancing reply starts with a compact line that **must** include the primary worktree slot `wt=`:
 
 ```text
-[$run · lang=zh · auto=off · 05-run/05.02-workspace-routing · wt=<short-path|missing|none> · T04 doing]
+[$kilo · lang=zh · auto=off · 05-run/05.02-workspace-routing · wt=<short-path|missing|none> · T04 doing]
 ```
 
 `wt` is the primary worktree identity for this binding: a short path/basename when registered and present, `missing` when Handoff records a worktree that git lacks, or `none` for docs-only lines. Do **not** put `dirty`, `branch`, or `primary=` in the compact status line — branch lives in Handoff; dirty git state belongs in the dirty-tree prompt or checkpoint notes only when it blocks work.
@@ -148,10 +148,10 @@ At the integration gate (only after impl-review is approved on code lines), proa
 请确认下一步：
 1. 当前 worktree 已完成：进行人工 smoke，并选择 merge / pr / keep-branch / prune
 2. 继续当前 worktree：提出下一项任务
-3. 新建 worktree：指定新 workstream 或确认 `$run new <name>`
+3. 新建 worktree：指定新 workstream 或确认 `$kilo new <name>`
 ```
 
-Do not close the workstream, create a new worktree, or start new mutations until the decision is explicit. In `$run auto`, this is still a hard integration stop; auto mode must not guess the worktree disposition.
+Do not close the workstream, create a new worktree, or start new mutations until the decision is explicit. In `$kilo auto`, this is still a hard integration stop; auto mode must not guess the worktree disposition.
 
 ## Companion skills
 
