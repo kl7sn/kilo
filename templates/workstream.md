@@ -24,9 +24,9 @@ tags:
 - [[spec]]
 - [[tasks]]
 
-## $kilo
+## /kilo
 
-1. `$kilo` advance · `$kilo bind` switch · `$kilo lang en|zh` · `$kilo auto` unattended
+1. `/kilo` advance · `/kilo bind` switch · `/kilo lang en|zh` · `/kilo auto` unattended
 2. `doing→done` requires verification evidence in `context.md`
 3. Refresh **Handoff** before pause; long-lived rules go to **Gotchas**
 4. Close only after human smoke + worktree disposition (integration gate)

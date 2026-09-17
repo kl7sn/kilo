@@ -15,7 +15,7 @@ tags:
 
 # {{title}}
 
-Project container for `$kilo`. Create with `$kilo init`.
+Project container for `/kilo`. Create with `/kilo init`.
 
 ## Workstreams
 

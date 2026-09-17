@@ -24,9 +24,9 @@ tags:
 - [[spec]]
 - [[tasks]]
 
-## $kilo
+## /kilo
 
-1. `$kilo` 推进 · `$kilo bind` 切换 · `$kilo lang en|zh` · `$kilo auto` 无人值守
+1. `/kilo` 推进 · `/kilo bind` 切换 · `/kilo lang en|zh` · `/kilo auto` 无人值守
 2. `doing→done` 须在 `context.md` 留下验证证据
 3. 暂停前刷新 **Handoff**；长期约束写入 **Gotchas**
 4. 关线须过集成闸（人工冒烟 + worktree 处置）

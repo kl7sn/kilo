@@ -15,7 +15,7 @@ tags:
 
 # {{title}}
 
-`$kilo` 项目容器。用 `$kilo init` 创建。
+`/kilo` 项目容器。用 `/kilo init` 创建。
 
 ## 下属任务包
 

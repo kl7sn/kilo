@@ -1,6 +1,6 @@
-# $kilo auto protocol
+# /kilo auto protocol
 
-`$kilo auto` sets Handoff `auto_mode: true` and keeps ready tasks flowing in one bound workstream. It never bypasses workspace accounting, verification, hard stops, Acceptance freeze, implementation review, or integration gates.
+`/kilo auto` sets Handoff `auto_mode: true` and keeps ready tasks flowing in one bound workstream. It never bypasses workspace accounting, verification, hard stops, Acceptance freeze, implementation review, or integration gates.
 
 ## Design gates
 
@@ -22,11 +22,11 @@ summary: "one line"
 
 Never ask the user to “confirm” or “continue” to unlock an ordinary design gate in auto mode.
 
-On design `approve`, write or refresh `review.md` `## Acceptance` from the approved success criteria and set `status: frozen` (auto may freeze without a human echo). Proceed to execute only after Acceptance is frozen on code workstreams. Auto may not widen a frozen bar on its own: work beyond it is a revise that needs the user, or a `$kilo new` line.
+On design `approve`, write or refresh `review.md` `## Acceptance` from the approved success criteria and set `status: frozen` (auto may freeze without a human echo). Proceed to execute only after Acceptance is frozen on code workstreams. Auto may not widen a frozen bar on its own: work beyond it is a revise that needs the user, or a `/kilo new` line.
 
 ## Implementation review gates
 
-When all tasks are `done` (or an explicit `$kilo review` is in flight):
+When all tasks are `done` (or an explicit `/kilo review` is in flight):
 
 1. Set `impl-review: pending` / `re_review` on the status tail.
 2. Dispatch the read-only implementation reviewer per [execute.md](execute.md) (Acceptance + `review.md` digest/path + git attachments).
@@ -43,4 +43,4 @@ Escalate only when the decision changes target user, business goal, non-goals, c
 
 ## Status and exit
 
-Use `auto=on` in every advancing status line while enabled. “Exit auto” or an explicit plain `$kilo` exit sets `auto_mode: false`. Full-stop requires a task blocker, Handoff refresh, and resume hint.
+Use `auto=on` in every advancing status line while enabled. “Exit auto” or an explicit plain `/kilo` exit sets `auto_mode: false`. Full-stop requires a task blocker, Handoff refresh, and resume hint.

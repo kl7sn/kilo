@@ -1,4 +1,4 @@
-# $kilo execution protocol
+# /kilo execution protocol
 
 ## Phase routing
 
@@ -8,7 +8,7 @@
 - Ready rows and Acceptance frozen (or docs-only) → execute.
 - Blocked only → report blockers.
 - All rows done → **implementation review gate**, then integration gate; do not auto-close.
-- Explicit `$kilo review` → same review gate on demand (does not require all tasks done).
+- Explicit `/kilo review` → same review gate on demand (does not require all tasks done).
 
 ## Acceptance freeze gate
 
@@ -20,11 +20,11 @@ Code workstreams (`worktree_status` not `none`) must freeze acceptance **before 
 
 | Moment | Action |
 |---|---|
-| `$kilo new` / first demand mapping | Draft `## Acceptance` in `review.md` from **this turn's** user message and/or plan success criteria (`status: draft`) |
+| `/kilo new` / first demand mapping | Draft `## Acceptance` in `review.md` from **this turn's** user message and/or plan success criteria (`status: draft`) |
 | explore→plan / design settle | Refresh draft from approved success criteria; still `draft` |
 | **plan→execute** | Emit the freeze prompt; user confirms or edits → `status: frozen` |
 | Later chat | **Do not** update Acceptance |
-| Explicit revise | Only `$kilo accept …` or clear「验收改成…」→ back to `draft`, bump `version`, set `supersedes`, then re-freeze |
+| Explicit revise | Only `/kilo accept …` or clear「验收改成…」→ back to `draft`, bump `version`, set `supersedes`, then re-freeze |
 
 `worktree_path` / `worktree_branch` always come from Handoff, never from chat.
 
@@ -38,7 +38,7 @@ Code workstreams (`worktree_status` not `none`) must freeze acceptance **before 
 回复：确认 / 或直接改这三行
 ```
 
-In `$kilo auto`, freeze from the design-approved success criteria without waiting; still write `## Acceptance` with `status: frozen` and the verbatim pass bar.
+In `/kilo auto`, freeze from the design-approved success criteria without waiting; still write `## Acceptance` with `status: frozen` and the verbatim pass bar.
 
 ### `## Acceptance` shape
 
@@ -57,7 +57,7 @@ constraints: []
 pass_bar: "<one line>"
 ```
 
-Hard-stop execute mutation, `$kilo review`, and smoke/close when Acceptance is `missing` or `draft` on a code workstream. Softening `user_prompt` after freeze is forbidden; reopen via explicit revise only.
+Hard-stop execute mutation, `/kilo review`, and smoke/close when Acceptance is `missing` or `draft` on a code workstream. Softening `user_prompt` after freeze is forbidden; reopen via explicit revise only.
 
 Optional implementer self-attestations (`## Claims` in `review.md`) may support Acceptance but must not replace it.
 
@@ -69,7 +69,7 @@ Acceptance is per workstream, not per task, so appending work does **not** mint 
 |---|---|---|
 | Fixing a finding, adding tests/docs, refactor inside the same deliverable | unchanged, same `version` | reset `impl_review_status` to `re_review`; re-audit against the same bar |
 | New capability or deliverable beyond the frozen bar, still this line | explicit revise: `draft` → bump `version` → re-freeze | new review cycle against the new `version` |
-| New capability that is really a different line | untouched | `$kilo new` under the parent (strict workstream fit) |
+| New capability that is really a different line | untouched | `/kilo new` under the parent (strict workstream fit) |
 
 Any task added or reopened after `impl_review_status: approved` invalidates that approval — set `re_review` in the same turn. An approval recorded against `acceptance_version: 1` never covers `version: 2`.
 
@@ -77,8 +77,8 @@ Any task added or reopened after `impl_review_status: approved` invalidates that
 
 Before mutation-accounting preflight, adding a task row, or any external mutation:
 
-1. **Primary worktree must be usable.** If `worktree_status` is `missing`, hard-stop with the missing-worktree prompt from [reference.md](reference.md); never fall back to the main checkout. If the task touches code/config and `worktree_status` ∈ `{none, pruned, missing}`, stop and register a primary that already exists in `git worktree list` via `$kilo adopt <path>`. Do **not** implement same-line reattach as `$kilo new`. `$kilo new` is only for a new workstream. Code mutations require an `active` (or later integration) primary worktree path—not `missing`, `pruned`, or docs-only `none`.
-2. **Strict workstream-fit.** Non-continuation requests must not add a task row or mutate. Set `binding_decision: pending`, emit the non-continuation prompt from [reference.md](reference.md), and stop for continue-current / `$kilo bind` / `$kilo new <name>`.
+1. **Primary worktree must be usable.** If `worktree_status` is `missing`, hard-stop with the missing-worktree prompt from [reference.md](reference.md); never fall back to the main checkout. If the task touches code/config and `worktree_status` ∈ `{none, pruned, missing}`, stop and register a primary that already exists in `git worktree list` via `/kilo adopt <path>`. Do **not** implement same-line reattach as `/kilo new`. `/kilo new` is only for a new workstream. Code mutations require an `active` (or later integration) primary worktree path—not `missing`, `pruned`, or docs-only `none`.
+2. **Strict workstream-fit.** Non-continuation requests must not add a task row or mutate. Set `binding_decision: pending`, emit the non-continuation prompt from [reference.md](reference.md), and stop for continue-current / `/kilo bind` / `/kilo new <name>`.
 
 ### Continuation check
 
@@ -87,7 +87,7 @@ A request is a continuation only when:
 - it clearly targets the current `doing` row or a specific `ready` task (including `Txx`); or
 - it explicitly says continue/finish the current work and exactly one sensible target exists.
 
-Everything else—mixed domains, independent deliverables, stale backlog, “顺便”, “再加一个”, or ambiguous follow-up—is non-continuation and requires an explicit binding decision before add-task or mutate. `$kilo auto` treats these gates as hard stops (no guessing).
+Everything else—mixed domains, independent deliverables, stale backlog, “顺便”, “再加一个”, or ambiguous follow-up—is non-continuation and requires an explicit binding decision before add-task or mutate. `/kilo auto` treats these gates as hard stops (no guessing).
 
 ## Mutation-accounting preflight
 
@@ -105,7 +105,7 @@ If any check fails, stop and repair accounting before mutating. A later `recover
 Every advancing turn reports state without waiting for a user prompt. Emit a compact status line plus one checkpoint. The status line **must** include `wt=<short-path|missing|none>` for the primary worktree; omit `dirty`, `branch`, and `primary=` from the compact line.
 
 ```text
-[$kilo · lang=<lang> · auto=<on|off> · <project>/<workstream> · wt=<short-path|missing|none> · <task state>]
+[/kilo · lang=<lang> · auto=<on|off> · <project>/<workstream> · wt=<short-path|missing|none> · <task state>]
 绑定：<project>/<workstream> · 阶段：<explore|plan|execute> · wt：<short-path|missing|none> · 进度：<done/doing/ready> · 下一步：<one action>
 ```
 Refresh the checkpoint after binding/recovery, each task claim, each verification result, each phase transition, and every stop. Keep it factual and concise; do not claim completion until the integration gate is satisfied.
@@ -140,7 +140,7 @@ When useful, append a falsifiable entry to `review.md` `## Claims` (task id, cla
 
 ## Implementation review gate
 
-For code workstreams, after all tasks are `done` with fresh evidence (or on `$kilo review`), run an adversarial review **before** the human smoke prompt. Docs-only lines (`worktree_status: none`) skip this gate.
+For code workstreams, after all tasks are `done` with fresh evidence (or on `/kilo review`), run an adversarial review **before** the human smoke prompt. Docs-only lines (`worktree_status: none`) skip this gate.
 
 Parent is the sole writer of workspace files. Cross-agent review state lives in the workstream `review.md` — never ask the user to copy-paste long reports between agents.
 
@@ -150,10 +150,10 @@ Acceptance plus rounds are the audit contract and its history; they grow every c
 
 - `review.md` (same workstream folder) holds `## Acceptance`, `## ReviewIndex`, `## Claims`, and `## ReviewThread` rounds.
 - `context.md` gets no pointer block. Handoff `acceptance_status` and `impl_review_status` are the cheap signals; never inline Acceptance text, round bodies, findings prose, or reviewer reports into `context.md`.
-- Open `review.md` when a freeze/revise is due, when `impl_review_status` is `pending|in_triage|re_review`, when `$kilo review` runs, or when the user asks about a finding or a task's review history. Prefer Acceptance + index + rounds still `open`/`fixed`, not the whole file.
+- Open `review.md` when a freeze/revise is due, when `impl_review_status` is `pending|in_triage|re_review`, when `/kilo review` runs, or when the user asks about a finding or a task's review history. Prefer Acceptance + index + rounds still `open`/`fixed`, not the whole file.
 - If a Handoff mirror and `review.md` disagree, `review.md` wins; refresh the mirror instead of editing history.
 
-### Dispatch (`$kilo review`)
+### Dispatch (`/kilo review`)
 
 1. Require Acceptance `status: frozen`; else hard-stop with the freeze prompt.
 2. Set Handoff `impl_review_status: pending` (first pass) or `re_review`.
@@ -213,7 +213,7 @@ After a reviewer round, set `impl_review_status: in_triage` and append a `role: 
 
 Every implementer response must name the task that carried the fix and the commit, so `## ReviewIndex` can answer "what did review say about T06 and what changed" without replaying chat.
 
-Then either continue execute on new/reopened tasks, or `$kilo review` again with the digest plus `review_file` attached. Maximum **two** full review cycles after the first finding round; then `escalate` / `impl_review_status: escalated` unless the user extends.
+Then either continue execute on new/reopened tasks, or `/kilo review` again with the digest plus `review_file` attached. Maximum **two** full review cycles after the first finding round; then `escalate` / `impl_review_status: escalated` unless the user extends.
 
 ### Entering human smoke
 
@@ -245,7 +245,7 @@ After impl-review is approved, proactively inspect the worktree rather than wait
 2. continue with another task in the current worktree; or
 3. create a new worktree/workstream before further mutations.
 
-If the tree is already `pruned` and the line is still open, the next tree on this line is `$kilo adopt <path>` — not `$kilo new`.
+If the tree is already `pruned` and the line is still open, the next tree on this line is `/kilo adopt <path>` — not `/kilo new`.
 
 This prompt is required in normal and auto mode. Auto mode may not guess the answer or close the line on the user's behalf.
 
