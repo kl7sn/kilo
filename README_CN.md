@@ -149,7 +149,7 @@ npx skills update                           # 之后更新
 - **代码仓（git 根）**：只有 `.kilo-state`——记录绑了哪条 workstream、哪个 worktree。
 - **Obsidian 库**：全部状态文档（`project.md` / `tasks.md` / `context.md` / `review.md` 等）。`.kilo-state` 的 `workspace:` 指向这里。
 
-![Two landing places: code repo vs Obsidian vault](docs/images/kilo-readme-two-places.png)
+![Two landing places: code repo vs Obsidian vault](docs/images/kilo-readme-two-places.svg)
 
 路径怎么找：先看 `.kilo-state`，再看旧的 `.run-state`，再看 `KILO_WORKSPACE` / 旧的 `RUN_WORKSPACE`；都没有就需要显式配置。不会悄悄落到 `~/run-workspace`。
 

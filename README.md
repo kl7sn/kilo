@@ -148,7 +148,7 @@ State lands in two places — don't mix them:
 - **Code repo (git root):** only `.kilo-state` — which workstream / worktree this session is bound to.
 - **Obsidian vault:** all state docs (`project.md` / `tasks.md` / `context.md` / `review.md`, …). `.kilo-state` `workspace:` points here.
 
-![Two landing places: code repo vs Obsidian vault](docs/images/kilo-readme-two-places.png)
+![Two landing places: code repo vs Obsidian vault](docs/images/kilo-readme-two-places.svg)
 
 Resolution order: `.kilo-state` → legacy `.run-state` → `KILO_WORKSPACE` → legacy `RUN_WORKSPACE` → you must set it up. No silent fallback to `~/run-workspace`.
 
