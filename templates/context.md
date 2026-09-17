@@ -16,8 +16,8 @@
 - blocker: none
 - open_questions: []
 - failed_approaches: []
-- next_action: `$run` to explore / plan
-- resume_hint: `$run`
+- next_action: `$kilo` to explore / plan
+- resume_hint: `$kilo`
 - key_paths: []
 - worktree_path: none
 - worktree_branch: -

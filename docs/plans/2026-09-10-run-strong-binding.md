@@ -1,3 +1,5 @@
+> **Note:** Product renamed to `kilo` (2026-09-17). This plan’s filenames keep `run` for history.
+
 # Strong Binding Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.

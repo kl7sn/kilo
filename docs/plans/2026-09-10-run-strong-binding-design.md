@@ -1,3 +1,5 @@
+> **Note:** Product renamed to `kilo` (2026-09-17). This plan’s filenames keep `run` for history.
+
 # Design: $run session ↔ workstream ↔ worktree strong binding
 
 **Date:** 2026-09-10  

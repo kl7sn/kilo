@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="docs/images/run-mark.svg" width="72" height="72" alt="run" />
+  <img src="docs/images/kilo-mark.svg" width="72" height="72" alt="kilo" />
 </p>
 
-<h1 align="center">run</h1>
+<h1 align="center">kilo</h1>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT" /></a>
-  <a href="https://skills.sh/kl7sn/run"><img src="https://img.shields.io/badge/install-npx%20skills-6366f1?style=flat-square" alt="Install" /></a>
+  <a href="https://skills.sh/kl7sn/kilo"><img src="https://img.shields.io/badge/install-npx%20skills-6366f1?style=flat-square" alt="Install" /></a>
   <a href="#supported-agents"><img src="https://img.shields.io/badge/agents-Cursor%20%7C%20Claude%20%7C%20Codex-555?style=flat-square" alt="Agents" /></a>
   <a href="#workspace"><img src="https://img.shields.io/badge/state-Markdown%20workspace-lightgrey?style=flat-square" alt="State" /></a>
 </p>
@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  <a href="https://skills.sh/kl7sn/run"><strong>Install run</strong></a>
+  <a href="https://skills.sh/kl7sn/kilo"><strong>Install kilo</strong></a>
   · follows
   <a href="https://agentskills.io/">Agent Skills</a>
   via
@@ -32,7 +32,7 @@
 
 ## What it is
 
-`/run` is a process skill for Cursor, Claude Code, and Codex.
+`/kilo` is a process skill for Cursor, Claude Code, and Codex.
 
 Multi-step work you can pause and resume:
 
@@ -40,9 +40,9 @@ Multi-step work you can pause and resume:
 bind workstream → explore / plan / execute → verify → hand off → continue
 ```
 
-![/run main flow](docs/images/run-readme-main-flow.svg)
+![/kilo main flow](docs/images/kilo-readme-main-flow.svg)
 
-State docs live in an **Obsidian Markdown vault**. The code repo only keeps a small `.run-state` pointer. No control plane. No SaaS.
+State docs live in an **Obsidian Markdown vault**. The code repo only keeps a small `.kilo-state` pointer. No control plane. No SaaS.
 
 ## Why it exists
 
@@ -54,13 +54,13 @@ Agents write code well. They struggle with:
 
 Full-process frameworks (GSD, BMAD, Spec-Kit, …) can help, but they often take over the process — and then process bugs are hard to fix.
 
-`/run` keeps state in files, keeps phases explicit, and stops when it should instead of pushing ahead.
+`/kilo` keeps state in files, keeps phases explicit, and stops when it should instead of pushing ahead.
 
 ## What it does
 
 - **Three layers** — project → workstream → tasks (`tasks.md` rows)
-- **Sticky session** — once a repo is bound, stay on `/run`; no silent ad-hoc edits
-- **Single writer** — only parent `/run` updates workspace; subagents may edit code (prefer worktrees)
+- **Sticky session** — once a repo is bound, stay on `/kilo`; no silent ad-hoc edits
+- **Single writer** — only parent `/kilo` updates workspace; subagents may edit code (prefer worktrees)
 - **Verification gate** — `doing → done` needs evidence in the execution log
 - **Acceptance freeze** — lock the pass criteria before execute; later chat can't soften it
 - **Implementation review** — a read-only reviewer checks code against Acceptance before human smoke
@@ -68,7 +68,7 @@ Full-process frameworks (GSD, BMAD, Spec-Kit, …) can help, but they often take
 - **Project knowledge** — `project.md` keeps durable facts plus a gotcha *index*; details stay where you learned them
 - **Integration gate** — all tasks `done` ≠ workstream closed; you still need human smoke + worktree disposition
 - **Handoff** — resume from `## Handoff` in `context.md`, not from old chats
-- **`/run auto`** — unattended advance; design reviews need dual-agent consensus; hard-stop conditions still stop
+- **`/kilo auto`** — unattended advance; design reviews need dual-agent consensus; hard-stop conditions still stop
 
 ### Hard binding rules
 
@@ -81,80 +81,80 @@ Full-process frameworks (GSD, BMAD, Spec-Kit, …) can help, but they often take
 ### 1. Install
 
 ```bash
-npx skills add kl7sn/run -g
+npx skills add kl7sn/kilo -g
 ```
 
-That installs **`run`**. Common flags:
+That installs **`kilo`**. Common flags:
 
 ```bash
-npx skills add kl7sn/run -g -y              # non-interactive
-npx skills add kl7sn/run -g -a cursor       # Cursor only
-npx skills add kl7sn/run --list             # see what's in the package
+npx skills add kl7sn/kilo -g -y              # non-interactive
+npx skills add kl7sn/kilo -g -a cursor       # Cursor only
+npx skills add kl7sn/kilo --list             # see what's in the package
 npx skills update                           # refresh later
 ```
 
 ### 2. Point at an Obsidian vault, then create a workstream
 
-State docs go under the vault (`RUN_WORKSPACE` or `.run-state` `workspace:`). From a bound code repo:
+State docs go under the vault (`KILO_WORKSPACE` or `.kilo-state` `workspace:`). From a bound code repo:
 
 ```text
-/run init demo          # project container in the vault (once)
-/run new hello          # nested workstream under the project
+/kilo init demo          # project container in the vault (once)
+/kilo new hello          # nested workstream under the project
 ```
 
-`.run-state` lives at the **code repo** git root; `project.md` / `tasks.md` / … land in the vault.
+`.kilo-state` lives at the **code repo** git root; `project.md` / `tasks.md` / … land in the vault.
 
 ### 3. Run
 
 ```text
-/run                    # advance explore → plan → execute
-/run auto               # unattended (hard stops still apply)
+/kilo                    # advance explore → plan → execute
+/kilo auto               # unattended (hard stops still apply)
 ```
 
 Every advancing reply starts with a status line:
 
 ```text
-[/run · lang=en · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
+[/kilo · lang=en · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
 ```
 
 ## What's in the package
 
 | Skill | Role |
 | --- | --- |
-| [`run`](skills/run/SKILL.md) | Process protocol — bind, phases, tasks, Handoff, gates |
+| [`kilo`](skills/kilo/SKILL.md) | Process protocol — bind, phases, tasks, Handoff, gates |
 
-`/run` is **not** a general skill toolkit. TDD, grilling, domain tools stay separate and optional.
+`/kilo` is **not** a general skill toolkit. TDD, grilling, domain tools stay separate and optional.
 
-The entrypoint `skills/run/SKILL.md` stays short (under 500 lines). Workspace, recovery, execution, auto, and reference details live under `skills/run/protocols/` and load only when needed.
+The entrypoint `skills/kilo/SKILL.md` stays short (under 500 lines). Workspace, recovery, execution, auto, and reference details live under `skills/kilo/protocols/` and load only when needed.
 
 ## Commands
 
 | Command | Description |
 | --- | --- |
-| `/run init` [projectId] | Create project container in the Obsidian vault |
-| `/run new` [workstreamId] | Create nested workstream |
-| `/run bind` | Rebind this session interactively |
-| `/run accept` … | Draft or revise frozen Acceptance |
-| `/run review` | Dispatch read-only implementation review |
-| `/run lang` [en\|zh] | Show or set document language |
-| `/run` | Advance current phase |
-| `/run auto` | Unattended advance |
+| `/kilo init` [projectId] | Create project container in the Obsidian vault |
+| `/kilo new` [workstreamId] | Create nested workstream |
+| `/kilo bind` | Rebind this session interactively |
+| `/kilo accept` … | Draft or revise frozen Acceptance |
+| `/kilo review` | Dispatch read-only implementation review |
+| `/kilo lang` [en\|zh] | Show or set document language |
+| `/kilo` | Advance current phase |
+| `/kilo auto` | Unattended advance |
 
 ## Workspace
 
 State lands in two places — don't mix them:
 
-- **Code repo (git root):** only `.run-state` — which workstream / worktree this session is bound to.
-- **Obsidian vault:** all state docs (`project.md` / `tasks.md` / `context.md` / `review.md`, …). `.run-state` `workspace:` points here.
+- **Code repo (git root):** only `.kilo-state` — which workstream / worktree this session is bound to.
+- **Obsidian vault:** all state docs (`project.md` / `tasks.md` / `context.md` / `review.md`, …). `.kilo-state` `workspace:` points here.
 
-![Two landing places: code repo vs Obsidian vault](docs/images/run-readme-two-places.png)
+![Two landing places: code repo vs Obsidian vault](docs/images/kilo-readme-two-places.png)
 
-Resolution order: `.run-state` → `RUN_WORKSPACE` → you must set it up. No silent fallback to `~/run-workspace`.
+Resolution order: `.kilo-state` → legacy `.run-state` → `KILO_WORKSPACE` → legacy `RUN_WORKSPACE` → you must set it up. No silent fallback to `~/run-workspace`.
 
 ```text
-<code-repo>/.run-state              # session index only, at git root
+<code-repo>/.kilo-state              # session index only, at git root
 
-<obsidian-vault>/                   # Obsidian vault = RUN_WORKSPACE
+<obsidian-vault>/                   # Obsidian vault = KILO_WORKSPACE
 └── Projects/
     └── 01-demo/                    # project  NN-<slug>
         ├── project.md              # workstreams+worktrees · Stable Facts · Gotcha Index
@@ -168,7 +168,7 @@ Resolution order: `.run-state` → `RUN_WORKSPACE` → you must set it up. No si
 
 Sample: [`examples/01-demo/`](examples/01-demo/) · Templates: [`templates/`](templates/) (`*.zh.md` for Chinese)
 
-`.run-state` looks roughly like:
+`.kilo-state` looks roughly like:
 
 ```yaml
 workspace: /absolute/path/to/obsidian-vault/Projects/01-demo/01.01-hello
@@ -185,9 +185,9 @@ repo: .
 | Claude Code | `~/.claude/skills/` |
 | Codex | `~/.codex/skills/` |
 
-One agent only: `npx skills add kl7sn/run -g -a <agent>`.
+One agent only: `npx skills add kl7sn/kilo -g -a <agent>`.
 
-## What /run is not
+## What /kilo is not
 
 | | |
 | --- | --- |
@@ -198,21 +198,31 @@ One agent only: `npx skills add kl7sn/run -g -a <agent>`.
 
 ## Optional companions
 
-`/run` orchestrates; phase-discipline skills are optional:
+`/kilo` orchestrates; phase-discipline skills are optional:
 
 - **Defaults:** superpowers (`brainstorming`, `writing-plans`, TDD, `verification-before-completion`)
 - **Cherry-picks:** [mattpocock/skills](https://github.com/mattpocock/skills) — e.g. `grill-with-docs`, `to-tickets`, `code-review`
 - **Don't** dual-run their `handoff` / `implement`, or move durable state out of the workspace
 
-See [`skills/run/SKILL.md`](skills/run/SKILL.md) → *Companion skills*.
+See [`skills/kilo/SKILL.md`](skills/kilo/SKILL.md) → *Companion skills*.
 
 ## Documentation
 
 | Document | Purpose |
 | --- | --- |
-| [`skills/run/SKILL.md`](skills/run/SKILL.md) | Entrypoint; details in [`skills/run/protocols/`](skills/run/protocols/) |
+| [`skills/kilo/SKILL.md`](skills/kilo/SKILL.md) | Entrypoint; details in [`skills/kilo/protocols/`](skills/kilo/protocols/) |
 | [`docs/design.md`](docs/design.md) | Design notes and tradeoffs |
 | [`README_CN.md`](README_CN.md) | 中文说明 |
+
+## Migration from `run`
+
+Formerly published as **`run`** (`kl7sn/run`). Reinstall with:
+
+```bash
+npx skills add kl7sn/kilo -g
+```
+
+Session file is now **`.kilo-state`** (legacy `.run-state` is still read). Env vars are **`KILO_WORKSPACE`** / **`KILO_LANG`** (legacy `RUN_*` still read). Next successful bind/write persists `.kilo-state`.
 
 ## License
 

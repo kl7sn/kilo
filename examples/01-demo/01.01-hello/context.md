@@ -16,8 +16,8 @@
 - blocker: none
 - open_questions: []
 - failed_approaches: []
-- next_action: `/run` to plan or execute T01
-- resume_hint: `/run`
+- next_action: `/kilo` to plan or execute T01
+- resume_hint: `/kilo`
 - key_paths: []
 - worktree_path: none
 - worktree_branch: -
@@ -32,6 +32,6 @@
 
 ## Key Decisions
 
-- 2026-08-21: created example workstream for kl7sn/run docs.
+- 2026-08-21: created example workstream for kl7sn/kilo docs.
 
 ## Execution Log

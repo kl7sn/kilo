@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="630" viewBox="0 0 1600 630" role="img" aria-label="/run main flow">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="630" viewBox="0 0 1600 630" role="img" aria-label="/kilo main flow">
   <defs>
     <filter id="cardShadow" x="-10%" y="-10%" width="125%" height="140%">
       <feDropShadow dx="0" dy="2" stdDeviation="2.2" flood-color="#121212" flood-opacity="0.10"/>
     </filter>
   </defs>
   <rect width="1600" height="630" fill="#FAF8F5"/>
-  <text x="800" y="44" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="36" font-weight="600" fill="#262A30">/run main flow</text>
+  <text x="800" y="44" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="36" font-weight="600" fill="#262A30">/kilo main flow</text>
   <text x="800" y="76" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#6E7680">State lives in files. Phases stay clear. Stop at freeze, review, and human smoke.</text>
 
   <rect x="56" y="118" width="464" height="436" rx="22" fill="#FFF6EC"/>
