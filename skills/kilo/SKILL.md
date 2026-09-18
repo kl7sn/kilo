@@ -123,10 +123,11 @@ Parallel work is legal only for independent tasks in an explicitly recorded wave
 
 ## Status line
 
-Every advancing reply **ends** with a two-line status block, separated from the body by a blank line. Put everything except `wt` on the first line; put `wt` alone on the next line (hard line break). Do not put this block at the start of the reply.
+Every advancing reply **ends** with a status block, separated from the body by a blank line. First line: everything except `wt`. Then another blank line (Markdown will otherwise join the two lines into one paragraph). Then `wt=` alone. Do not put this block at the start of the reply.
 
 ```text
 [/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · T04 doing]
+
 wt=/absolute/path/to/worktree
 ```
 
@@ -141,6 +142,7 @@ During execution, do not provide a bare status block only. Place a concise check
 进度：T04 done，T05 doing，T06 ready · 下一步：运行 <verification command>
 
 [/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · T04 doing]
+
 wt=/absolute/path/to/worktree
 ```
 

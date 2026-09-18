@@ -102,13 +102,14 @@ If any check fails, stop and repair accounting before mutating. A later `recover
 
 ## Proactive progress checkpoints
 
-Every advancing turn reports state without waiting for a user prompt. End the reply with a blank line, then a two-line status: first line has `line=<project>/<line>` and the other fields; second line is `wt=<absolute-path|missing|none>` alone (hard line break). Omit `dirty`, `branch`, and `primary=` from the first status line. Do not put this block at the start of the reply. When executing, put the checkpoint in the body before that blank line.
+Every advancing turn reports state without waiting for a user prompt. End the reply with a blank line, then the first status line (`line=<project>/<line>` and the other fields), then another blank line, then `wt=<absolute-path|missing|none>` alone. Markdown joins adjacent lines into one paragraph, so the extra blank line is required. Omit `dirty`, `branch`, and `primary=` from the first status line. Do not put this block at the start of the reply. When executing, put the checkpoint in the body before that blank line.
 
 ```text
 绑定：<project>/<line> · 阶段：<explore|plan|execute>
 进度：<done/doing/ready> · 下一步：<one action>
 
 [/kilo · lang=<lang> · auto=<on|off> · line=<project>/<line> · <task state>]
+
 wt=<absolute-path|missing|none>
 ```
 Refresh the checkpoint after binding/recovery, each task claim, each verification result, each phase transition, and every stop. Keep it factual and concise; do not claim completion until the integration gate is satisfied.

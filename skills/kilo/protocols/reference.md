@@ -178,7 +178,7 @@ A fact entry may carry an optional `check:` (command or path) that makes it chea
 
 ## Progress and integration prompt
 
-Every advancing reply **ends** with a blank line, then a two-line `/kilo` status: first line has `line=<project>/<line>` and the other fields; second line is `wt=<absolute-path|missing|none>` alone (hard line break). Do not put `dirty`, `branch`, or `primary=` on the first line. Do not put this block at the start of the reply. Emit it after recovery, task transitions, verification, phase changes, and stops; never wait for a user status request.
+Every advancing reply **ends** with a blank line, then the first `/kilo` status line (`line=<project>/<line>` and the other fields), then another blank line, then `wt=<absolute-path|missing|none>` alone. Markdown joins adjacent lines into one paragraph, so do not put `wt=` on the line immediately after `[/kilo …]`. Do not put `dirty`, `branch`, or `primary=` on the first line. Do not put this block at the start of the reply. Emit it after recovery, task transitions, verification, phase changes, and stops; never wait for a user status request.
 
 While impl-review is active, include `impl-review: pending|in_triage|re_review|approved|escalated` in the status tail.
 
