@@ -102,11 +102,12 @@ If any check fails, stop and repair accounting before mutating. A later `recover
 
 ## Proactive progress checkpoints
 
-Every advancing turn reports state without waiting for a user prompt. End the reply with a checkpoint (when executing) plus a two-line status: first line has `line=<project>/<line>` and the other fields; second line is `wt=<absolute-path|missing|none>` alone. Omit `dirty`, `branch`, and `primary=` from the first status line. Do not put this block at the start of the reply.
+Every advancing turn reports state without waiting for a user prompt. End the reply with a blank line, then a two-line status: first line has `line=<project>/<line>` and the other fields; second line is `wt=<absolute-path|missing|none>` alone (hard line break). Omit `dirty`, `branch`, and `primary=` from the first status line. Do not put this block at the start of the reply. When executing, put the checkpoint in the body before that blank line.
 
 ```text
 绑定：<project>/<line> · 阶段：<explore|plan|execute>
 进度：<done/doing/ready> · 下一步：<one action>
+
 [/kilo · lang=<lang> · auto=<on|off> · line=<project>/<line> · <task state>]
 wt=<absolute-path|missing|none>
 ```

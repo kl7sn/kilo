@@ -112,7 +112,7 @@ npx skills update                           # 之后更新
 /kilo auto               # 无人值守（硬停止条件仍然生效）
 ```
 
-每次推进时，回复**末尾**有两行状态（`wt` 单独一行）：
+每次推进时，回复**末尾**空一行，再跟两行状态（`wt` 单独换行）：
 
 ```text
 [/kilo · lang=zh · auto=off · line=01-demo/01.01-hello · T01 ready]

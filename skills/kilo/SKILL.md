@@ -123,7 +123,7 @@ Parallel work is legal only for independent tasks in an explicitly recorded wave
 
 ## Status line
 
-Every advancing reply **ends** with a two-line status block. Put everything except `wt` on the first line; put `wt` alone on the second line. Do not put this block at the start of the reply.
+Every advancing reply **ends** with a two-line status block, separated from the body by a blank line. Put everything except `wt` on the first line; put `wt` alone on the next line (hard line break). Do not put this block at the start of the reply.
 
 ```text
 [/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · T04 doing]
@@ -134,11 +134,12 @@ wt=/absolute/path/to/worktree
 
 Use `design-review: pending|approved|revise|escalate` while an auto design gate is active; use `impl-review: pending|in_triage|re_review|approved|escalated` during implementation review; use `smoke_pending` until human smoke passes.
 
-During execution, do not provide a bare status block only. Place a concise checkpoint immediately above the two-line status at the end:
+During execution, do not provide a bare status block only. Place a concise checkpoint in the body, then a blank line, then the two-line status at the very end:
 
 ```text
 绑定：<project>/<line> · 阶段：execute
 进度：T04 done，T05 doing，T06 ready · 下一步：运行 <verification command>
+
 [/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · T04 doing]
 wt=/absolute/path/to/worktree
 ```
