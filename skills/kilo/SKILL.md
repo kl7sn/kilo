@@ -123,20 +123,20 @@ Parallel work is legal only for independent tasks in an explicitly recorded wave
 
 ## Status line
 
-Every advancing reply starts with a compact line that **must** include the primary worktree slot `wt=`:
+Every advancing reply starts with a compact line that **must** include `line=` and the primary worktree slot `wt=`:
 
 ```text
-[/kilo · lang=zh · auto=off · 05-run/05.02-workspace-routing · wt=<short-path|missing|none> · T04 doing]
+[/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · wt=/absolute/path/to/worktree · T04 doing]
 ```
 
-`wt` is the primary worktree identity for this binding: a short path/basename when registered and present, `missing` when Handoff records a worktree that git lacks, or `none` for docs-only lines. Do **not** put `dirty`, `branch`, or `primary=` in the compact status line — branch lives in Handoff; dirty git state belongs in the dirty-tree prompt or checkpoint notes only when it blocks work.
+`line` is `<project>/<line>`. `wt` is the primary worktree **absolute path** when registered and present, `missing` when Handoff records a worktree that git lacks, or `none` for docs-only lines. Do **not** put `dirty`, `branch`, or `primary=` in the compact status line — branch lives in Handoff; dirty git state belongs in the dirty-tree prompt or checkpoint notes only when it blocks work.
 
 Use `design-review: pending|approved|revise|escalate` while an auto design gate is active; use `impl-review: pending|in_triage|re_review|approved|escalated` during implementation review; use `smoke_pending` until human smoke passes.
 
 During execution, do not provide a bare status line only. Follow it with a concise checkpoint:
 
 ```text
-绑定：<project>/<line> · 阶段：execute · wt：<short-path|missing|none>
+绑定：<project>/<line> · 阶段：execute · wt：<absolute-path|missing|none>
 进度：T04 done，T05 doing，T06 ready · 下一步：运行 <verification command>
 ```
 

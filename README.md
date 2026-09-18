@@ -114,7 +114,7 @@ State docs go under the vault (`KILO_WORKSPACE` or `.kilo-state` `workspace:`). 
 Every advancing reply starts with a status line:
 
 ```text
-[/kilo · lang=en · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
+[/kilo · lang=en · auto=off · line=01-demo/01.01-hello · wt=none · T01 ready]
 ```
 
 ## What's in the package

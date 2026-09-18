@@ -115,7 +115,7 @@ npx skills update                           # 之后更新
 每次推进时，回复开头会有状态行：
 
 ```text
-[/kilo · lang=zh · auto=off · 01-demo/01.01-hello · wt=none · T01 ready]
+[/kilo · lang=zh · auto=off · line=01-demo/01.01-hello · wt=none · T01 ready]
 ```
 
 ## 包内 skill
