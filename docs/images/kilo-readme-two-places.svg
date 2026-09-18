@@ -17,7 +17,7 @@
   <circle cx="118" cy="330" r="8" fill="#E67E30"/>
   <text x="140" y="336" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22" font-weight="600" fill="#262A30">.kilo-state</text>
   <text x="140" y="372" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#E67E30">workspace: &lt;vault-path&gt;</text>
-  <text x="104" y="460" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#6E7680">Binds which workstream / worktree</text>
+  <text x="104" y="460" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#6E7680">Binds which line / worktree</text>
   <text x="104" y="486" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#6E7680">this repo session advances.</text>
 
   <!-- Arrow -->
@@ -32,28 +32,33 @@
   <text x="904" y="230" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="600" fill="#262A30">Markdown vault</text>
   <text x="904" y="262" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#6E7680">State docs live here</text>
 
-  <text x="904" y="330" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#262A30">Projects/</text>
-  <rect x="928" y="352" width="16" height="13" rx="2" fill="#E67E30"/>
-  <rect x="934" y="348" width="16" height="13" rx="2" fill="#F4A36A"/>
-  <text x="960" y="364" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#E67E30">01-demo/</text>
-  <rect x="960" y="388" width="16" height="13" rx="2" fill="#E67E30"/>
-  <rect x="966" y="384" width="16" height="13" rx="2" fill="#F4A36A"/>
-  <text x="992" y="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#E67E30">01.01-hello/</text>
+  <text x="904" y="318" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#262A30">Projects/</text>
+  <rect x="928" y="340" width="16" height="13" rx="2" fill="#E67E30"/>
+  <rect x="934" y="336" width="16" height="13" rx="2" fill="#F4A36A"/>
+  <text x="960" y="352" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#E67E30">01-demo/</text>
   <g fill="#5B6168" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17">
-    <rect x="1024" y="420" width="12" height="15" rx="1.5" fill="#8A9096"/>
-    <rect x="1028" y="416" width="12" height="15" rx="1.5" fill="#5B6168"/>
-    <text x="1050" y="432">project.md</text>
-    <rect x="1024" y="452" width="12" height="15" rx="1.5" fill="#8A9096"/>
-    <rect x="1028" y="448" width="12" height="15" rx="1.5" fill="#5B6168"/>
-    <text x="1050" y="464">tasks.md</text>
-    <rect x="1024" y="484" width="12" height="15" rx="1.5" fill="#8A9096"/>
-    <rect x="1028" y="480" width="12" height="15" rx="1.5" fill="#5B6168"/>
-    <text x="1050" y="496">context.md</text>
-    <rect x="1024" y="516" width="12" height="15" rx="1.5" fill="#8A9096"/>
-    <rect x="1028" y="512" width="12" height="15" rx="1.5" fill="#5B6168"/>
-    <text x="1050" y="528">review.md</text>
-    <rect x="1024" y="548" width="12" height="15" rx="1.5" fill="#8A9096"/>
-    <rect x="1028" y="544" width="12" height="15" rx="1.5" fill="#5B6168"/>
-    <text x="1050" y="560">spec.md</text>
+    <rect x="992" y="368" width="12" height="15" rx="1.5" fill="#8A9096"/>
+    <rect x="996" y="364" width="12" height="15" rx="1.5" fill="#5B6168"/>
+    <text x="1018" y="380">project.md</text>
+  </g>
+  <rect x="960" y="400" width="16" height="13" rx="2" fill="#E67E30"/>
+  <rect x="966" y="396" width="16" height="13" rx="2" fill="#F4A36A"/>
+  <text x="992" y="412" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#E67E30">01.01-hello/</text>
+  <g fill="#5B6168" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17">
+    <rect x="1024" y="432" width="12" height="15" rx="1.5" fill="#8A9096"/>
+    <rect x="1028" y="428" width="12" height="15" rx="1.5" fill="#5B6168"/>
+    <text x="1050" y="444">line.md</text>
+    <rect x="1024" y="464" width="12" height="15" rx="1.5" fill="#8A9096"/>
+    <rect x="1028" y="460" width="12" height="15" rx="1.5" fill="#5B6168"/>
+    <text x="1050" y="476">tasks.md</text>
+    <rect x="1024" y="496" width="12" height="15" rx="1.5" fill="#8A9096"/>
+    <rect x="1028" y="492" width="12" height="15" rx="1.5" fill="#5B6168"/>
+    <text x="1050" y="508">context.md</text>
+    <rect x="1024" y="528" width="12" height="15" rx="1.5" fill="#8A9096"/>
+    <rect x="1028" y="524" width="12" height="15" rx="1.5" fill="#5B6168"/>
+    <text x="1050" y="540">review.md</text>
+    <rect x="1024" y="560" width="12" height="15" rx="1.5" fill="#8A9096"/>
+    <rect x="1028" y="556" width="12" height="15" rx="1.5" fill="#5B6168"/>
+    <text x="1050" y="572">spec.md</text>
   </g>
 </svg>
