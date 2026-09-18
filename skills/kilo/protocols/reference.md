@@ -178,7 +178,7 @@ A fact entry may carry an optional `check:` (command or path) that makes it chea
 
 ## Progress and integration prompt
 
-Every advancing reply starts with a `/kilo` status line that includes `line=<project>/<line>` and `wt=<absolute-path|missing|none>` for the primary worktree, plus the resolved binding, phase, current task statuses, and one next action. Do not put `dirty`, `branch`, or `primary=` in the compact status line. Emit it after recovery, task transitions, verification, phase changes, and stops; never wait for a user status request.
+Every advancing reply **ends** with a two-line `/kilo` status: first line has `line=<project>/<line>` and the other fields; second line is `wt=<absolute-path|missing|none>` alone. Do not put `dirty`, `branch`, or `primary=` on the first line. Do not put this block at the start of the reply. Emit it after recovery, task transitions, verification, phase changes, and stops; never wait for a user status request.
 
 While impl-review is active, include `impl-review: pending|in_triage|re_review|approved|escalated` in the status tail.
 

@@ -60,7 +60,7 @@ Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.
 9. Map the current request to an existing task or add a task row only after the binding decision is resolved.
 10. Route: missing design → explore; all tasks todo → plan; plan→execute needs Acceptance freeze; ready tasks → execute; blocked only → report; all done → impl-review gate then integration gate; `/kilo review` → impl-review on demand.
 11. Inspect dirty/commit state before advancing. Uncommitted carry-over requires explicit triage before further mutation.
-12. Emit a status checkpoint containing the resolved binding, phase, task statuses, worktree/git state, Acceptance/impl-review state, and next action before advancing. Emit another checkpoint after each task claim, verification result, phase transition, audit finding, or hard stop.
+12. End the reply with the two-line status block (`line=` on the first line, `wt=` alone on the second). When executing, put the checkpoint immediately above it. Do not lead the reply with status.
 
 ## Workspace resolution
 
@@ -123,21 +123,24 @@ Parallel work is legal only for independent tasks in an explicitly recorded wave
 
 ## Status line
 
-Every advancing reply starts with a compact line that **must** include `line=` and the primary worktree slot `wt=`:
+Every advancing reply **ends** with a two-line status block. Put everything except `wt` on the first line; put `wt` alone on the second line. Do not put this block at the start of the reply.
 
 ```text
-[/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · wt=/absolute/path/to/worktree · T04 doing]
+[/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · T04 doing]
+wt=/absolute/path/to/worktree
 ```
 
-`line` is `<project>/<line>`. `wt` is the primary worktree **absolute path** when registered and present, `missing` when Handoff records a worktree that git lacks, or `none` for docs-only lines. Do **not** put `dirty`, `branch`, or `primary=` in the compact status line — branch lives in Handoff; dirty git state belongs in the dirty-tree prompt or checkpoint notes only when it blocks work.
+`line` is `<project>/<line>`. `wt` is the primary worktree **absolute path** when registered and present, `missing` when Handoff records a worktree that git lacks, or `none` for docs-only lines. Do **not** put `dirty`, `branch`, or `primary=` on the first status line — branch lives in Handoff; dirty git state belongs in the dirty-tree prompt or checkpoint notes only when it blocks work.
 
 Use `design-review: pending|approved|revise|escalate` while an auto design gate is active; use `impl-review: pending|in_triage|re_review|approved|escalated` during implementation review; use `smoke_pending` until human smoke passes.
 
-During execution, do not provide a bare status line only. Follow it with a concise checkpoint:
+During execution, do not provide a bare status block only. Place a concise checkpoint immediately above the two-line status at the end:
 
 ```text
-绑定：<project>/<line> · 阶段：execute · wt：<absolute-path|missing|none>
+绑定：<project>/<line> · 阶段：execute
 进度：T04 done，T05 doing，T06 ready · 下一步：运行 <verification command>
+[/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · T04 doing]
+wt=/absolute/path/to/worktree
 ```
 
 For session bind, non-continuation fit, and missing-worktree stops, use the three standard prompts in [reference.md](protocols/reference.md) **Binding and code-management prompts** (new-session, non-continuation, missing). Do not invent alternate wording.

@@ -39,7 +39,7 @@ When a code worktree exists, also record `worktree_path`, `worktree_branch`, `wo
 
 ## Full-stop
 
-For hard blocks or auto stops, update tasks and Handoff with a machine-readable blocker, `review_status: escalate` when applicable, a next action, and a resume hint. Reply with the status line and a short Handoff summary; stop without claiming completion.
+For hard blocks or auto stops, update tasks and Handoff with a machine-readable blocker, `review_status: escalate` when applicable, a next action, and a resume hint. End the reply with the two-line status block and a short Handoff summary; stop without claiming completion.
 
 ## Proactive worktree decision
 

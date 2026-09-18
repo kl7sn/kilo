@@ -111,10 +111,11 @@ State docs go under the vault (`KILO_WORKSPACE` or `.kilo-state` `workspace:`). 
 /kilo auto               # unattended (hard stops still apply)
 ```
 
-Every advancing reply starts with a status line:
+Every advancing reply ends with a two-line status (`wt` on its own line):
 
 ```text
-[/kilo · lang=en · auto=off · line=01-demo/01.01-hello · wt=none · T01 ready]
+[/kilo · lang=en · auto=off · line=01-demo/01.01-hello · T01 ready]
+wt=none
 ```
 
 ## What's in the package
