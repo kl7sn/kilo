@@ -114,7 +114,7 @@ State docs go under the vault (`KILO_WORKSPACE` or `.kilo-state` `workspace:`). 
 Every advancing reply ends with a blank line, then the status line, then another blank line, then `wt` alone (Markdown otherwise joins them):
 
 ```text
-[/kilo · lang=en · auto=off · line=01-demo/01.01-hello · T01 ready]
+[/kilo · lang=en · auto=off · line=01-demo/01.01-hello · ready: write the hello example]
 
 wt=none
 ```

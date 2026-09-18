@@ -115,7 +115,7 @@ npx skills update                           # 之后更新
 每次推进时，回复**末尾**空一行，再出状态行，再空一行，再单独写 `wt`（Markdown 否则会把两行收成一段）：
 
 ```text
-[/kilo · lang=zh · auto=off · line=01-demo/01.01-hello · T01 ready]
+[/kilo · lang=zh · auto=off · line=01-demo/01.01-hello · ready: 写 hello 示例]
 
 wt=none
 ```

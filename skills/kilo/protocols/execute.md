@@ -106,13 +106,17 @@ Every advancing turn reports state without waiting for a user prompt. End the re
 
 ```text
 绑定：<project>/<line> · 阶段：<explore|plan|execute>
-进度：<done/doing/ready> · 下一步：<one action>
+进度：
+- T04 doing 把 compose 超时改成可配置
+- T05 ready 补超时单测
+下一步：<one action>
 
-[/kilo · lang=<lang> · auto=<on|off> · line=<project>/<line> · <task state>]
+[/kilo · lang=<lang> · auto=<on|off> · line=<project>/<line> · doing: 把 compose 超时改成可配置]
 
 wt=<absolute-path|missing|none>
 ```
-Refresh the checkpoint after binding/recovery, each task claim, each verification result, each phase transition, and every stop. Keep it factual and concise; do not claim completion until the integration gate is satisfied.
+
+User-facing progress (checkpoint, replies, next-action) must quote the `tasks.md` 任务 text, not a bare `Txx`. Refresh the checkpoint after binding/recovery, each task claim, each verification result, each phase transition, and every stop. Keep it factual and concise; do not claim completion until the integration gate is satisfied.
 
 ## Language-specific preflight
 

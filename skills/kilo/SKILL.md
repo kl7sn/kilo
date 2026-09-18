@@ -126,7 +126,7 @@ Parallel work is legal only for independent tasks in an explicitly recorded wave
 Every advancing reply **ends** with a status block, separated from the body by a blank line. First line: everything except `wt`. Then another blank line (Markdown will otherwise join the two lines into one paragraph). Then `wt=` alone. Do not put this block at the start of the reply.
 
 ```text
-[/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · T04 doing]
+[/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · doing: 把 compose 超时改成可配置]
 
 wt=/absolute/path/to/worktree
 ```
@@ -135,13 +135,16 @@ wt=/absolute/path/to/worktree
 
 Use `design-review: pending|approved|revise|escalate` while an auto design gate is active; use `impl-review: pending|in_triage|re_review|approved|escalated` during implementation review; use `smoke_pending` until human smoke passes.
 
-During execution, do not provide a bare status block only. Place a concise checkpoint in the body, then a blank line, then the two-line status at the very end:
+During execution, do not provide a bare status block only. Place a concise checkpoint in the body, then a blank line, then the two-line status at the very end. **Never show a bare `Txx` to the user** — copy the 任务 cell from `tasks.md` next to the id.
 
 ```text
 绑定：<project>/<line> · 阶段：execute
-进度：T04 done，T05 doing，T06 ready · 下一步：运行 <verification command>
+进度：
+- T04 doing 把 compose 超时改成可配置
+- T05 ready 补超时单测
+下一步：运行 <verification command>
 
-[/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · T04 doing]
+[/kilo · lang=zh · auto=off · line=05-run/05.02-workspace-routing · doing: 把 compose 超时改成可配置]
 
 wt=/absolute/path/to/worktree
 ```
