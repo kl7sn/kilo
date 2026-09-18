@@ -18,7 +18,7 @@
 <p align="center"><strong>给 Coding Agent 用的执行协议。</strong></p>
 
 <p align="center">
-  绑一条 workstream，把状态写在 Markdown 里；没有验证依据不标 <code>done</code>；<br />
+  绑一条线，把状态写在 Markdown 里；没有验证依据不标 <code>done</code>；<br />
   下次从 Handoff 接着做，不用翻旧聊天记录。
 </p>
 
@@ -38,7 +38,7 @@
 多步任务可以中断，也可以接着做：
 
 ```text
-绑定 workstream → explore / plan / execute → 验证 → 交接 → 继续
+绑定这条线 → explore / plan / execute → 验证 → 交接 → 继续
 ```
 
 ![/kilo main flow](docs/images/kilo-readme-main-flow.svg)
@@ -59,22 +59,22 @@ GSD、BMAD、Spec-Kit 这类「托管全流程」的方案能用，但常常喧�
 
 ## 它能干什么
 
-- **三层结构** —— project → workstream → tasks（`tasks.md` 里一行一项）
+- **三层结构** —— project → line（这条线）→ tasks（`tasks.md` 里一行一项）
 - **会话绑定** —— 仓库绑定后必须走 `/kilo`，不能绕过协议改代码
 - **状态文档只由父 `/kilo` 写入** —— subagent 可以改代码（优先用 worktree）
 - **完成须有证据** —— `doing → done` 要在执行日志里留下验证记录
 - **先冻结验收再执行** —— 进入 execute 前先定死通过标准，之后闲聊不能放宽
 - **先实现审核再人工冒烟** —— 只读审核对照 Acceptance，通过后再做人工冒烟
 - **验收与审核分开存放** —— 验收和审核回合写在 `review.md`；`context.md` 只保留状态镜像
-- **项目级知识可继承** —— `project.md` 留稳定事实和已知问题索引；细节仍在原 workstream
-- **任务全完成不等于可以关闭 workstream** —— 还要人工冒烟，并处理 worktree（合并 / 保留 / 清理等）
+- **项目级知识可继承** —— `project.md` 留稳定事实和已知问题索引；细节仍在原 line
+- **任务全完成不等于可以关闭这条线** —— 还要人工冒烟，并处理 worktree（合并 / 保留 / 清理等）
 - **从 Handoff 续跑** —— 读 `context.md` 的 `## Handoff`，不翻旧聊天
 - **`/kilo auto`** —— 可以无人值守推进；设计评审需要双 agent 达成共识；碰到硬停止条件仍会停
 
 ### 绑定规则（必须遵守）
 
-- **一个会话只绑一条 workstream、一个主 worktree** —— 同一会话里不要同时推进多条
-- **先绑定再推进** —— 还没恢复或还没选定 workstream，就不要做 explore / plan / execute
+- **一个会话只绑一条 line、一个主 worktree** —— 同一会话里不要同时推进多条
+- **先绑定再推进** —— 还没恢复或还没选定 line，就不要做 explore / plan / execute
 - **worktree 缺失则停止** —— `worktree_status: missing` 时禁止改代码，也不要退回主工作区凑合
 
 ## 快速开始
@@ -94,13 +94,13 @@ npx skills add kl7sn/kilo --list             # 看包里有什么
 npx skills update                           # 之后更新
 ```
 
-### 2. 指向 Obsidian 库，再新建 workstream
+### 2. 指向 Obsidian 库，再新建一条线
 
 状态文档写在 Obsidian 库里（`KILO_WORKSPACE`，或 `.kilo-state` 的 `workspace:`）。在已绑定的代码仓里：
 
 ```text
 /kilo init demo          # 在库里建项目（做一次即可）
-/kilo new hello          # 在项目下新建 workstream
+/kilo new hello          # 在项目下新建一条线
 ```
 
 `.kilo-state` 在**代码仓**的 git 根目录；`project.md` / `tasks.md` 等落在 Obsidian 库。
@@ -133,7 +133,7 @@ npx skills update                           # 之后更新
 | 命令 | 说明 |
 | --- | --- |
 | `/kilo init` [projectId] | 在库里创建项目 |
-| `/kilo new` [workstreamId] | 创建嵌套 workstream |
+| `/kilo new` [lineId] | 在项目下新建一条线 |
 | `/kilo bind` | 重新绑定当前会话 |
 | `/kilo adopt` [path] | 把已有 git worktree 登记成当前线主树（仅 `missing` / `none` / `pruned`） |
 | `/kilo accept` … | 起草或修订已冻结的验收标准 |
@@ -146,7 +146,7 @@ npx skills update                           # 之后更新
 
 状态分两处存放，不要混用：
 
-- **代码仓（git 根）**：只有 `.kilo-state`——记录绑了哪条 workstream、哪个 worktree。
+- **代码仓（git 根）**：只有 `.kilo-state`——记录绑了哪条 line、哪个 worktree。
 - **Obsidian 库**：全部状态文档（`project.md` / `tasks.md` / `context.md` / `review.md` 等）。`.kilo-state` 的 `workspace:` 指向这里。
 
 ![Two landing places: code repo vs Obsidian vault](docs/images/kilo-readme-two-places.svg)
@@ -159,9 +159,9 @@ npx skills update                           # 之后更新
 <obsidian-vault>/                   # Obsidian 库 = KILO_WORKSPACE
 └── Projects/
     └── 01-demo/                    # 项目  NN-<slug>
-        ├── project.md              # workstream 与 worktree · 稳定事实 · 已知问题索引
-        └── 01.01-hello/            # workstream  NN.MM-<slug>
-            ├── workstream.md
+        ├── project.md              # line 与 worktree · 稳定事实 · 已知问题索引
+        └── 01.01-hello/            # line  NN.MM-<slug>
+            ├── line.md
             ├── tasks.md
             ├── context.md          # Handoff · Gotchas · 关键决策 · 执行日志
             ├── review.md           # Acceptance · ReviewIndex · Claims · ReviewThread
@@ -196,7 +196,7 @@ repo: .
 | ❌ 托管 Agent 平台 | ✅ Markdown workspace + skill 协议 |
 | ❌ 必须天天打开的 Issue 系统 | ✅ 能用 grep 搜的 `tasks.md` |
 | ❌ 通用 skill 入口 | ✅ 只管流程 |
-| ❌ 「看起来没问题」就算完 | ✅ 验证 + 关闭 workstream 前做人工冒烟 |
+| ❌ 「看起来没问题」就算完 | ✅ 验证 + 关闭这条线前做人工冒烟 |
 
 ## 可选 companion
 

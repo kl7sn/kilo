@@ -9,7 +9,7 @@ Public summary of the workflow. Full rules live in `skills/kilo/SKILL.md`.
 ## Model
 
 1. **Project** — `Projects/<NN-slug>/project.md`
-2. **Workstream** — nested `Projects/<NN-slug>/<NN.MM-slug>/` with `workstream.md` + `tasks.md` + `context.md`
+2. **Line** — nested `Projects/<NN-slug>/<NN.MM-slug>/` with `line.md` + `tasks.md` + `context.md`
 3. **Tasks** — rows in `tasks.md` (`todo` / `ready` / `doing` / `blocked` / `done`)
 
 ## Durable state
@@ -27,7 +27,7 @@ Public summary of the workflow. Full rules live in `skills/kilo/SKILL.md`.
 ## Quality
 
 - Done requires verification evidence in `context.md` execution log.
-- **Automated gates** satisfy task `done`; **human smoke** on the worktree satisfies workstream close.
+- **Automated gates** satisfy task `done`; **human smoke** on the worktree satisfies line close.
 - Illegal multiple `doing` (no parallel wave) is a hard block.
 - Independent ready tasks may run in parallel via subagents; **only the parent writes workspace files**. Prefer worktree isolation for code edits.
 
@@ -52,7 +52,7 @@ Public summary of the workflow. Full rules live in `skills/kilo/SKILL.md`.
 
 The frozen pass bar and the rounds that audit it share one file, **`review.md`** (`## Acceptance`, `## ReviewIndex`, `## Claims`, `## ReviewThread`): the reviewer gets a single attachment, and `context.md` stays cheap to reload. Handoff carries only `acceptance_status` / `impl_review_status` mirrors, so gates fire without opening the file; `review.md` is loaded at freeze/revise, during review/triage, or when answering a finding/task history question.
 
-Acceptance is per workstream and versioned. Appending in-scope work (finding fixes, tests) keeps the same `version` but resets an `approved` review to `re_review`; work that widens the deliverable needs an explicit revise (`version+1`) or a new line.
+Acceptance is per line and versioned. Appending in-scope work (finding fixes, tests) keeps the same `version` but resets an `approved` review to `re_review`; work that widens the deliverable needs an explicit revise (`version+1`) or a new line.
 
 ## Inherited project knowledge
 
@@ -67,15 +67,15 @@ Promotion order: mechanize first (test / lint / type / CI beats prose, because a
 
 **Fact drift.** A landed fact is current truth, not settled history; later requirements will contradict it. When a line invalidates an entry it must record the conflict as accountable work, ask the user first if a sibling line is `active`/`smoke_pending` on the old truth, update the entry in place at close, and put the reason in its own `## Key Decisions`. If the invalidated fact was referenced by the frozen Acceptance, the bar is revised (`version+1`) rather than reinterpreted. A line cannot close leaving a known contradiction in `project.md`.
 
-`project.md` also tracks each workstream's worktree path, branch, and state.
+`project.md` also tracks each line's worktree path, branch, and state.
 
-`status: closed` ends the workstream. New durable work must **not** reopen it — `/kilo new` under the parent (or bind another active line). Binding a closed line while needing tasks/decisions/code is an abnormal bind / hard block.
+`status: closed` ends the line. New durable work must **not** reopen it — `/kilo new` under the parent (or bind another active line). Binding a closed line while needing tasks/decisions/code is an abnormal bind / hard block.
 
 ## Comparison
 
 Full table: [README § Comparison](../README.md#comparison). Summary:
 
-- **ai-memory** — cross-session capture & handoff injection; `/kilo` — explicit tasks, verification, workstream close rules. Often used together.
+- **ai-memory** — cross-session capture & handoff injection; `/kilo` — explicit tasks, verification, line close rules. Often used together.
 - **mattpocock/skills** — composable phase toolbox; `/kilo` owns workspace orchestration. Cherry-pick only; no dual `handoff`/`implement`.
 - **GSD / BMAD / Spec-Kit** — own the pipeline; `/kilo` stays a small Markdown + skill protocol with visible hard stops.
 

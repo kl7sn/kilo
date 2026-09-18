@@ -17,13 +17,13 @@ tags:
 
 Project container for `/kilo`. Create with `/kilo init`.
 
-## Workstreams
+## Lines
 
-| Workstream | Notes | Worktree | Branch | State |
+| Line | Notes | Worktree | Branch | State |
 | --- | --- | --- | --- | --- |
 | | | | | |
 
-> Link example: `[[01.01-hello/workstream]]`
+> Link example: `[[01.01-hello/line]]`
 > `State` uses the Handoff enum: `none|active|missing|smoke_pending|ready_to_merge|pruned`
 
 ## Repos
@@ -34,11 +34,11 @@ Project container for `/kilo`. Create with `/kilo init`.
 
 ## Stable Facts
 
-<!-- Long-lived, verifiable facts every workstream needs: build/run commands, directory
+<!-- Long-lived, verifiable facts every line needs: build/run commands, directory
      conventions, quirks of external systems. One line each, optional `check:` command.
      Current truth only: when a later line invalidates an entry, replace it in place and
      record why in that line's ## Key Decisions — no changelog here.
-     Not for transient traps — those stay in the workstream context.md. -->
+     Not for transient traps — those stay in the line context.md. -->
 
 ## Gotcha Index
 

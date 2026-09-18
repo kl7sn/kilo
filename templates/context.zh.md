@@ -2,7 +2,7 @@
 
 - status: open
 - updated: "{{date}}"
-- workstream: "{{parent}}/{{project}}"
+- line: "{{parent}}/{{project}}"
 - parent_project: "{{parent}}"
 - lang: zh
 - auto_mode: false

@@ -23,7 +23,7 @@ tags:
 | --- | --- | --- | --- | --- |
 | | | | | |
 
-> 链接示例：`[[01.01-hello/workstream]]`
+> 链接示例：`[[01.01-hello/line]]`
 > `状态` 用 Handoff 枚举：`none|active|missing|smoke_pending|ready_to_merge|pruned`
 
 ## 仓库

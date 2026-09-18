@@ -1,7 +1,7 @@
 # spec: `/kilo adopt <path>`
 
 Date: 2026-09-17  
-Workstream: 05-run/05.05-koli-continuous-optimization  
+Line: 05-run/05.05-koli-continuous-optimization  
 Status: approved (design-review R2)
 
 ## Goal
@@ -29,14 +29,14 @@ Status: approved (design-review R2)
 
 ## Preconditions (all required)
 
-1. 本会话已绑定一条 open workstream。未绑定 → 走新会话 bind 提示，不 adopt。
+1. 本会话已绑定一条 open line。未绑定 → 走新会话 bind 提示，不 adopt。
 2. Handoff `worktree_status` ∈ `{missing, none, pruned}`。
 3. `<path>` 出现在本仓 `git worktree list --porcelain`（按 path 精确匹配解析后的绝对路径）。
-4. 本仓 `.kilo-state` 里没有任何**其它** workstream 把该 path 当作**当前主目录**。当前主目录 = 该条目 `worktree_status` ∈ `{active, smoke_pending, ready_to_merge}` 且 `worktree_path` 解析后等于 `<path>`。`pruned` / `missing` / `none` 上留下的旧 path **不算**当前主目录，adopt 可以挂走。
+4. 本仓 `.kilo-state` 里没有任何**其它** line 把该 path 当作**当前主目录**。当前主目录 = 该条目 `worktree_status` ∈ `{active, smoke_pending, ready_to_merge}` 且 `worktree_path` 解析后等于 `<path>`。`pruned` / `missing` / `none` 上留下的旧 path **不算**当前主目录，adopt 可以挂走。
 
 ## Effects (success)
 
-Adopt 挂的是**新的主树**，上一棵树的集成状态作废，不得带着旧 smoke/disposition 去关线。
+Adopt 挂的是**新的主树**，上一棵树的集成状态作废，不得带着旧 smoke/disposition 去关闭这条线。
 
 1. Handoff：
    - `worktree_path` = 绝对 path
@@ -70,8 +70,8 @@ Adopt 挂的是**新的主树**，上一棵树的集成状态作废，不得带�
 
 - **missing 提示**第 2 项改为：`/kilo adopt <path>`（用户给出的已有路径）。
 - **orphan 核对**：仅当当前线 status ∈ `{missing, none, pruned}` 时，才把「认领到当前线」说成 `/kilo adopt <path>`。当前线已有 active 主树时，orphan 只能 keep / 授权后 prune / 绑到别的线，不能 adopt 到本线。
-- **集成闸门**：树已 prune、线仍 open 时，下一棵树用 `/kilo adopt <path>`，不必 `/kilo new`。选项 3 仍是新 workstream；adopt 不是新线。
-- **execute 预改代码闸**：任务要改代码且 `worktree_status` ∈ `{none, pruned, missing}` 时，**停下来要求 `/kilo adopt <path>`**（path 已在 `git worktree list`）。禁止把「同一条线接下棵树」做成 `/kilo new`，也禁止 missing 时悄悄用主仓。`/kilo new` 只用于新 workstream。
+- **集成闸门**：树已 prune、线仍 open 时，下一棵树用 `/kilo adopt <path>`，不必 `/kilo new`。选项 3 仍是新 line；adopt 不是新线。
+- **execute 预改代码闸**：任务要改代码且 `worktree_status` ∈ `{none, pruned, missing}` 时，**停下来要求 `/kilo adopt <path>`**（path 已在 `git worktree list`）。禁止把「同一条线接下棵树」做成 `/kilo new`，也禁止 missing 时悄悄用主仓。`/kilo new` 只用于新 line。
 
 ## Files to change (product)
 

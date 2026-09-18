@@ -2,7 +2,7 @@
 
 - status: open
 - updated: 2026-08-21
-- workstream: 01-demo/01.01-hello
+- line: 01-demo/01.01-hello
 - parent_project: 01-demo
 - lang: en
 - auto_mode: false
@@ -24,7 +24,7 @@
 - worktree_status: none
 - smoke_status: pending
 - integration_next: none
-- notes: example workstream
+- notes: example line
 
 ## Gotchas
 
@@ -32,6 +32,6 @@
 
 ## Key Decisions
 
-- 2026-08-21: created example workstream for kl7sn/kilo docs.
+- 2026-08-21: created example line for kl7sn/kilo docs.
 
 ## Execution Log

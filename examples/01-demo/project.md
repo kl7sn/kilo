@@ -13,11 +13,11 @@ tags:
 
 # 01-demo
 
-## Workstreams
+## Lines
 
-| Workstream | Notes | Worktree | Branch | State |
+| Line | Notes | Worktree | Branch | State |
 | --- | --- | --- | --- | --- |
-| [[01.01-hello/workstream]] | Hello workstream | - | - | none |
+| [[01.01-hello/line]] | Hello line | - | - | none |
 
 ## Stable Facts
 

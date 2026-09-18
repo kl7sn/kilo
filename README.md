@@ -18,7 +18,7 @@
 <p align="center"><strong>Durable execution for coding agents.</strong></p>
 
 <p align="center">
-  Bind a workstream, keep state docs in Markdown, no <code>done</code> without evidence,<br />
+  Bind a line, keep state docs in Markdown, no <code>done</code> without evidence,<br />
   and continue from Handoff — not from old chat history.
 </p>
 
@@ -37,7 +37,7 @@
 Multi-step work you can pause and resume:
 
 ```text
-bind workstream → explore / plan / execute → verify → hand off → continue
+bind line → explore / plan / execute → verify → hand off → continue
 ```
 
 ![/kilo main flow](docs/images/kilo-readme-main-flow.svg)
@@ -58,7 +58,7 @@ Full-process frameworks (GSD, BMAD, Spec-Kit, …) can help, but they often take
 
 ## What it does
 
-- **Three layers** — project → workstream → tasks (`tasks.md` rows)
+- **Three layers** — project → line → tasks (`tasks.md` rows)
 - **Sticky session** — once a repo is bound, stay on `/kilo`; no silent ad-hoc edits
 - **Single writer** — only parent `/kilo` updates workspace; subagents may edit code (prefer worktrees)
 - **Verification gate** — `doing → done` needs evidence in the execution log
@@ -66,14 +66,14 @@ Full-process frameworks (GSD, BMAD, Spec-Kit, …) can help, but they often take
 - **Implementation review** — a read-only reviewer checks code against Acceptance before human smoke
 - **Separate review file** — Acceptance + rounds live in `review.md`; `context.md` only mirrors status
 - **Project knowledge** — `project.md` keeps durable facts plus a gotcha *index*; details stay where you learned them
-- **Integration gate** — all tasks `done` ≠ workstream closed; you still need human smoke + worktree disposition
+- **Integration gate** — all tasks `done` ≠ line closed; you still need human smoke + worktree disposition
 - **Handoff** — resume from `## Handoff` in `context.md`, not from old chats
 - **`/kilo auto`** — unattended advance; design reviews need dual-agent consensus; hard-stop conditions still stop
 
 ### Hard binding rules
 
-- **One session ↔ one workstream ↔ one primary worktree** — don't advance multiple workstreams in one session
-- **New sessions must bind first** — restore or pick a workstream before explore / plan / execute
+- **One session ↔ one line ↔ one primary worktree** — don't advance multiple lines in one session
+- **New sessions must bind first** — restore or pick a line before explore / plan / execute
 - **Missing worktree = hard stop** — `worktree_status: missing` blocks code changes; don't fall back to the main checkout
 
 ## Quick start
@@ -93,13 +93,13 @@ npx skills add kl7sn/kilo --list             # see what's in the package
 npx skills update                           # refresh later
 ```
 
-### 2. Point at an Obsidian vault, then create a workstream
+### 2. Point at an Obsidian vault, then create a line
 
 State docs go under the vault (`KILO_WORKSPACE` or `.kilo-state` `workspace:`). From a bound code repo:
 
 ```text
 /kilo init demo          # project container in the vault (once)
-/kilo new hello          # nested workstream under the project
+/kilo new hello          # nested line under the project
 ```
 
 `.kilo-state` lives at the **code repo** git root; `project.md` / `tasks.md` / … land in the vault.
@@ -132,7 +132,7 @@ The entrypoint `skills/kilo/SKILL.md` stays short (under 500 lines). Workspace, 
 | Command | Description |
 | --- | --- |
 | `/kilo init` [projectId] | Create project container in the Obsidian vault |
-| `/kilo new` [workstreamId] | Create nested workstream |
+| `/kilo new` [lineId] | Create nested line |
 | `/kilo bind` | Rebind this session interactively |
 | `/kilo adopt` [path] | Register an existing git worktree as this line's primary (`missing`/`none`/`pruned` only) |
 | `/kilo accept` … | Draft or revise frozen Acceptance |
@@ -145,7 +145,7 @@ The entrypoint `skills/kilo/SKILL.md` stays short (under 500 lines). Workspace, 
 
 State lands in two places — don't mix them:
 
-- **Code repo (git root):** only `.kilo-state` — which workstream / worktree this session is bound to.
+- **Code repo (git root):** only `.kilo-state` — which line / worktree this session is bound to.
 - **Obsidian vault:** all state docs (`project.md` / `tasks.md` / `context.md` / `review.md`, …). `.kilo-state` `workspace:` points here.
 
 ![Two landing places: code repo vs Obsidian vault](docs/images/kilo-readme-two-places.svg)
@@ -158,9 +158,9 @@ Resolution order: `.kilo-state` → legacy `.run-state` → `KILO_WORKSPACE` →
 <obsidian-vault>/                   # Obsidian vault = KILO_WORKSPACE
 └── Projects/
     └── 01-demo/                    # project  NN-<slug>
-        ├── project.md              # workstreams+worktrees · Stable Facts · Gotcha Index
-        └── 01.01-hello/            # workstream  NN.MM-<slug>
-            ├── workstream.md
+        ├── project.md              # lines+worktrees · Stable Facts · Gotcha Index
+        └── 01.01-hello/            # line  NN.MM-<slug>
+            ├── line.md
             ├── tasks.md
             ├── context.md          # Handoff · Gotchas · Key Decisions · Execution Log
             ├── review.md           # Acceptance · ReviewIndex · Claims · ReviewThread

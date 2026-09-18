@@ -18,16 +18,16 @@ smoke_status: pending | passed | waived-by-user
 integration_next: none | merge | pr | keep-branch | prune
 worktree_git_status: clean | dirty | unknown | not-applicable
 commit_status: committed | uncommitted | unknown | not-applicable | merged
-binding_decision: pending | continue-current | bind-existing | new-workstream
+binding_decision: pending | continue-current | bind-existing | new-line
 impl_review_status: none | pending | in_triage | re_review | approved | escalated
 acceptance_status: missing | draft | frozen
 ```
 
-Never encode compound or free-form values in these fields. Automated smoke belongs in `notes` or the execution log.
+Never encode compound or free-form values in these fields. Automated smoke belongs in `notes` or the execution log. Read `binding_decision: new-workstream` as `new-line`.
 
 `worktree_git_status`, `commit_status`, and `binding_decision` are durable decision fields, not prose. `commit_status: uncommitted` blocks close. Keep `binding_decision` values as listed; `binding_decision: pending` blocks add-task and mutation for fit drift, missing worktree, and new-session unbound cases.
 
-`impl_review_status: none` is for docs-only lines. Code workstreams use the other values per [execute.md](execute.md) implementation review gate. `acceptance_status` mirrors `review.md` `## Acceptance.status` so gates can fire without opening that file; `review.md` remains authoritative.
+`impl_review_status: none` is for docs-only lines. Code lines use the other values per [execute.md](execute.md) implementation review gate. `acceptance_status` mirrors `review.md` `## Acceptance.status` so gates can fire without opening that file; `review.md` remains authoritative.
 
 ## Acceptance and review file
 
@@ -116,7 +116,7 @@ Rules: reviewer rounds only append findings; implementer rounds only set disposi
 
 ## Inherited project knowledge
 
-Project level stores **facts and pointers, never copies**. Full gotcha text stays in the workstream that learned it.
+Project level stores **facts and pointers, never copies**. Full gotcha text stays in the line that learned it.
 
 | Location | Holds | Read when |
 |---|---|---|
@@ -145,7 +145,7 @@ A landed fact is only "current truth", not settled history. Later lines change r
 When explore/plan finds that this line will change or invalidate a project-level fact or index conclusion:
 
 1. **Do not route around it.** Record the conflict as a task row (or an explicit plan decision naming the entry), so the update is accounted for instead of remembered.
-2. **Check who is mid-flight.** If any sibling row in the workstreams table is `active` or `smoke_pending`, that line may be building on the old fact — surface the conflict and ask the user before changing shared truth.
+2. **Check who is mid-flight.** If any sibling row in the lines table is `active` or `smoke_pending`, that line may be building on the old fact — surface the conflict and ask the user before changing shared truth.
 3. **Update in place at close.** Replace the entry with the new current value and re-tag its origin line. `## Stable Facts` and `## Gotcha Index` hold only what is true now; do not accumulate a changelog there.
 4. **Put the history where history lives.** Why it changed (old → new, trigger) goes into this line's `context.md` `## Key Decisions`.
 5. **Check Acceptance.** If the invalidated fact is referenced by this line's `spec_anchors` or `constraints`, the frozen bar no longer describes reality: revise Acceptance explicitly (`version+1`) rather than reinterpreting it.
@@ -154,12 +154,12 @@ An index conclusion that this line disproved must be rewritten or deleted in the
 
 A fact entry may carry an optional `check:` (command or path) that makes it cheaply falsifiable. Verify it only when that fact bears on the current task; a `check:` that now fails is a drift signal, not a blocker to work around.
 
-`project.md` also tracks each workstream's worktree (`Worktree`, `Branch`, `State` columns) using the Handoff enums, so sibling lines with an `active` or `smoke_pending` worktree are visible without opening every `context.md`. The parent refreshes those cells on `/kilo new`, at the integration gate, and on disposition.
+`project.md` also tracks each line's worktree (`Worktree`, `Branch`, `State` columns) using the Handoff enums, so sibling lines with an `active` or `smoke_pending` worktree are visible without opening every `context.md`. The parent refreshes those cells on `/kilo new`, at the integration gate, and on disposition.
 
 ### Acceptance freeze prompt
 
 ```text
-请确认本 workstream 验收标准（确认后冻结，开发闲聊不再改）：
+请确认本条线的验收标准（确认后冻结，开发闲聊不再改）：
 1. 对照：<spec path / sheet>
 2. 约束：<constraints>
 3. 通过线：<pass_bar>；测试全绿不算通过
@@ -189,7 +189,7 @@ When all task rows are done, tests are fresh, **impl-review is approved** (code 
 请确认：
 1. 当前 worktree 已完成，并提供人工 smoke + integration disposition；
 2. 继续当前 worktree；或
-3. 新建 worktree/workstream 后再继续。
+3. 新建 worktree/line 后再继续。
 树已 prune、线仍 open 时，下一棵树用 `/kilo adopt <path>`，不必 `/kilo new`。
 ```
 
@@ -197,26 +197,26 @@ The prompt is a hard integration gate. `ready_to_merge` means technically ready,
 
 ## Binding and code-management prompts
 
-New session unbound — no restored workstream binding yet:
+New session unbound — no restored line binding yet:
 
 ```text
-新会话尚未绑定 workstream。
+新会话尚未绑定这条线。
 请选择：
-1. `/kilo bind` — 绑定已有 active workstream（并校验其 worktree）
-2. `/kilo new <name>` — 新建 workstream + 对应 worktree
+1. `/kilo bind` — 绑定已有 active 的线（并校验其 worktree）
+2. `/kilo new <name>` — 新建一条线 + 对应 worktree
 未绑定前不会恢复或改代码。
 ```
 
 Non-continuation / pile-up risk — request does not clearly continue the bound line:
 
 ```text
-当前绑定：<project>/<workstream> · worktree：<path|missing>
+当前绑定：<project>/<line> · worktree：<path|missing>
 当前任务：<doing/ready 摘要>
 本次请求不像续做上述任务。
 请确认：
 1. 仍属当前线：说明对应哪个任务后继续
-2. 关闭当前 workstream（先走 integration/smoke/disposition）再 `/kilo new <name>`
-3. `/kilo bind` 到其它 active workstream
+2. 关闭当前这条线（先走 integration/smoke/disposition）再 `/kilo new <name>`
+3. `/kilo bind` 到其它还开着的线
 ```
 
 Missing worktree — Handoff path/branch not present in `git worktree list`:
@@ -236,7 +236,7 @@ When git reports uncommitted changes at integration, use this prompt:
 当前 worktree：<path> · git：dirty · commit：uncommitted
 请确认：
 1. 提交当前变更（先审查 diff，再 commit）
-2. 保留当前分支，暂不提交（workstream 保持 open）
+2. 保留当前分支，暂不提交（这条线保持 open）
 3. 继续当前任务，但先记录这些变更的归属
 ```
 
@@ -246,7 +246,7 @@ Never turn a dirty tree into `ready_to_merge` or `closed` without explicit handl
 
 Treat these as **explicit smoke waiver** when tasks are done and integration disposition is already set (`merge` / `pr` / `keep-branch` / `prune`):
 
-- 「可以关闭了」「关掉这条线」「close the workstream」「关闭 workstream」
+- 「可以关闭了」「关掉这条线」「close the line」「关闭这条线」
 
 Set `smoke_status: waived-by-user`, `status: closed`, `auto_mode: false`, and record the waiver in the execution log. Do not invent a passed smoke. If disposition is still unset, ask for disposition before closing.
 
@@ -283,7 +283,7 @@ auto_mode: true | false
 
 Use `verification-before-completion` before every `doing → done`. Evidence must be fresh in the same turn; tests, lint, or build output are not a substitute for user smoke at the integration gate.
 
-Parent-chain self-review (`review_status`) is **not** a substitute for the implementation review gate (`impl_review_status` + `review.md`). Self-review cannot approve smoke entry alone on code workstreams.
+Parent-chain self-review (`review_status`) is **not** a substitute for the implementation review gate (`impl_review_status` + `review.md`). Self-review cannot approve smoke entry alone on code lines.
 
 ## Hard blocks
 
@@ -292,19 +292,19 @@ Stop and ask/escalate for:
 - new-session unbound (no bind/new yet — no restore or code mutation)
 - worktree-missing (`worktree_status: missing` unresolved)
 - `/kilo adopt` when `worktree_status` is `active` / `smoke_pending` / `ready_to_merge`, or when `<path>` is not in this repo's `git worktree list`, or when `<path>` is another line's current primary
-- sole-active silent bind (forbidden — never auto-bind the only active workstream without explicit `/kilo bind` / user choice)
+- sole-active silent bind (forbidden — never auto-bind the only active line without explicit `/kilo bind` / user choice)
 - mutation outside primary worktree
-- Acceptance not frozen on a code workstream when entering execute, `/kilo review`, or smoke/close
+- Acceptance not frozen on a code line when entering execute, `/kilo review`, or smoke/close
 - unresolved review blockers in `review.md` (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
 - Acceptance or review rounds inlined into `context.md` instead of `review.md`
 - gotcha text copied into `project.md` instead of a pointer, or a mechanizable constraint written as prose without attempting the test/lint route
 - a known conflict with a project-level fact or index conclusion left unrecorded and unresolved at close (silent divergence), or shared truth rewritten while a sibling line is `active`/`smoke_pending` without asking the user
 - tasks added or reopened after `impl_review_status: approved` without resetting to `re_review`
 - an appended task that widens the deliverable beyond the frozen Acceptance, without an explicit revise or `/kilo new`
-- cross-repo confirmation, true product forks, irreversible operations, state contradiction, recover anomaly, bind ambiguity, missing workstream parent, unbound mutation, parallel merge conflict, subagent workspace writes, unresolved workspace, or premature close
+- cross-repo confirmation, true product forks, irreversible operations, state contradiction, recover anomaly, bind ambiguity, missing line parent, unbound mutation, parallel merge conflict, subagent workspace writes, unresolved workspace, or premature close
 
 Ordinary test failures are revise-and-fix conditions.
 
 ## Companion boundaries
 
-Companions provide phase discipline only. They do not own a second workflow, write workspace state, skip task accounting, or close workstreams. The parent `/kilo` remains the sole writer for `.kilo-state`, `tasks.md`, `context.md`, and `review.md`.
+Companions provide phase discipline only. They do not own a second workflow, write workspace state, skip task accounting, or close lines. The parent `/kilo` remains the sole writer for `.kilo-state`, `tasks.md`, `context.md`, and `review.md`.

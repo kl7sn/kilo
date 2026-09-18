@@ -1,6 +1,6 @@
 ---
 title: "{{title}}"
-type: workstream
+type: line
 parent: "{{parent}}"
 project: "{{project}}"
 status: active
@@ -11,7 +11,7 @@ repos: []
 lang: "{{lang}}"
 updated: "{{date}}"
 tags:
-  - workstream
+  - line
 ---
 
 # {{title}}

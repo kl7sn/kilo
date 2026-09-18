@@ -1,6 +1,6 @@
 # /kilo auto protocol
 
-`/kilo auto` sets Handoff `auto_mode: true` and keeps ready tasks flowing in one bound workstream. It never bypasses workspace accounting, verification, hard stops, Acceptance freeze, implementation review, or integration gates.
+`/kilo auto` sets Handoff `auto_mode: true` and keeps ready tasks flowing in one bound line. It never bypasses workspace accounting, verification, hard stops, Acceptance freeze, implementation review, or integration gates.
 
 ## Design gates
 
@@ -22,7 +22,7 @@ summary: "one line"
 
 Never ask the user to “confirm” or “continue” to unlock an ordinary design gate in auto mode.
 
-On design `approve`, write or refresh `review.md` `## Acceptance` from the approved success criteria and set `status: frozen` (auto may freeze without a human echo). Proceed to execute only after Acceptance is frozen on code workstreams. Auto may not widen a frozen bar on its own: work beyond it is a revise that needs the user, or a `/kilo new` line.
+On design `approve`, write or refresh `review.md` `## Acceptance` from the approved success criteria and set `status: frozen` (auto may freeze without a human echo). Proceed to execute only after Acceptance is frozen on code lines. Auto may not widen a frozen bar on its own: work beyond it is a revise that needs the user, or a `/kilo new` line.
 
 ## Implementation review gates
 

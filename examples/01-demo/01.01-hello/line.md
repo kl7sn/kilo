@@ -1,15 +1,15 @@
 ---
 title: "01.01-hello"
-type: workstream
+type: line
 parent: "01-demo"
 project: "01.01-hello"
 status: active
 next: "[[tasks]]"
-summary: "Example workstream"
+summary: "Example line"
 lang: en
 updated: "2026-08-21"
 tags:
-  - workstream
+  - line
 ---
 
 # 01.01-hello

@@ -4,7 +4,7 @@
 
 - Missing or incomplete design → explore and write `spec.md`. `spec.md` is the input contract (target state the review compares against), not a running log; evidence goes to `## Execution Log`. Read `project.md` `## Stable Facts` and `## Gotcha Index` first, and follow an index pointer only when its topic touches this line, so a sibling's trap is not rediscovered without reading everything it wrote. If this line's design contradicts one of those entries, record the conflict now per the fact-drift rules in [reference.md](reference.md); never route around a stale entry silently.
 - Design exists and all task rows are todo → plan and create an acyclic task table with at least one ready row.
-- Plan complete / about to enter execute → **Acceptance freeze gate** (code workstreams).
+- Plan complete / about to enter execute → **Acceptance freeze gate** (code lines).
 - Ready rows and Acceptance frozen (or docs-only) → execute.
 - Blocked only → report blockers.
 - All rows done → **implementation review gate**, then integration gate; do not auto-close.
@@ -12,9 +12,9 @@
 
 ## Acceptance freeze gate
 
-Code workstreams (`worktree_status` not `none`) must freeze acceptance **before the first execute mutation**. Do not mine the chat transcript for acceptance after the fact.
+Code lines (`worktree_status` not `none`) must freeze acceptance **before the first execute mutation**. Do not mine the chat transcript for acceptance after the fact.
 
-`## Acceptance` lives in the workstream `review.md`, next to the rounds that audit it; create that file at the first draft. Handoff keeps only the `acceptance_status` mirror.
+`## Acceptance` lives in the line `review.md`, next to the rounds that audit it; create that file at the first draft. Handoff keeps only the `acceptance_status` mirror.
 
 ### Capture moments
 
@@ -31,7 +31,7 @@ Code workstreams (`worktree_status` not `none`) must freeze acceptance **before 
 ### Freeze prompt
 
 ```text
-请确认本 workstream 验收标准（确认后冻结，开发闲聊不再改）：
+请确认本条线的验收标准（确认后冻结，开发闲聊不再改）：
 1. 对照：<spec path / sheet>
 2. 约束：<e.g. slaveId=22>
 3. 通过线：<human pass bar；测试全绿不算通过>
@@ -57,19 +57,19 @@ constraints: []
 pass_bar: "<one line>"
 ```
 
-Hard-stop execute mutation, `/kilo review`, and smoke/close when Acceptance is `missing` or `draft` on a code workstream. Softening `user_prompt` after freeze is forbidden; reopen via explicit revise only.
+Hard-stop execute mutation, `/kilo review`, and smoke/close when Acceptance is `missing` or `draft` on a code line. Softening `user_prompt` after freeze is forbidden; reopen via explicit revise only.
 
 Optional implementer self-attestations (`## Claims` in `review.md`) may support Acceptance but must not replace it.
 
 ### Appended tasks vs a frozen Acceptance
 
-Acceptance is per workstream, not per task, so appending work does **not** mint a new Acceptance by default:
+Acceptance is per line, not per task, so appending work does **not** mint a new Acceptance by default:
 
 | Appended work | Acceptance | Review |
 |---|---|---|
 | Fixing a finding, adding tests/docs, refactor inside the same deliverable | unchanged, same `version` | reset `impl_review_status` to `re_review`; re-audit against the same bar |
 | New capability or deliverable beyond the frozen bar, still this line | explicit revise: `draft` → bump `version` → re-freeze | new review cycle against the new `version` |
-| New capability that is really a different line | untouched | `/kilo new` under the parent (strict workstream fit) |
+| New capability that is really a different line | untouched | `/kilo new` under the parent (strict line fit) |
 
 Any task added or reopened after `impl_review_status: approved` invalidates that approval — set `re_review` in the same turn. An approval recorded against `acceptance_version: 1` never covers `version: 2`.
 
@@ -77,8 +77,8 @@ Any task added or reopened after `impl_review_status: approved` invalidates that
 
 Before mutation-accounting preflight, adding a task row, or any external mutation:
 
-1. **Primary worktree must be usable.** If `worktree_status` is `missing`, hard-stop with the missing-worktree prompt from [reference.md](reference.md); never fall back to the main checkout. If the task touches code/config and `worktree_status` ∈ `{none, pruned, missing}`, stop and register a primary that already exists in `git worktree list` via `/kilo adopt <path>`. Do **not** implement same-line reattach as `/kilo new`. `/kilo new` is only for a new workstream. Code mutations require an `active` (or later integration) primary worktree path—not `missing`, `pruned`, or docs-only `none`.
-2. **Strict workstream-fit.** Non-continuation requests must not add a task row or mutate. Set `binding_decision: pending`, emit the non-continuation prompt from [reference.md](reference.md), and stop for continue-current / `/kilo bind` / `/kilo new <name>`.
+1. **Primary worktree must be usable.** If `worktree_status` is `missing`, hard-stop with the missing-worktree prompt from [reference.md](reference.md); never fall back to the main checkout. If the task touches code/config and `worktree_status` ∈ `{none, pruned, missing}`, stop and register a primary that already exists in `git worktree list` via `/kilo adopt <path>`. Do **not** implement same-line reattach as `/kilo new`. `/kilo new` is only for a new line. Code mutations require an `active` (or later integration) primary worktree path—not `missing`, `pruned`, or docs-only `none`.
+2. **Strict line-fit.** Non-continuation requests must not add a task row or mutate. Set `binding_decision: pending`, emit the non-continuation prompt from [reference.md](reference.md), and stop for continue-current / `/kilo bind` / `/kilo new <name>`.
 
 ### Continuation check
 
@@ -105,8 +105,8 @@ If any check fails, stop and repair accounting before mutating. A later `recover
 Every advancing turn reports state without waiting for a user prompt. Emit a compact status line plus one checkpoint. The status line **must** include `wt=<short-path|missing|none>` for the primary worktree; omit `dirty`, `branch`, and `primary=` from the compact line.
 
 ```text
-[/kilo · lang=<lang> · auto=<on|off> · <project>/<workstream> · wt=<short-path|missing|none> · <task state>]
-绑定：<project>/<workstream> · 阶段：<explore|plan|execute> · wt：<short-path|missing|none> · 进度：<done/doing/ready> · 下一步：<one action>
+[/kilo · lang=<lang> · auto=<on|off> · <project>/<line> · wt=<short-path|missing|none> · <task state>]
+绑定：<project>/<line> · 阶段：<explore|plan|execute> · wt：<short-path|missing|none> · 进度：<done/doing/ready> · 下一步：<one action>
 ```
 Refresh the checkpoint after binding/recovery, each task claim, each verification result, each phase transition, and every stop. Keep it factual and concise; do not claim completion until the integration gate is satisfied.
 
@@ -140,15 +140,15 @@ When useful, append a falsifiable entry to `review.md` `## Claims` (task id, cla
 
 ## Implementation review gate
 
-For code workstreams, after all tasks are `done` with fresh evidence (or on `/kilo review`), run an adversarial review **before** the human smoke prompt. Docs-only lines (`worktree_status: none`) skip this gate.
+For code lines, after all tasks are `done` with fresh evidence (or on `/kilo review`), run an adversarial review **before** the human smoke prompt. Docs-only lines (`worktree_status: none`) skip this gate.
 
-Parent is the sole writer of workspace files. Cross-agent review state lives in the workstream `review.md` — never ask the user to copy-paste long reports between agents.
+Parent is the sole writer of workspace files. Cross-agent review state lives in the line `review.md` — never ask the user to copy-paste long reports between agents.
 
 ### Review file separation
 
 Acceptance plus rounds are the audit contract and its history; they grow every cycle, so they do **not** live in `context.md`.
 
-- `review.md` (same workstream folder) holds `## Acceptance`, `## ReviewIndex`, `## Claims`, and `## ReviewThread` rounds.
+- `review.md` (same line folder) holds `## Acceptance`, `## ReviewIndex`, `## Claims`, and `## ReviewThread` rounds.
 - `context.md` gets no pointer block. Handoff `acceptance_status` and `impl_review_status` are the cheap signals; never inline Acceptance text, round bodies, findings prose, or reviewer reports into `context.md`.
 - Open `review.md` when a freeze/revise is due, when `impl_review_status` is `pending|in_triage|re_review`, when `/kilo review` runs, or when the user asks about a finding or a task's review history. Prefer Acceptance + index + rounds still `open`/`fixed`, not the whole file.
 - If a Handoff mirror and `review.md` disagree, `review.md` wins; refresh the mirror instead of editing history.
@@ -227,14 +227,14 @@ Otherwise stay in review/triage; do not present the smoke disposition prompt as 
 
 ## Integration gate
 
-Automated tests and impl-review satisfy machine gates but cannot close a workstream. Closing requires:
+Automated tests and impl-review satisfy machine gates but cannot close a line. Closing requires:
 
 1. Every task done with evidence.
-2. Implementation review gate passed (`impl_review_status: approved`) on code workstreams.
+2. Implementation review gate passed (`impl_review_status: approved`) on code lines.
 3. User-confirmed smoke (`passed`) or explicit waiver (`waived-by-user`).
 4. `integration_next` set to `merge`, `pr`, `keep-branch`, or `prune`.
 5. Any worktree disposition executed or explicitly deferred with `keep-branch`.
-6. The `project.md` workstream row refreshed (`Worktree` / `Branch` / `State`). For anything learned that reaches sibling lines, run the promotion order in [reference.md](reference.md): mechanize first, else one `## Stable Facts` line or one `## Gotcha Index` pointer. Decisions stay line-local.
+6. The `project.md` line row refreshed (`Worktree` / `Branch` / `State`). For anything learned that reaches sibling lines, run the promotion order in [reference.md](reference.md): mechanize first, else one `## Stable Facts` line or one `## Gotcha Index` pointer. Decisions stay line-local.
 7. Every project-level fact or index conclusion this line invalidated is updated in place to the new current truth, with the reason recorded in `## Key Decisions`. A line may not close while leaving a contradiction behind.
 
 Until then keep Handoff open with `smoke_status: pending` and, when applicable, `worktree_status: smoke_pending`.
@@ -243,7 +243,7 @@ After impl-review is approved, proactively inspect the worktree rather than wait
 
 1. finish the current worktree (then provide smoke evidence and choose `merge`, `pr`, `keep-branch`, or `prune`);
 2. continue with another task in the current worktree; or
-3. create a new worktree/workstream before further mutations.
+3. create a new worktree/line before further mutations.
 
 If the tree is already `pruned` and the line is still open, the next tree on this line is `/kilo adopt <path>` — not `/kilo new`.
 
