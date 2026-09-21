@@ -112,6 +112,13 @@ npx skills update                           # 之后更新
 /kilo auto               # 无人值守（硬停止条件仍然生效）
 ```
 
+只读看板（不编辑、不上 Electron）：
+
+```bash
+python3 view/serve.py --root "$KILO_WORKSPACE"
+# 打开 http://127.0.0.1:8765
+```
+
 每次推进时，回复**末尾**空一行，再出状态行，再空一行，再单独写 `wt`（Markdown 否则会把两行收成一段）：
 
 ```text
