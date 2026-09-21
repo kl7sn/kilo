@@ -111,11 +111,14 @@ State docs go under the vault (`KILO_WORKSPACE` or `.kilo-state` `workspace:`). 
 /kilo auto               # unattended (hard stops still apply)
 ```
 
-Read-only workspace board (no editor, no Electron):
+Read-only workspace board (no editor). Browser or a native window:
 
 ```bash
 python3 view/serve.py --root "$KILO_WORKSPACE"
 # open http://127.0.0.1:8765
+
+pip install -r view/requirements.txt
+python3 view/app.py --root "$KILO_WORKSPACE"
 ```
 
 Every advancing reply ends with a blank line, then the status line, then another blank line, then `wt` alone (Markdown otherwise joins them):
