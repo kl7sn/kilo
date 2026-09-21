@@ -49,6 +49,8 @@ Status: settled
 2. 等人选范围后再改文件。  
 3. `/kilo auto` 不得新建 skill；最多拟 1/2 的补丁仍须可回滚的短写入。本线实现里 auto 对 3 硬停。
 
+一条线 **impl-review 通过、进入冒烟/处置闸** 时，同一回合自动跑分类（只列出，不写入）。不要每轮 recover、不要任务还在 doing 时跑。
+
 ## Layout
 
 ```text
@@ -73,3 +75,4 @@ Read order: `Projects/_facts.md`（若存在）→ `project.md` 两节 → 当�
 - `ops.md` 为可选；Gotcha Index 示例指向 ops/context，不指向 spec。
 - `Projects/_facts.md` 出现在 layout 与 recover。
 - README 中英各有一行命令说明。
+- 线完成进入冒烟闸时协议要求自动列出 `/kilo up`，并写明不自动写入。

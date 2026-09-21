@@ -247,7 +247,7 @@ Automated tests and impl-review satisfy machine gates but cannot close a line. C
 
 Until then keep Handoff open with `smoke_status: pending` and, when applicable, `worktree_status: smoke_pending`.
 
-After impl-review is approved, proactively inspect the worktree rather than waiting for a status question. If completion, smoke, or disposition is not explicit, ask the user whether to:
+After impl-review is approved, run `/kilo up` **classification only** (list levels 1/2/3, no writes) in the same turn as the smoke/disposition prompt. Then inspect the worktree rather than waiting for a status question. If completion, smoke, or disposition is not explicit, ask the user whether to:
 
 1. finish the current worktree (then provide smoke evidence and choose `merge`, `pr`, `keep-branch`, or `prune`);
 2. continue with another task in the current worktree; or

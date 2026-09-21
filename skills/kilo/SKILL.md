@@ -152,7 +152,7 @@ wt=/absolute/path/to/worktree
 
 For session bind, non-continuation fit, and missing-worktree stops, use the three standard prompts in [reference.md](protocols/reference.md) **Binding and code-management prompts** (new-session, non-continuation, missing). Do not invent alternate wording.
 
-At the integration gate (only after impl-review is approved on code lines), proactively present one decision prompt when the current worktree is not explicitly complete:
+At the integration gate (only after impl-review is approved on code lines), first list `/kilo up` findings (no writes), then proactively present one decision prompt when the current worktree is not explicitly complete:
 
 ```text
 当前任务已完成，自动验证与实现审核已通过；worktree 仍为 <status>。

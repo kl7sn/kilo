@@ -126,6 +126,12 @@ Never write secrets, tokens, or AK/SK into any of these files.
 2. Wait for the user to pick a scope, then write.
 3. `/kilo auto` must not create a new skill. It may propose level 1/2 patches but still stops before a new skill file.
 
+### Auto-list when a line completes
+
+When impl-review is `approved` and the integration/smoke prompt is shown (all tasks done; the line is complete from the agent's side), **run this classification in the same turn** — list only, no writes. Same three levels and the same "wait for scope" rule. Do not skip it because the user did not type `/kilo up`.
+
+Do **not** auto-list on every recover, every chat turn, or while tasks are still `doing`. Do **not** auto-write `project.md`, `_facts.md`, `ops.md`, or a skill. If every level is empty, say so in one line and continue to the smoke prompt.
+
 ### Failures (stop, no writes)
 
 | Condition | Action |
