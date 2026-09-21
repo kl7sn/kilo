@@ -12,12 +12,22 @@
     <span class="pill">只读</span>
   </header>
   <div class="shell">
-    <aside id="nav">
-      <div class="nav-label" id="nav-label">Workspace</div>
-      <div id="tree">加载中…</div>
-    </aside>
+    <div class="miller">
+      <section class="col">
+        <div class="nav-label">Workspace</div>
+        <div id="col-workspace" class="col-body"></div>
+      </section>
+      <section class="col">
+        <div class="nav-label">Project</div>
+        <div id="col-project" class="col-body"></div>
+      </section>
+      <section class="col">
+        <div class="nav-label">Line</div>
+        <div id="col-line" class="col-body"></div>
+      </section>
+    </div>
     <main>
-      <div id="crumb" class="muted">选择左侧文件</div>
+      <div id="crumb" class="muted">选择 project</div>
       <iframe id="doc" title="markdown"></iframe>
     </main>
   </div>

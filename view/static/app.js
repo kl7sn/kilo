@@ -1,10 +1,11 @@
-const treeEl = document.getElementById("tree");
-const labelEl = document.getElementById("nav-label");
+const wsEl = document.getElementById("col-workspace");
+const projEl = document.getElementById("col-project");
+const lineEl = document.getElementById("col-line");
 const docEl = document.getElementById("doc");
 const crumbEl = document.getElementById("crumb");
 
 let catalog = { root: "", projects: [] };
-let loc = { level: "workspace", projectId: "", lineId: "", file: "" };
+let loc = { projectId: "", lineId: "", file: "" };
 
 function projectById(id) {
   return catalog.projects.find((p) => p.id === id);
@@ -14,12 +15,19 @@ function lineById(proj, id) {
   return proj && proj.lines.find((l) => l.id === id);
 }
 
-function row(text, { active, muted, onClick } = {}) {
+function row(text, { active, onClick } = {}) {
   const b = document.createElement("button");
-  b.className = "row" + (active ? " active" : "") + (muted ? " muted-row" : "");
+  b.className = "row" + (active ? " active" : "");
   b.textContent = text;
   if (onClick) b.onclick = onClick;
   return b;
+}
+
+function empty(text) {
+  const d = document.createElement("div");
+  d.className = "col-empty";
+  d.textContent = text;
+  return d;
 }
 
 function renderCrumb() {
@@ -37,9 +45,9 @@ function renderCrumb() {
     b.onclick = fn;
     crumbEl.appendChild(b);
   };
-  add("workspace", () => goWorkspace());
-  if (loc.projectId) add(loc.projectId, () => goProject(loc.projectId));
-  if (loc.lineId) add(loc.lineId, () => goLine(loc.projectId, loc.lineId));
+  add("workspace", () => selectProject(""));
+  if (loc.projectId) add(loc.projectId, () => selectProject(loc.projectId));
+  if (loc.lineId) add(loc.lineId, () => selectLine(loc.projectId, loc.lineId));
   if (loc.file) {
     const sep = document.createElement("span");
     sep.className = "sep";
@@ -51,50 +59,58 @@ function renderCrumb() {
   }
 }
 
-function renderNav() {
-  treeEl.innerHTML = "";
-  if (loc.level === "workspace") {
-    labelEl.textContent = "Workspace";
-    if (!catalog.projects.length) {
-      treeEl.textContent = "未找到 Projects/";
-      return;
-    }
-    for (const proj of catalog.projects) {
-      treeEl.appendChild(
-        row(proj.id, {
-          active: loc.projectId === proj.id && !loc.lineId,
-          onClick: () => goProject(proj.id),
-        })
-      );
-    }
+function fillWorkspace() {
+  wsEl.innerHTML = "";
+  if (!catalog.projects.length) {
+    wsEl.appendChild(empty("未找到 Projects/"));
     return;
   }
-  if (loc.level === "project") {
-    const proj = projectById(loc.projectId);
-    labelEl.textContent = "Project";
-    treeEl.appendChild(row("← workspace", { muted: true, onClick: () => goWorkspace() }));
-    treeEl.appendChild(
-      row("project.md", {
-        active: loc.file === proj.path,
-        onClick: () => openFile(proj.path),
+  for (const proj of catalog.projects) {
+    wsEl.appendChild(
+      row(proj.id, {
+        active: loc.projectId === proj.id,
+        onClick: () => selectProject(proj.id),
       })
     );
-    for (const line of proj.lines) {
-      treeEl.appendChild(
-        row(line.id, {
-          active: loc.lineId === line.id,
-          onClick: () => goLine(proj.id, line.id),
-        })
-      );
-    }
+  }
+}
+
+function fillProject() {
+  projEl.innerHTML = "";
+  const proj = projectById(loc.projectId);
+  if (!proj) {
+    projEl.appendChild(empty("选择 project"));
     return;
   }
+  projEl.appendChild(
+    row("project.md", {
+      active: loc.file === proj.path && !loc.lineId,
+      onClick: () => {
+        loc.lineId = "";
+        openFile(proj.path);
+      },
+    })
+  );
+  for (const line of proj.lines) {
+    projEl.appendChild(
+      row(line.id, {
+        active: loc.lineId === line.id,
+        onClick: () => selectLine(proj.id, line.id),
+      })
+    );
+  }
+}
+
+function fillLine() {
+  lineEl.innerHTML = "";
   const proj = projectById(loc.projectId);
   const line = lineById(proj, loc.lineId);
-  labelEl.textContent = "Line";
-  treeEl.appendChild(row("← " + proj.id, { muted: true, onClick: () => goProject(proj.id) }));
+  if (!line) {
+    lineEl.appendChild(empty("选择 line"));
+    return;
+  }
   for (const f of line.files) {
-    treeEl.appendChild(
+    lineEl.appendChild(
       row(f.name, {
         active: loc.file === f.path,
         onClick: () => openFile(f.path),
@@ -103,47 +119,44 @@ function renderNav() {
   }
 }
 
-function goWorkspace() {
-  loc = { level: "workspace", projectId: "", lineId: "", file: "" };
-  docEl.removeAttribute("src");
-  renderNav();
-  renderCrumb();
-}
-
-function goProject(id) {
+function selectProject(id) {
+  if (!id) {
+    loc = { projectId: "", lineId: "", file: "" };
+    docEl.removeAttribute("src");
+    paint();
+    return;
+  }
   const proj = projectById(id);
-  loc = { level: "project", projectId: id, lineId: "", file: proj.path };
+  loc = { projectId: id, lineId: "", file: proj.path };
   openFile(proj.path);
-  renderNav();
-  renderCrumb();
 }
 
-function goLine(projectId, lineId) {
+function selectLine(projectId, lineId) {
   const proj = projectById(projectId);
   const line = lineById(proj, lineId);
   const first = line.files[0];
-  loc = {
-    level: "line",
-    projectId,
-    lineId,
-    file: first ? first.path : "",
-  };
+  loc = { projectId, lineId, file: first ? first.path : "" };
   if (first) openFile(first.path);
-  renderNav();
-  renderCrumb();
+  else paint();
 }
 
 function openFile(rel) {
   loc.file = rel;
   docEl.src = "/render?path=" + encodeURIComponent(rel);
-  renderNav();
+  paint();
+}
+
+function paint() {
+  fillWorkspace();
+  fillProject();
+  fillLine();
   renderCrumb();
 }
 
 async function loadTree() {
   const res = await fetch("/api/tree");
   catalog = await res.json();
-  goWorkspace();
+  paint();
 }
 
 loadTree();
