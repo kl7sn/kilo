@@ -43,6 +43,7 @@ Always show `/kilo` and `/kilo <subcommand>` in prompts, status lines, examples,
 | `/kilo new <line>` | Create a numbered line under a project |
 | `/kilo bind` | Interactively switch to an active line/project |
 | `/kilo adopt <path>` | Register an existing git worktree as this line's primary (only if missing/none/pruned) |
+| `/kilo up` | Classify this conversation into project facts, workspace facts, or an existing skill; list first, then write |
 | `/kilo lang [en\|zh]` | Show or set durable document language |
 
 Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.md), [execute.md](protocols/execute.md), [auto.md](protocols/auto.md), [reference.md](protocols/reference.md).
@@ -50,11 +51,11 @@ Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.
 ## Startup route
 
 1. Read repo `.kilo-state` and resolve the workspace; unresolved means hard stop.
-2. Handle an explicit subcommand before normal phase detection (`/kilo bind` / `/kilo new` / `/kilo adopt` / `/kilo auto` / `/kilo review` / `/kilo accept` / `/kilo lang` / `/kilo init`).
+2. Handle an explicit subcommand before normal phase detection (`/kilo bind` / `/kilo new` / `/kilo adopt` / `/kilo up` / `/kilo auto` / `/kilo review` / `/kilo accept` / `/kilo lang` / `/kilo init`).
 3. Resolve `lang`: open Handoff → `.kilo-state` → `KILO_LANG` → `en`.
 4. Match `CODEX_THREAD_ID`/session id in `.kilo-state projects[]`. **If no `session_id` match → emit the new-session bind prompt (`/kilo bind` or `/kilo new`) and stop** before recover advance; never auto-bind the sole active line.
 5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / `/kilo adopt <path>` / close then `/kilo new`).
-6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Gotchas / log, plus `project.md` `## Stable Facts` / `## Gotcha Index` (short, inherited). Open `review.md` only for freeze/revise, review, triage, or a review-history question.
+6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Gotchas / log, plus `Projects/_facts.md` (if present) then `project.md` `## Stable Facts` / `## Gotcha Index` (short, inherited). Open `review.md` only for freeze/revise, review, triage, or a review-history question. Follow a Gotcha Index pointer into `ops.md` or `context.md` only when the topic touches this line — never into `spec.md`.
 7. If the line is closed and this turn needs durable landing, stop recover and create/bind an active line.
 8. Strict line-fit before mapping or adding tasks: non-continuation → set `binding_decision: pending` and stop for continue-current / `/kilo bind` / `/kilo new <name>`.
 9. Map the current request to an existing task or add a task row only after the binding decision is resolved.
@@ -87,7 +88,7 @@ Do not guess, create, select, or write a fallback directory.
 - Tasks: rows in the line `tasks.md` (`todo`, `ready`, `doing`, `blocked`, `done`).
 - Runtime truth: the line `context.md` `## Handoff` block.
 - Acceptance and review truth: the line `review.md` (`## Acceptance`, `## ReviewIndex`, `## Claims`, `## ReviewThread`), mirrored cheaply by Handoff `acceptance_status` / `impl_review_status`.
-- Inherited knowledge: `project.md` `## Stable Facts` (durable facts) and `## Gotcha Index` (pointers, not copies) apply to every line under that project. Gotcha full text and `## Key Decisions` stay line-local in `context.md`; mechanize a constraint before writing it anywhere. Project entries are current truth: a line that invalidates one must update it in place before close, not diverge silently.
+- Inherited knowledge: `Projects/_facts.md` (workspace, optional) then `project.md` `## Stable Facts` / `## Gotcha Index`. Long recipes live in optional line `ops.md` (create only when that line has them). `context.md` `## Gotchas` stay one-liners or pointers. `spec.md` is the design contract, not a runbook. Mechanize a constraint before writing it anywhere. Project/workspace entries are current truth: a line that invalidates one must update it in place before close.
 - Sibling worktrees: the `project.md` lines table carries each line's `Worktree` / `Branch` / `State`.
 - Session index: repo-root `.kilo-state`; one repo may list many lines, but one session advances one.
 
@@ -171,7 +172,7 @@ For user-facing Chinese polish (README, prompts, notes), prefer `kaola-writing`:
 
 ## Progressive disclosure map
 
-- Workspace setup, init/new/bind/adopt, numbering, language: [protocols/workspace.md](protocols/workspace.md)
+- Workspace setup, init/new/bind/adopt/up, numbering, language: [protocols/workspace.md](protocols/workspace.md)
 - Recover, Handoff, and session sticky: [protocols/recover.md](protocols/recover.md)
 - Explore/plan/execute, Acceptance freeze and versioning, `review.md` separation, impl-review, integration gate: [protocols/execute.md](protocols/execute.md)
 - Auto mode, design gates, and impl-review gates: [protocols/auto.md](protocols/auto.md)

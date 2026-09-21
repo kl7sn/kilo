@@ -138,6 +138,7 @@ wt=none
 | `/kilo new` [lineId] | 在项目下新建一条线 |
 | `/kilo bind` | 重新绑定当前会话 |
 | `/kilo adopt` [path] | 把已有 git worktree 登记成当前线主树（仅 `missing` / `none` / `pruned`） |
+| `/kilo up` | 把当前对话分类沉淀到 project / workspace 事实或现有 skill |
 | `/kilo accept` … | 起草或修订已冻结的验收标准 |
 | `/kilo review` | 发起只读实现审核 |
 | `/kilo lang` [en\|zh] | 查看或设置文档语言 |

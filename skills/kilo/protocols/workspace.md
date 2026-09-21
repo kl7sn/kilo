@@ -16,14 +16,17 @@ After `/kilo init`, `/kilo new`, `/kilo bind`, or `/kilo adopt`, persist the res
 ## Layout and numbering
 
 ```text
-<workspace>/Projects/NN-project/
-├── project.md
-└── NN.MM-line/
-    ├── line.md
-    ├── tasks.md
-    ├── context.md
-    ├── review.md (Acceptance + review rounds; created at first draft)
-    └── spec.md (optional)
+<workspace>/Projects/
+├── _facts.md                 # optional workspace Stable Facts + Gotcha Index
+└── NN-project/
+    ├── project.md            # Stable Facts + Gotcha Index (no extra experience file)
+    └── NN.MM-line/
+        ├── line.md
+        ├── tasks.md
+        ├── context.md        # Handoff; Gotchas are one-liners or pointers
+        ├── review.md         # Acceptance + review rounds; created at first draft
+        ├── spec.md           # optional design contract, not a runbook
+        └── ops.md            # optional recipes; create only when this line has them
 ```
 
 Projects use `NN-slug`; lines use `NN.MM-slug`. Allocate the next number under the parent. New homepages must use `project.md` / `line.md`. Legacy unnumbered folders remain readable; do not rename without authorization.
@@ -47,7 +50,7 @@ Resolve the workspace first. Create only `Projects/<projectId>/project.md`; do n
 
 ## `/kilo new`
 
-Resolve the parent project from an active line, project homepage, or explicit user target. Allocate `NN.MM-slug`, create the homepage plus empty `tasks.md` and `context.md`, append the parent lines row (notes plus `Worktree` / `Branch` / `State`), and bind the session to the new line. Do not pre-create `review.md`; it appears with the first Acceptance draft. Carry the parent `project.md` `## Stable Facts` and `## Gotcha Index` into explore rather than rediscovering them. Do not auto-execute by default. Before allocating a worktree, surface active/smoke-pending sibling worktrees.
+Resolve the parent project from an active line, project homepage, or explicit user target. Allocate `NN.MM-slug`, create the homepage plus empty `tasks.md` and `context.md`, append the parent lines row (notes plus `Worktree` / `Branch` / `State`), and bind the session to the new line. Do not pre-create `review.md`; it appears with the first Acceptance draft. Carry `Projects/_facts.md` (if present) and the parent `project.md` `## Stable Facts` / `## Gotcha Index` into explore rather than rediscovering them. Do not auto-execute by default. Before allocating a worktree, surface active/smoke-pending sibling worktrees.
 
 For code repos: allocate the primary worktree, write `worktree_path` / `worktree_branch` into Handoff (and the matching `.kilo-state` entry), and set `worktree_status: active`. Record `worktree_status: none` only for pure-docs lines that never touch code. When the creating turn states a pass bar or spec path, seed `review.md` `## Acceptance` as `draft` (`version: 1`) from that turn only (do not mine prior chat). After bind/new completes, run the bidirectional worktree audit (orphan + missing) from [recover.md](recover.md) before recover advance or mutation.
 
@@ -98,6 +101,38 @@ No git object changes, no checkout, no branch delete.
 | `missing` and the agent uses the main checkout without `/kilo adopt` | Still forbidden. Only an explicit `/kilo adopt <main-checkout-path>` may register the main checkout |
 
 After success, run the orphan/missing audit from [recover.md](recover.md) before recover advance or mutation.
+
+## `/kilo up`
+
+Classify reusable findings from **this conversation** and the bound line's recent log. List first, then write only after the user picks a scope. Does not re-bundle the old `up` skill into the kilo install.
+
+```text
+/kilo up
+```
+
+Explicit subcommand, before phase detection. Requires an open bound line.
+
+### Classification (highest matching level, then stop)
+
+1. **This project.** Env-bound commands (cluster, context, pod, port, alias, bucket, repo path). Long steps go in this line's optional `ops.md` (create the file only when needed). `context.md` `## Gotchas` keeps a one-line pointer. `project.md` gets either one `## Stable Facts` line or one `## Gotcha Index` pointer to `ops.md` / `context.md` — **never to `spec.md`**.
+2. **All projects.** Short rules with no repo/cluster names. Write `Projects/_facts.md` (same two headings). Create the file with empty sections if missing. Env-specific text must not be promoted here.
+3. **Skill.** Own trigger, cross-session, and a section in an existing skill would blur ownership. Absorb into the nearest existing skill first. Default new-skill count is 0. A new skill requires explicit user confirmation. Naming follows existing conventions (`shimo-*`, `st-*`, or unprefixed) — **do not default to `kilo-`**. If the finding contradicts an existing skill, record the conflict and do not merge.
+
+Never write secrets, tokens, or AK/SK into any of these files.
+
+### Interaction
+
+1. List what this turn can write at levels 1 / 2 / 3 (any level may be empty).
+2. Wait for the user to pick a scope, then write.
+3. `/kilo auto` must not create a new skill. It may propose level 1/2 patches but still stops before a new skill file.
+
+### Failures (stop, no writes)
+
+| Condition | Action |
+| --- | --- |
+| Unbound session | New-session bind prompt |
+| Nothing durable (one-off chat, unverified guess) | Say so; do not invent a fact |
+| Finding contradicts an existing skill | Report the conflict; do not merge |
 
 ## Language
 

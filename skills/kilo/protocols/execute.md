@@ -2,7 +2,7 @@
 
 ## Phase routing
 
-- Missing or incomplete design → explore and write `spec.md`. `spec.md` is the input contract (target state the review compares against), not a running log; evidence goes to `## Execution Log`. Read `project.md` `## Stable Facts` and `## Gotcha Index` first, and follow an index pointer only when its topic touches this line, so a sibling's trap is not rediscovered without reading everything it wrote. If this line's design contradicts one of those entries, record the conflict now per the fact-drift rules in [reference.md](reference.md); never route around a stale entry silently.
+- Missing or incomplete design → explore and write `spec.md`. `spec.md` is the input contract (target state the review compares against), not a running log; evidence goes to `## Execution Log`. Operational recipes belong in optional `ops.md`, not in `spec.md`. Read `Projects/_facts.md` if present, then `project.md` `## Stable Facts` and `## Gotcha Index` first, and follow an index pointer into `ops.md` or `context.md` only when its topic touches this line. If this line's design contradicts one of those entries, record the conflict now per the fact-drift rules in [reference.md](reference.md); never route around a stale entry silently.
 - Design exists and all task rows are todo → plan and create an acyclic task table with at least one ready row.
 - Plan complete / about to enter execute → **Acceptance freeze gate** (code lines).
 - Ready rows and Acceptance frozen (or docs-only) → execute.
@@ -242,7 +242,7 @@ Automated tests and impl-review satisfy machine gates but cannot close a line. C
 3. User-confirmed smoke (`passed`) or explicit waiver (`waived-by-user`).
 4. `integration_next` set to `merge`, `pr`, `keep-branch`, or `prune`.
 5. Any worktree disposition executed or explicitly deferred with `keep-branch`.
-6. The `project.md` line row refreshed (`Worktree` / `Branch` / `State`). For anything learned that reaches sibling lines, run the promotion order in [reference.md](reference.md): mechanize first, else one `## Stable Facts` line or one `## Gotcha Index` pointer. Decisions stay line-local.
+6. The `project.md` line row refreshed (`Worktree` / `Branch` / `State`). For anything learned that reaches sibling lines, run the promotion order in [reference.md](reference.md): mechanize first, else optional `ops.md` plus one `## Stable Facts` line or one `## Gotcha Index` pointer (to `ops.md` or `context.md`, never `spec.md`). Decisions stay line-local. `/kilo up` is the explicit command to classify and promote from a conversation.
 7. Every project-level fact or index conclusion this line invalidated is updated in place to the new current truth, with the reason recorded in `## Key Decisions`. A line may not close while leaving a contradiction behind.
 
 Until then keep Handoff open with `smoke_status: pending` and, when applicable, `worktree_status: smoke_pending`.

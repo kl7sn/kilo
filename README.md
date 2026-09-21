@@ -137,6 +137,7 @@ The entrypoint `skills/kilo/SKILL.md` stays short (under 500 lines). Workspace, 
 | `/kilo new` [lineId] | Create nested line |
 | `/kilo bind` | Rebind this session interactively |
 | `/kilo adopt` [path] | Register an existing git worktree as this line's primary (`missing`/`none`/`pruned` only) |
+| `/kilo up` | Classify this conversation into project / workspace facts or an existing skill |
 | `/kilo accept` … | Draft or revise frozen Acceptance |
 | `/kilo review` | Dispatch read-only implementation review |
 | `/kilo lang` [en\|zh] | Show or set document language |
