@@ -80,48 +80,37 @@ button:focus-visible {
   text-transform: uppercase;
 }
 #tree { padding: 0 0 16px; }
-.proj { margin: 0; }
-.proj > button, .line > button, .file {
+.row {
   display: block;
   width: calc(100% - 12px);
-  margin: 0 6px;
+  height: 36px;
+  margin: 1px 6px;
+  padding: 0 10px;
   text-align: left;
   border: 0;
   background: none;
-  font: inherit;
-  color: inherit;
+  font: 13px/20px inherit;
+  color: var(--ds-ink);
   cursor: pointer;
   border-radius: var(--ds-radius-control);
   transition: background var(--ds-ease);
 }
-.proj > button {
-  height: 36px;
-  padding: 0 10px;
-  font-weight: 600;
-  font-size: 13px;
-}
-.line > button {
-  height: 28px;
-  padding: 0 10px 0 18px;
-  font-size: 13px;
-  color: var(--ds-ink);
-}
-.file {
-  height: 28px;
-  padding: 0 10px 0 28px;
-  color: var(--ds-ink-muted);
-  font-size: 12px;
-  line-height: 18px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-.file:hover, .proj > button:hover, .line > button:hover {
-  background: var(--ds-neutral-subtle);
-}
-.file.active {
-  color: var(--ds-ink);
+.row:hover { background: var(--ds-neutral-subtle); }
+.row.active {
   background: var(--ds-accent-soft);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ds-accent) 35%, transparent);
 }
+.row.muted-row { color: var(--ds-ink-muted); }
+#crumb .sep { margin: 0 6px; color: var(--ds-ink-subtle); }
+button.crumb {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ds-ink);
+  cursor: pointer;
+  padding: 0;
+}
+button.crumb:hover { text-decoration: underline; }
 .muted { color: var(--ds-ink-muted); font-size: 11px; line-height: 16px; }
 main {
   flex: 1;
