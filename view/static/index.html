@@ -7,17 +7,20 @@
   <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body>
-  <aside id="nav">
-    <header>
-      <strong>kilo</strong>
-      <span class="muted">只读</span>
-    </header>
-    <div id="tree">加载中…</div>
-  </aside>
-  <main>
-    <div id="crumb" class="muted">选择左侧文件</div>
-    <iframe id="doc" title="markdown"></iframe>
-  </main>
+  <header class="app-header">
+    <strong>kilo workspace</strong>
+    <span class="muted">只读</span>
+  </header>
+  <div class="shell">
+    <aside id="nav">
+      <div class="nav-label">Projects</div>
+      <div id="tree">加载中…</div>
+    </aside>
+    <main>
+      <div id="crumb" class="muted">选择左侧文件</div>
+      <iframe id="doc" title="markdown"></iframe>
+    </main>
+  </div>
   <script src="/static/app.js"></script>
 </body>
 </html>
