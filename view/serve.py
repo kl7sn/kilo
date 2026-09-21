@@ -81,8 +81,18 @@ def md_inline(text: str) -> str:
     return text
 
 
+def strip_frontmatter(src: str) -> str:
+    text = src.lstrip("\ufeff")
+    if text.startswith("---"):
+        rest = text[3:]
+        end = rest.find("\n---")
+        if end != -1:
+            return rest[end + 4 :].lstrip("\n")
+    return text
+
+
 def md_to_html(src: str) -> str:
-    lines = src.replace("\r\n", "\n").split("\n")
+    lines = strip_frontmatter(src).replace("\r\n", "\n").split("\n")
     out: list[str] = []
     i = 0
     in_code = False
@@ -145,6 +155,15 @@ def md_to_html(src: str) -> str:
             out.append("<li>" + md_inline(re.sub(r"^[-*]\s+", "", line)) + "</li>")
             i += 1
             continue
+        if line.startswith(">"):
+            close_lists()
+            quote = [re.sub(r"^>\s?", "", line)]
+            i += 1
+            while i < len(lines) and lines[i].startswith(">"):
+                quote.append(re.sub(r"^>\s?", "", lines[i]))
+                i += 1
+            out.append("<blockquote>" + md_to_html("\n".join(quote)) + "</blockquote>")
+            continue
         if line.strip() == "":
             close_lists()
             i += 1
@@ -192,14 +211,24 @@ class Handler(BaseHTTPRequestHandler):
             payload = json.dumps({"root": str(ROOT), "projects": list_tree(ROOT)}).encode()
             self._send(200, payload, "application/json; charset=utf-8")
             return
-        if path == "/api/html":
+        if path in ("/api/html", "/render"):
             rel = (qs.get("path") or [""])[0]
             target = safe_join(ROOT, rel)
             if target is None or not target.is_file() or target.suffix != ".md":
                 self._send(404, b"not found", "text/plain")
                 return
             text = target.read_text(encoding="utf-8", errors="replace")
-            body = json.dumps({"path": rel, "html": md_to_html(text), "title": target.name}).encode()
+            converted = md_to_html(text)
+            if path == "/render":
+                page = (
+                    "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+                    "<link rel='stylesheet' href='/static/app.css'>"
+                    "</head><body class='doc'>"
+                    f"{converted}</body></html>"
+                ).encode()
+                self._send(200, page, "text/html; charset=utf-8")
+                return
+            body = json.dumps({"path": rel, "html": converted, "title": target.name}).encode()
             self._send(200, body, "application/json; charset=utf-8")
             return
         self._send(404, b"not found", "text/plain")

@@ -42,14 +42,8 @@ async function loadTree() {
 }
 
 async function openFile(rel) {
-  const res = await fetch("/api/html?path=" + encodeURIComponent(rel));
-  if (!res.ok) {
-    docEl.textContent = "无法打开 " + rel;
-    return;
-  }
-  const data = await res.json();
-  crumbEl.textContent = data.path;
-  docEl.innerHTML = data.html;
+  crumbEl.textContent = rel;
+  docEl.src = "/render?path=" + encodeURIComponent(rel);
   document.querySelectorAll(".file").forEach((el) => {
     el.classList.toggle("active", el.dataset.path === rel);
   });
