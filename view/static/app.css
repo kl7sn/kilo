@@ -42,9 +42,10 @@ button:focus-visible {
   border-bottom: 0;
 }
 .app-header strong {
-  font-size: 15px;
+  font-size: 17px;
   line-height: 22px;
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.02em;
 }
 .pill {
   display: inline-flex;
@@ -86,12 +87,13 @@ button:focus-visible {
 }
 .nav-label {
   flex-shrink: 0;
-  padding: 10px 12px 8px;
-  font-size: 11px;
-  line-height: 16px;
-  color: var(--ds-ink-subtle);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  padding: 14px 12px 6px;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--ds-ink);
+  letter-spacing: -0.01em;
+  text-transform: none;
 }
 .col-body {
   flex: 1;
@@ -117,6 +119,9 @@ button:focus-visible {
   cursor: pointer;
   border-radius: var(--ds-radius-control);
   transition: background var(--ds-ease);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .row:hover { background: rgba(0, 0, 0, 0.04); }
 .row.active {
