@@ -60,16 +60,21 @@ button:focus-visible {
   flex: 1;
   min-height: 0;
   display: flex;
-  padding: 12px;
-  gap: 12px;
+  margin: 12px;
+  background: var(--ds-neutral-default);
+  border: 1px solid var(--ds-hairline);
+  border-radius: var(--ds-radius-panel);
+  overflow: hidden;
+  gap: 0;
 }
 .miller {
   display: flex;
   flex-shrink: 0;
   width: 540px;
-  background: var(--ds-neutral-default);
-  border: 1px solid var(--ds-hairline);
-  border-radius: var(--ds-radius-panel);
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--ds-hairline);
+  border-radius: 0;
   overflow: hidden;
 }
 .col {
@@ -136,9 +141,9 @@ main {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  background: var(--ds-neutral-default);
-  border: 1px solid var(--ds-hairline);
-  border-radius: var(--ds-radius-panel);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
   overflow: hidden;
 }
 #crumb {
