@@ -11,8 +11,21 @@
     <strong>kilo workspace</strong>
     <span class="pill">只读</span>
   </header>
-  <nav id="crumb" class="crumb-bar" aria-label="路径"></nav>
-  <iframe id="doc" title="markdown"></iframe>
+  <div class="app-body">
+    <aside class="rail">
+      <button type="button" id="nav-home" class="rail-item active">首页</button>
+    </aside>
+    <div class="stage">
+      <section id="home">
+        <div class="home-hero" id="home-hero"></div>
+        <div class="card-grid" id="card-grid"></div>
+      </section>
+      <section id="reader" hidden>
+        <nav id="crumb" class="crumb-bar" aria-label="路径"></nav>
+        <iframe id="doc" title="markdown"></iframe>
+      </section>
+    </div>
+  </div>
   <script src="/static/app.js"></script>
 </body>
 </html>

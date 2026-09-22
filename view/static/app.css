@@ -59,6 +59,113 @@ button:focus-visible {
   font-size: 11px;
   line-height: 16px;
 }
+.app-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.rail {
+  width: 200px;
+  flex-shrink: 0;
+  padding: 12px 10px;
+  background: var(--ds-neutral-subtle);
+}
+.rail-item {
+  display: block;
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: 13px/20px inherit;
+  color: var(--ds-ink);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.rail-item.active {
+  background: var(--ds-neutral-default);
+  box-shadow: var(--ds-select-shadow);
+}
+.stage {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-neutral-default);
+}
+#home {
+  flex: 1;
+  overflow: auto;
+  padding: 28px 32px 48px;
+}
+#reader {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#reader[hidden], #home[hidden] { display: none; }
+.home-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  background: var(--ds-neutral-subtle);
+  border-radius: 16px;
+}
+.home-hero h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 650;
+}
+.home-hero p {
+  margin: 0;
+  color: var(--ds-ink-muted);
+}
+.hero-stats {
+  display: flex;
+  gap: 28px;
+}
+.stat-n { display: block; font-size: 20px; font-weight: 650; }
+.stat-l { color: var(--ds-ink-muted); font-size: 12px; }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.space-card {
+  min-height: 132px;
+  padding: 16px 18px;
+  background: var(--ds-neutral-subtle);
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+.space-name { font-size: 15px; font-weight: 600; }
+.space-meta {
+  margin: 8px 0 0;
+  color: var(--ds-ink-muted);
+  font-size: 12px;
+}
+.space-foot {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.text-btn {
+  border: 0;
+  background: none;
+  font: 13px inherit;
+  font-weight: 600;
+  color: var(--ds-ink);
+  cursor: pointer;
+}
 .crumb-bar {
   flex-shrink: 0;
   height: 40px;

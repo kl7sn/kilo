@@ -1,5 +1,10 @@
 const docEl = document.getElementById("doc");
 const crumbEl = document.getElementById("crumb");
+const homeEl = document.getElementById("home");
+const readerEl = document.getElementById("reader");
+const heroEl = document.getElementById("home-hero");
+const gridEl = document.getElementById("card-grid");
+const navHome = document.getElementById("nav-home");
 
 let catalog = { root: "", projects: [] };
 let loc = { projectId: "", lineId: "", file: "" };
@@ -157,8 +162,56 @@ docEl.addEventListener("load", () => {
   }
 });
 
-function paint() {
+function hello() {
+  const h = new Date().getHours();
+  if (h < 5) return "夜深了";
+  if (h < 12) return "早";
+  if (h < 18) return "午安";
+  return "晚上好";
+}
+
+function showHome() {
+  loc = { projectId: "", lineId: "", file: "" };
+  docEl.removeAttribute("src");
+  homeEl.hidden = false;
+  readerEl.hidden = true;
+  navHome.classList.add("active");
+  const lines = catalog.projects.reduce((n, p) => n + p.lines.length, 0);
+  heroEl.innerHTML =
+    `<div class="hero-copy"><h1>${hello()}</h1><p>管理 workspace 里的 project 和 line。</p></div>` +
+    `<div class="hero-stats">` +
+    `<div><span class="stat-n">${catalog.projects.length}</span><span class="stat-l">项目</span></div>` +
+    `<div><span class="stat-n">${lines}</span><span class="stat-l">line</span></div>` +
+    `</div>`;
+  gridEl.innerHTML = "";
+  for (const p of catalog.projects) {
+    const card = document.createElement("article");
+    card.className = "space-card";
+    const n = p.lines.length;
+    card.innerHTML =
+      `<div class="space-top"><div class="space-name">${p.id}</div></div>` +
+      `<p class="space-meta">${n} 条 line</p>` +
+      `<div class="space-foot"><span class="pill">只读</span><button type="button" class="text-btn">打开</button></div>`;
+    const open = () => selectProject(p.id);
+    card.querySelector(".text-btn").onclick = (ev) => {
+      ev.stopPropagation();
+      open();
+    };
+    card.onclick = open;
+    gridEl.appendChild(card);
+  }
+}
+
+function showReader() {
+  homeEl.hidden = true;
+  readerEl.hidden = false;
+  navHome.classList.remove("active");
   renderCrumb();
+}
+
+function paint() {
+  if (!loc.projectId) showHome();
+  else showReader();
 }
 
 async function loadTree() {
@@ -205,6 +258,8 @@ async function checkCode() {
     /* restarting */
   }
 }
+
+navHome.onclick = () => selectProject("");
 
 loadTree();
 setInterval(checkStamp, 1500);
