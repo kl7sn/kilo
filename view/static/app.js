@@ -165,7 +165,24 @@ window.addEventListener("message", (ev) => {
   const data = ev.data;
   if (!data || data.type !== "kilo-open" || !data.path) return;
   locateFromPath(data.path);
-  openFile(data.path);
+  if (docEl.src.indexOf("path=" + encodeURIComponent(data.path)) === -1) {
+    openFile(data.path);
+  } else {
+    paint();
+  }
+});
+
+docEl.addEventListener("load", () => {
+  try {
+    const u = new URL(docEl.contentWindow.location.href);
+    if (u.pathname !== "/render") return;
+    const p = u.searchParams.get("path");
+    if (!p) return;
+    locateFromPath(p);
+    paint();
+  } catch (err) {
+    /* ignore cross-origin */
+  }
 });
 
 function paint() {
