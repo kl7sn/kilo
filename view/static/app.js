@@ -188,5 +188,24 @@ async function checkStamp() {
   }
 }
 
+let codeKey = "";
+
+async function checkCode() {
+  try {
+    const s = await fetch("/api/code-stamp").then((r) => r.json());
+    const key = s.ui + ":" + s.py;
+    if (!codeKey) {
+      codeKey = key;
+      return;
+    }
+    if (key === codeKey) return;
+    codeKey = key;
+    location.reload();
+  } catch (err) {
+    /* restarting */
+  }
+}
+
 loadTree();
 setInterval(checkStamp, 1500);
+setInterval(checkCode, 800);

@@ -10,12 +10,15 @@ import os
 import posixpath
 import re
 import sys
+import threading
+import time
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(".").resolve()
-STATIC = Path(__file__).resolve().parent / "static"
+VIEW_DIR = Path(__file__).resolve().parent
+STATIC = VIEW_DIR / "static"
 
 
 def safe_join(root: Path, rel: str) -> Path | None:
@@ -85,6 +88,44 @@ def workspace_stamp(root: Path) -> dict:
             except OSError:
                 continue
     return {"n": n, "t": latest}
+
+
+def _mtime(path: Path) -> int:
+    try:
+        return path.stat().st_mtime_ns
+    except OSError:
+        return 0
+
+
+def code_stamp() -> dict:
+    ui = 0
+    py = 0
+    if STATIC.is_dir():
+        for p in STATIC.iterdir():
+            if p.suffix in {".html", ".css", ".js"}:
+                ui = max(ui, _mtime(p))
+    for p in VIEW_DIR.glob("*.py"):
+        py = max(py, _mtime(p))
+    return {"ui": ui, "py": py}
+
+
+def restart_process() -> None:
+    sys.stderr.write("kilo view: code changed, restarting\n")
+    sys.stderr.flush()
+    os.execv(sys.executable, [sys.executable, *sys.argv])
+
+
+def start_code_watch() -> None:
+    def loop() -> None:
+        last = code_stamp()
+        while True:
+            time.sleep(0.7)
+            now = code_stamp()
+            if now["py"] != last["py"]:
+                restart_process()
+            last = now
+
+    threading.Thread(target=loop, daemon=True).start()
 
 
 def resolve_wiki(base_rel: str, target: str) -> str:
@@ -304,6 +345,10 @@ class Handler(BaseHTTPRequestHandler):
             payload = json.dumps(workspace_stamp(ROOT)).encode()
             self._send(200, payload, "application/json; charset=utf-8")
             return
+        if path == "/api/code-stamp":
+            payload = json.dumps(code_stamp()).encode()
+            self._send(200, payload, "application/json; charset=utf-8")
+            return
         if path in ("/api/html", "/render"):
             rel = (qs.get("path") or [""])[0]
             target = safe_join(ROOT, rel)
@@ -347,6 +392,7 @@ def main() -> None:
     if not ROOT.is_dir():
         sys.stderr.write(f"root not a directory: {ROOT}\n")
         sys.exit(2)
+    start_code_watch()
     httpd = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     print(f"kilo view  http://127.0.0.1:{args.port}  root={ROOT}", flush=True)
     httpd.serve_forever()

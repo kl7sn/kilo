@@ -75,6 +75,7 @@ def main() -> None:
     httpd = ThreadingHTTPServer(("127.0.0.1", port), BoundHandler)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
+    board.start_code_watch()
     url = f"http://127.0.0.1:{port}/"
     for _ in range(50):
         try:
