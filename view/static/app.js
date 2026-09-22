@@ -1,6 +1,3 @@
-const wsEl = document.getElementById("col-workspace");
-const projEl = document.getElementById("col-project");
-const lineEl = document.getElementById("col-line");
 const docEl = document.getElementById("doc");
 const crumbEl = document.getElementById("crumb");
 
@@ -23,99 +20,74 @@ function row(text, { active, onClick } = {}) {
   return b;
 }
 
-function empty(text) {
-  const d = document.createElement("div");
-  d.className = "col-empty";
-  d.textContent = text;
-  return d;
+function crumbNode(label, items, onLabelClick) {
+  const wrap = document.createElement("div");
+  wrap.className = "crumb-item";
+  const btn = document.createElement("button");
+  btn.className = "crumb";
+  btn.textContent = label;
+  btn.onclick = onLabelClick;
+  wrap.appendChild(btn);
+  if (items && items.length) {
+    const menu = document.createElement("div");
+    menu.className = "menu";
+    for (const it of items) menu.appendChild(it);
+    wrap.appendChild(menu);
+  }
+  return wrap;
+}
+
+function sep() {
+  const s = document.createElement("span");
+  s.className = "sep";
+  s.textContent = "/";
+  return s;
 }
 
 function renderCrumb() {
   crumbEl.innerHTML = "";
-  const add = (label, fn) => {
-    if (crumbEl.childNodes.length) {
-      const sep = document.createElement("span");
-      sep.className = "sep";
-      sep.textContent = "/";
-      crumbEl.appendChild(sep);
-    }
-    const b = document.createElement("button");
-    b.className = "crumb";
-    b.textContent = label;
-    b.onclick = fn;
-    crumbEl.appendChild(b);
-  };
-  add("workspace", () => selectProject(""));
-  if (loc.projectId) add(loc.projectId, () => selectProject(loc.projectId));
-  if (loc.lineId) add(loc.lineId, () => selectLine(loc.projectId, loc.lineId));
-  if (loc.file) {
-    const sep = document.createElement("span");
-    sep.className = "sep";
-    sep.textContent = "/";
-    crumbEl.appendChild(sep);
-    const span = document.createElement("span");
-    span.textContent = loc.file.split("/").pop();
-    crumbEl.appendChild(span);
-  }
-}
-
-function fillWorkspace() {
-  wsEl.innerHTML = "";
-  if (!catalog.projects.length) {
-    wsEl.appendChild(empty("未找到 Projects/"));
-    return;
-  }
-  for (const proj of catalog.projects) {
-    wsEl.appendChild(
-      row(proj.id, {
-        active: loc.projectId === proj.id,
-        onClick: () => selectProject(proj.id),
-      })
-    );
-  }
-}
-
-function fillProject() {
-  projEl.innerHTML = "";
-  const proj = projectById(loc.projectId);
-  if (!proj) {
-    projEl.appendChild(empty("选择 project"));
-    return;
-  }
-  projEl.appendChild(
-    row("project.md", {
-      active: loc.file === proj.path && !loc.lineId,
-      onClick: () => {
-        loc.lineId = "";
-        openFile(proj.path);
-      },
-    })
-  );
-  for (const line of proj.lines) {
-    projEl.appendChild(
-      row(line.id, {
-        active: loc.lineId === line.id,
-        onClick: () => selectLine(proj.id, line.id),
-      })
-    );
-  }
-}
-
-function fillLine() {
-  lineEl.innerHTML = "";
   const proj = projectById(loc.projectId);
   const line = lineById(proj, loc.lineId);
-  if (!line) {
-    lineEl.appendChild(empty("选择 line"));
-    return;
+
+  const projectItems = catalog.projects.map((p) =>
+    row(p.id, { active: loc.projectId === p.id, onClick: () => selectProject(p.id) })
+  );
+  crumbEl.appendChild(
+    crumbNode("workspace", projectItems, () => selectProject(""))
+  );
+
+  if (proj) {
+    crumbEl.appendChild(sep());
+    const lineItems = [
+      row("project.md", {
+        active: loc.file === proj.path && !loc.lineId,
+        onClick: () => {
+          loc.lineId = "";
+          openFile(proj.path);
+        },
+      }),
+      ...proj.lines.map((l) =>
+        row(l.id, { active: loc.lineId === l.id, onClick: () => selectLine(proj.id, l.id) })
+      ),
+    ];
+    crumbEl.appendChild(crumbNode(proj.id, lineItems, () => selectProject(proj.id)));
   }
-  for (const f of line.files) {
-    lineEl.appendChild(
-      row(f.name, {
-        active: loc.file === f.path,
-        onClick: () => openFile(f.path),
-      })
+
+  if (proj && line) {
+    crumbEl.appendChild(sep());
+    const fileItems = line.files.map((f) =>
+      row(f.name, { active: loc.file === f.path, onClick: () => openFile(f.path) })
     );
+    crumbEl.appendChild(crumbNode(line.id, fileItems, () => selectLine(proj.id, line.id)));
+  }
+
+  if (loc.file) {
+    crumbEl.appendChild(sep());
+    const name = loc.file.split("/").pop();
+    const fileBtn = document.createElement("span");
+    fileBtn.className = "muted";
+    fileBtn.textContent = name;
+    crumbEl.appendChild(fileBtn);
   }
 }
 
@@ -186,9 +158,6 @@ docEl.addEventListener("load", () => {
 });
 
 function paint() {
-  fillWorkspace();
-  fillProject();
-  fillLine();
   renderCrumb();
 }
 

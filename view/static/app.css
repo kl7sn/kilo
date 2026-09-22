@@ -59,59 +59,69 @@ button:focus-visible {
   font-size: 11px;
   line-height: 16px;
 }
-.shell {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  margin: 0;
-  background: var(--ds-neutral-subtle);
-  border: 0;
-  border-radius: 0;
-  overflow: hidden;
-  gap: 0;
-}
-.miller {
-  display: flex;
+.crumb-bar {
   flex-shrink: 0;
-  width: 540px;
-  background: var(--ds-neutral-subtle);
-  border: 0;
-  border-radius: 0;
-  overflow: hidden;
-}
-.col {
-  flex: 1;
-  min-width: 0;
+  height: 40px;
   display: flex;
-  flex-direction: column;
-  border-right: 0;
-}
-.nav-label {
-  flex-shrink: 0;
-  padding: 14px 12px 6px;
-  font-size: 15px;
-  line-height: 22px;
-  font-weight: 600;
+  align-items: center;
+  gap: 2px;
+  padding: 0 16px;
+  background: var(--ds-neutral-subtle);
   color: var(--ds-ink);
-  letter-spacing: -0.01em;
-  text-transform: none;
+  font-size: 13px;
+  line-height: 20px;
 }
-.col-body {
-  flex: 1;
+.crumb-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40px;
+}
+.crumb-item > button.crumb {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ds-ink);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--ds-radius-control);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.crumb-item > button.crumb:hover,
+.crumb-item:hover > button.crumb,
+.crumb-item:focus-within > button.crumb {
+  background: var(--ds-neutral-default);
+  box-shadow: var(--ds-select-shadow);
+}
+.crumb-bar .sep { margin: 0 2px; color: var(--ds-ink-subtle); }
+.menu {
+  display: none;
+  position: absolute;
+  top: calc(100% - 4px);
+  left: 0;
+  min-width: 240px;
+  max-width: 360px;
+  max-height: min(70vh, 480px);
   overflow: auto;
-  padding: 0 0 12px;
+  padding: 6px;
+  background: var(--ds-neutral-default);
+  border-radius: 12px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12);
+  z-index: 30;
 }
-.col-empty {
-  padding: 8px 12px;
-  color: var(--ds-ink-subtle);
-  font-size: 12px;
-}
-.row {
+.crumb-item:hover .menu,
+.crumb-item:focus-within .menu {
   display: block;
-  width: calc(100% - 8px);
+}
+.menu .row {
+  display: block;
+  width: 100%;
   height: 32px;
-  margin: 1px 4px;
-  padding: 0 8px;
+  margin: 0;
+  padding: 0 10px;
   text-align: left;
   border: 0;
   background: none;
@@ -119,50 +129,16 @@ button:focus-visible {
   color: var(--ds-ink);
   cursor: pointer;
   border-radius: var(--ds-radius-control);
-  transition: background var(--ds-ease);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.row:hover { background: rgba(0, 0, 0, 0.04); }
-.row.active {
-  background: var(--ds-neutral-default);
-  box-shadow: var(--ds-select-shadow);
+.menu .row:hover { background: var(--ds-neutral-subtle); }
+.menu .row.active {
+  background: var(--ds-neutral-subtle);
+  font-weight: 600;
 }
-.row.muted-row { color: var(--ds-ink-muted); }
-#crumb .sep { margin: 0 6px; color: var(--ds-ink-subtle); }
-button.crumb {
-  border: 0;
-  background: none;
-  font: inherit;
-  color: var(--ds-ink);
-  cursor: pointer;
-  padding: 0;
-}
-button.crumb:hover { text-decoration: underline; }
 .muted { color: var(--ds-ink-muted); font-size: 11px; line-height: 16px; }
-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  background: var(--ds-neutral-default);
-  border: 0;
-  border-radius: 0;
-  overflow: hidden;
-}
-#crumb {
-  flex-shrink: 0;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  border-bottom: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--ds-ink-muted);
-}
 #doc {
   flex: 1;
   width: 100%;
