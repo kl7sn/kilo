@@ -352,7 +352,6 @@ body.doc a {
   text-decoration: none;
 }
 body.doc a:hover { text-decoration: underline; text-underline-offset: 2px; }
-body.doc a:hover { text-decoration: underline; }
 body.doc code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 13px;
