@@ -1,24 +1,32 @@
-/* Eigent light theme seeds from
-   https://github.com/eigent-ai/eigent/blob/main/src/style/tokens/base.color.json
-   themes.light.eigent: background #faf7f6, ink/accent #1d1d1d
-   plus token.css --colors-off-white-100 #f5f5f5, --colors-primary-5/6. */
+/* Catppuccin Latte hex:
+   https://github.com/catppuccin/catppuccin
+   Layout: AFFiNE-style sidebar + white content + gray cards. */
 :root {
-  --ds-neutral-subtle: #faf7f6;
-  --ds-neutral-muted: #f5f5f5;
+  --latte-base: #eff1f5;
+  --latte-mantle: #e6e9ef;
+  --latte-crust: #dce0e8;
+  --latte-text: #4c4f69;
+  --latte-subtext0: #6c6f85;
+  --latte-overlay0: #9ca0b0;
+  --latte-surface0: #ccd0da;
+  --latte-blue: #1e66f5;
+  --latte-green: #40a02b;
+  --ds-neutral-subtle: var(--latte-mantle);
+  --ds-neutral-muted: var(--latte-base);
   --ds-neutral-default: #ffffff;
-  --ds-ink: #1d1d1d;
-  --ds-ink-muted: #666666;
-  --ds-ink-subtle: #888888;
-  --ds-hairline: #e8e4e2;
-  --ds-accent: #1d1d1d;
+  --ds-ink: var(--latte-text);
+  --ds-ink-muted: var(--latte-subtext0);
+  --ds-ink-subtle: var(--latte-overlay0);
+  --ds-hairline: var(--latte-surface0);
+  --ds-accent: var(--latte-text);
   --ds-accent-soft: #ffffff;
-  --ds-ring: #1d1d1d;
+  --ds-ring: var(--latte-blue);
   --ds-radius-control: 10px;
   --ds-radius-panel: 16px;
-  --ds-pre-bg: #1d1d1d;
-  --ds-pre-fg: #faf7f6;
+  --ds-pre-bg: var(--latte-crust);
+  --ds-pre-fg: var(--latte-text);
   --ds-ease: 160ms ease-out;
-  --ds-select-shadow: 0 1px 2px rgba(29, 29, 29, 0.06);
+  --ds-select-shadow: 0 1px 2px rgba(76, 79, 105, 0.08);
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -197,7 +205,7 @@ button:focus-visible {
   height: 22px;
   padding: 0 9px;
 }
-.space-card .pill.on { color: #248a3d; }
+.space-card .pill.on { color: var(--latte-green); }
 .text-btn {
   border: 0;
   background: none;
@@ -340,10 +348,10 @@ body.doc blockquote {
   color: var(--ds-ink-muted);
 }
 body.doc a {
-  color: #1d1d1d;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: var(--latte-blue);
+  text-decoration: none;
 }
+body.doc a:hover { text-decoration: underline; text-underline-offset: 2px; }
 body.doc a:hover { text-decoration: underline; }
 body.doc code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
