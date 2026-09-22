@@ -73,8 +73,41 @@ def list_tree(root: Path) -> list[dict]:
     return out
 
 
-def md_inline(text: str) -> str:
+def resolve_wiki(base_rel: str, target: str) -> str:
+    target = target.strip().split("#", 1)[0]
+    base_dir = posixpath.dirname(base_rel.replace("\\", "/"))
+    joined = posixpath.normpath(posixpath.join(base_dir, target))
+    if joined.startswith("../") or joined == "..":
+        return ""
+    candidates = [joined]
+    if not joined.endswith(".md"):
+        candidates = [
+            joined + ".md",
+            joined + "/line.md",
+            joined + "/project.md",
+            joined + "/workstream.md",
+            joined + "/context.md",
+        ]
+    for rel in candidates:
+        hit = safe_join(ROOT, rel)
+        if hit is not None and hit.is_file():
+            return rel
+    return candidates[0]
+
+
+def md_inline(text: str, base_rel: str = "") -> str:
     text = html.escape(text)
+
+    def wiki(match: re.Match[str]) -> str:
+        target, label = match.group(1), match.group(2)
+        rel = resolve_wiki(base_rel, html.unescape(target))
+        shown = html.escape(label or target.split("/")[-1])
+        if not rel:
+            return shown
+        href = "/render?path=" + urllib.parse.quote(rel)
+        return f'<a class="wiki" href="{href}">{shown}</a>'
+
+    text = re.sub(r"\[\[([^\]|#]+)(?:\|([^\]]+))?\]\]", wiki, text)
     text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
     text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', text)
@@ -91,7 +124,7 @@ def strip_frontmatter(src: str) -> str:
     return text
 
 
-def md_to_html(src: str) -> str:
+def md_to_html(src: str, base_rel: str = "") -> str:
     lines = strip_frontmatter(src).replace("\r\n", "\n").split("\n")
     out: list[str] = []
     i = 0
@@ -130,13 +163,13 @@ def md_to_html(src: str) -> str:
             close_lists()
             headers = [c.strip() for c in line.strip("|").split("|")]
             i += 2
-            out.append("<table><thead><tr>" + "".join(f"<th>{md_inline(h)}</th>" for h in headers) + "</tr></thead><tbody>")
+            out.append("<table><thead><tr>" + "".join(f"<th>{md_inline(h, base_rel)}</th>" for h in headers) + "</tr></thead><tbody>")
             in_table = True
             continue
         if in_table:
             if re.match(r"^\|.+\|$", line):
                 cells = [c.strip() for c in line.strip("|").split("|")]
-                out.append("<tr>" + "".join(f"<td>{md_inline(c)}</td>" for c in cells) + "</tr>")
+                out.append("<tr>" + "".join(f"<td>{md_inline(c, base_rel)}</td>" for c in cells) + "</tr>")
                 i += 1
                 continue
             close_lists()
@@ -144,7 +177,7 @@ def md_to_html(src: str) -> str:
         if m:
             close_lists()
             n = len(m.group(1))
-            out.append(f"<h{n}>{md_inline(m.group(2))}</h{n}>")
+            out.append(f"<h{n}>{md_inline(m.group(2), base_rel)}</h{n}>")
             i += 1
             continue
         if re.match(r"^[-*]\s+", line):
@@ -152,7 +185,7 @@ def md_to_html(src: str) -> str:
                 close_lists()
                 out.append("<ul>")
                 in_ul = True
-            out.append("<li>" + md_inline(re.sub(r"^[-*]\s+", "", line)) + "</li>")
+            out.append("<li>" + md_inline(re.sub(r"^[-*]\s+", "", line), base_rel) + "</li>")
             i += 1
             continue
         if line.startswith(">"):
@@ -162,14 +195,14 @@ def md_to_html(src: str) -> str:
             while i < len(lines) and lines[i].startswith(">"):
                 quote.append(re.sub(r"^>\s?", "", lines[i]))
                 i += 1
-            out.append("<blockquote>" + md_to_html("\n".join(quote)) + "</blockquote>")
+            out.append("<blockquote>" + md_to_html("\n".join(quote), base_rel) + "</blockquote>")
             continue
         if line.strip() == "":
             close_lists()
             i += 1
             continue
         close_lists()
-        out.append("<p>" + md_inline(line) + "</p>")
+        out.append("<p>" + md_inline(line, base_rel) + "</p>")
         i += 1
     if in_code:
         out.append("<pre><code>" + html.escape("\n".join(code_buf)) + "</code></pre>")
@@ -218,11 +251,18 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(404, b"not found", "text/plain")
                 return
             text = target.read_text(encoding="utf-8", errors="replace")
-            converted = md_to_html(text)
+            converted = md_to_html(text, rel)
             if path == "/render":
                 page = (
                     "<!DOCTYPE html><html><head><meta charset='utf-8'>"
                     "<link rel='stylesheet' href='/static/app.css'>"
+                    "<script>document.addEventListener('click',function(e){"
+                    "var a=e.target.closest('a');if(!a)return;"
+                    "try{var u=new URL(a.href,location.origin);}catch(err){return;}"
+                    "if(u.pathname==='/render'&&u.searchParams.get('path')){"
+                    "e.preventDefault();"
+                    "parent.postMessage({type:'kilo-open',path:u.searchParams.get('path')},'*');"
+                    "}}});</script>"
                     "</head><body class='doc'>"
                     f"{converted}</body></html>"
                 ).encode()

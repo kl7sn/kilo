@@ -146,6 +146,28 @@ function openFile(rel) {
   paint();
 }
 
+function locateFromPath(rel) {
+  const parts = rel.replace(/\\/g, "/").split("/").filter(Boolean);
+  if (parts[0] !== "Projects" || parts.length < 2) {
+    loc = { projectId: "", lineId: "", file: rel };
+    return;
+  }
+  loc.projectId = parts[1];
+  if (parts.length >= 4 || (parts.length === 3 && !parts[2].endsWith(".md"))) {
+    loc.lineId = parts[2];
+  } else {
+    loc.lineId = "";
+  }
+  loc.file = rel;
+}
+
+window.addEventListener("message", (ev) => {
+  const data = ev.data;
+  if (!data || data.type !== "kilo-open" || !data.path) return;
+  locateFromPath(data.path);
+  openFile(data.path);
+});
+
 function paint() {
   fillWorkspace();
   fillProject();
