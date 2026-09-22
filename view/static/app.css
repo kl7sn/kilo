@@ -20,6 +20,7 @@
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
+html:has(body.doc) { height: auto; }
 body {
   display: flex;
   flex-direction: column;
@@ -173,11 +174,11 @@ main {
 body.doc {
   display: block;
   height: auto;
-  min-height: 100%;
+  min-height: 0;
   background: var(--ds-neutral-default);
-  padding: 28px 32px 64px;
-  max-width: 720px;
-  margin: 0 auto;
+  padding: 24px 28px 40px;
+  max-width: none;
+  margin: 0;
   font-size: 15px;
   line-height: 22px;
   color: var(--ds-ink);
@@ -256,6 +257,8 @@ body.doc th, body.doc td {
   padding: 8px 12px;
   text-align: left;
   vertical-align: top;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 body.doc th {
   background: var(--ds-neutral-subtle);

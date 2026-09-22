@@ -124,6 +124,48 @@ def strip_frontmatter(src: str) -> str:
     return text
 
 
+def split_table_row(line: str) -> list[str]:
+    line = line.strip()
+    if line.startswith("|"):
+        line = line[1:]
+    if line.endswith("|"):
+        line = line[:-1]
+    cells: list[str] = []
+    buf: list[str] = []
+    i = 0
+    wiki = 0
+    code = False
+    while i < len(line):
+        if line[i] == "`":
+            code = not code
+            buf.append("`")
+            i += 1
+            continue
+        if not code and line.startswith("[[", i):
+            wiki += 1
+            buf.append("[[")
+            i += 2
+            continue
+        if not code and wiki and line.startswith("]]", i):
+            wiki -= 1
+            buf.append("]]")
+            i += 2
+            continue
+        if line[i] == "\\" and i + 1 < len(line) and line[i + 1] == "|":
+            buf.append("|")
+            i += 2
+            continue
+        if line[i] == "|" and not code and wiki == 0:
+            cells.append("".join(buf).strip())
+            buf = []
+            i += 1
+            continue
+        buf.append(line[i])
+        i += 1
+    cells.append("".join(buf).strip())
+    return cells
+
+
 def md_to_html(src: str, base_rel: str = "") -> str:
     lines = strip_frontmatter(src).replace("\r\n", "\n").split("\n")
     out: list[str] = []
@@ -161,14 +203,14 @@ def md_to_html(src: str, base_rel: str = "") -> str:
             continue
         if re.match(r"^\|.+\|$", line) and i + 1 < len(lines) and re.match(r"^\|[\s:|-]+\|$", lines[i + 1]):
             close_lists()
-            headers = [c.strip() for c in line.strip("|").split("|")]
+            headers = split_table_row(line)
             i += 2
             out.append("<table><thead><tr>" + "".join(f"<th>{md_inline(h, base_rel)}</th>" for h in headers) + "</tr></thead><tbody>")
             in_table = True
             continue
         if in_table:
             if re.match(r"^\|.+\|$", line):
-                cells = [c.strip() for c in line.strip("|").split("|")]
+                cells = split_table_row(line)
                 out.append("<tr>" + "".join(f"<td>{md_inline(c, base_rel)}</td>" for c in cells) + "</tr>")
                 i += 1
                 continue
