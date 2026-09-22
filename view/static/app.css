@@ -42,22 +42,6 @@ button:focus-visible {
   outline: 2px solid var(--ds-ring);
   outline-offset: 2px;
 }
-.app-header {
-  height: 40px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  background: var(--ds-neutral-subtle);
-  border-bottom: 0;
-}
-.app-header strong {
-  font-size: 17px;
-  line-height: 22px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-}
 .pill {
   display: inline-flex;
   align-items: center;
@@ -78,8 +62,11 @@ button:focus-visible {
   width: 212px;
   flex-shrink: 0;
   padding: 16px 12px;
-  background: var(--ds-neutral-subtle);
+  background: var(--latte-base);
+  display: flex;
+  flex-direction: column;
 }
+.rail-foot { margin-top: auto; padding: 12px 10px 4px; }
 .rail-group {
   padding: 0 10px 8px;
   font-size: 11px;
@@ -115,7 +102,7 @@ button:focus-visible {
 #home {
   flex: 1;
   overflow: auto;
-  padding: 28px 36px 56px;
+  padding: 36px 40px 64px;
 }
 #reader {
   flex: 1;
@@ -127,12 +114,12 @@ button:focus-visible {
 .home-hero {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: 32px;
-  padding: 22px 26px;
-  margin-bottom: 22px;
-  background: var(--ds-neutral-subtle);
-  border-radius: 16px;
+  padding: 8px 4px 28px;
+  margin-bottom: 8px;
+  background: none;
+  border-radius: 0;
 }
 .home-hero h1 {
   margin: 0 0 4px;
@@ -167,15 +154,16 @@ button:focus-visible {
 .space-card {
   min-height: 156px;
   padding: 20px 22px 16px;
-  background: var(--ds-neutral-subtle);
+  background: var(--ds-neutral-default);
+  border: 1px solid var(--ds-hairline);
   border-radius: 16px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  transition: background var(--ds-ease), box-shadow var(--ds-ease);
+  transition: box-shadow var(--ds-ease);
 }
 .space-card:hover {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgb(76 79 105 / 0.06), 0 8px 16px -8px rgb(76 79 105 / 0.1);
 }
 .space-top {
   display: flex;
@@ -200,7 +188,7 @@ button:focus-visible {
 }
 .pills { display: flex; gap: 6px; }
 .space-card .pill {
-  background: var(--ds-neutral-default);
+  background: var(--latte-base);
   color: var(--ds-ink-muted);
   height: 22px;
   padding: 0 9px;
