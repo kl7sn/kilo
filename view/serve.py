@@ -73,6 +73,20 @@ def list_tree(root: Path) -> list[dict]:
     return out
 
 
+def workspace_stamp(root: Path) -> dict:
+    projects = root / "Projects"
+    latest = 0
+    n = 0
+    if projects.is_dir():
+        for p in projects.rglob("*.md"):
+            try:
+                n += 1
+                latest = max(latest, p.stat().st_mtime_ns)
+            except OSError:
+                continue
+    return {"n": n, "t": latest}
+
+
 def resolve_wiki(base_rel: str, target: str) -> str:
     target = target.strip().split("#", 1)[0]
     base_dir = posixpath.dirname(base_rel.replace("\\", "/"))
@@ -284,6 +298,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/tree":
             payload = json.dumps({"root": str(ROOT), "projects": list_tree(ROOT)}).encode()
+            self._send(200, payload, "application/json; charset=utf-8")
+            return
+        if path == "/api/stamp":
+            payload = json.dumps(workspace_stamp(ROOT)).encode()
             self._send(200, payload, "application/json; charset=utf-8")
             return
         if path in ("/api/html", "/render"):

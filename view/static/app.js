@@ -167,4 +167,26 @@ async function loadTree() {
   paint();
 }
 
+let stampKey = "";
+
+async function checkStamp() {
+  try {
+    const s = await fetch("/api/stamp").then((r) => r.json());
+    const key = s.n + ":" + s.t;
+    if (!stampKey) {
+      stampKey = key;
+      return;
+    }
+    if (key === stampKey) return;
+    stampKey = key;
+    await loadTree();
+    if (loc.file) {
+      docEl.src = "/render?path=" + encodeURIComponent(loc.file) + "&t=" + s.t;
+    }
+  } catch (err) {
+    /* server briefly down */
+  }
+}
+
 loadTree();
+setInterval(checkStamp, 1500);
