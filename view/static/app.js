@@ -165,8 +165,8 @@ docEl.addEventListener("load", () => {
 function hello() {
   const h = new Date().getHours();
   if (h < 5) return "夜深了";
-  if (h < 12) return "早";
-  if (h < 18) return "午安";
+  if (h < 12) return "早上好";
+  if (h < 18) return "下午好";
   return "晚上好";
 }
 
@@ -176,12 +176,13 @@ function showHome() {
   homeEl.hidden = false;
   readerEl.hidden = true;
   navHome.classList.add("active");
-  const lines = catalog.projects.reduce((n, p) => n + p.lines.length, 0);
+  const nProj = catalog.projects.length;
+  const nLine = catalog.projects.reduce((n, p) => n + p.lines.length, 0);
   heroEl.innerHTML =
-    `<div class="hero-copy"><h1>${hello()}</h1><p>管理 workspace 里的 project 和 line。</p></div>` +
+    `<div class="hero-copy"><h1>${hello()}</h1><p>浏览 workspace 里的 project 和 line，只读。</p></div>` +
     `<div class="hero-stats">` +
-    `<div><span class="stat-n">${catalog.projects.length}</span><span class="stat-l">项目</span></div>` +
-    `<div><span class="stat-n">${lines}</span><span class="stat-l">line</span></div>` +
+    `<div class="stat"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg><div><div class="stat-l">项目</div><div class="stat-n">${nProj}</div></div></div>` +
+    `<div class="stat"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><div><div class="stat-l">line</div><div class="stat-n">${nLine}</div></div></div>` +
     `</div>`;
   gridEl.innerHTML = "";
   for (const p of catalog.projects) {
@@ -189,9 +190,9 @@ function showHome() {
     card.className = "space-card";
     const n = p.lines.length;
     card.innerHTML =
-      `<div class="space-top"><div class="space-name">${p.id}</div></div>` +
+      `<div class="space-top"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg><div class="space-name">${p.id}</div></div>` +
       `<p class="space-meta">${n} 条 line</p>` +
-      `<div class="space-foot"><span class="pill">只读</span><button type="button" class="text-btn">打开</button></div>`;
+      `<div class="space-foot"><div class="pills"><span class="pill on">活跃</span><span class="pill">本地</span></div><button type="button" class="text-btn">打开</button></div>`;
     const open = () => selectProject(p.id);
     card.querySelector(".text-btn").onclick = (ev) => {
       ev.stopPropagation();
