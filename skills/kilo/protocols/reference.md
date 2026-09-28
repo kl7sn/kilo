@@ -273,7 +273,9 @@ Record the other worktree's detached/park state in Handoff `notes` so it is not 
 
 ## `.kilo-state` write safety
 
-`.kilo-state` is structured YAML-ish with a `projects:` list plus trailing runtime keys. Never rewrite it with naive line-stripping or regex that can delete the `projects:` body. Prefer surgical field updates (replace one `note:` / `status:` line under a known `project:` block, or append only the trailing `- updated:` / `- next_action:` keys). If the file is corrupted, restore from conversation-known bindings or a backup before continuing `/kilo`.
+`.kilo-state` is structured YAML-ish with a `projects:` list plus trailing runtime keys. Never rewrite it with naive line-stripping or regex that can delete the `projects:` body. Prefer surgical field updates on **this session’s** block (match `session_id`, then `worktree_path` if several rows share the session): replace one `note:` / `status:` / `worktree_path:` line, or append a new `- project:` block. Do not rewrite sibling blocks when this session binds or adopts. If the file is corrupted, restore from conversation-known bindings or a backup before continuing `/kilo`.
+
+Schema reminder: each `projects[]` row is one binding (`session_id` + `worktree_path` + line). `status` on a row is that binding (`active` / `completed` / `archived`), not a mutex for the whole clone. Top-level `project:` is a last-write hint. See [workspace.md](workspace.md) **`.kilo-state` identity**. Read legacy `status: current` as `active` for that row only.
 
 ## Self-review
 
@@ -297,6 +299,7 @@ Stop and ask/escalate for:
 - worktree-missing (`worktree_status: missing` unresolved)
 - `/kilo adopt` when `worktree_status` is `active` / `smoke_pending` / `ready_to_merge`, or when `<path>` is not in this repo's `git worktree list`, or when `<path>` is another line's current primary
 - sole-active silent bind (forbidden — never auto-bind the only active line without explicit `/kilo bind` / user choice)
+- repo-wide current bind (forbidden — never bind this cwd using another checkout’s `status: current`/`active` or top-level `project:` when that row’s `worktree_path` is not this cwd)
 - mutation outside primary worktree
 - Acceptance not frozen on a code line when entering execute, `/kilo review`, or smoke/close
 - unresolved review blockers in `review.md` (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
