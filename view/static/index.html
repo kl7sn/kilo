@@ -3,28 +3,186 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>kilo workspace</title>
+  <title>Kilo</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png" />
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
   <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body>
+  <div class="win-drag pywebview-drag-region"></div>
   <div class="app-body">
-    <aside class="rail">
+    <aside class="rail" id="rail">
       <div class="rail-group">首页</div>
       <button type="button" id="nav-home" class="rail-item active">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
         项目
+        <span id="nav-count" class="rail-count">0</span>
       </button>
-      <div class="rail-foot"><span class="pill">只读</span></div>
+      <button type="button" id="nav-sessions" class="rail-item">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+        会话
+        <span id="nav-live" class="rail-count">0</span>
+      </button>
+      <button type="button" id="nav-memory" class="rail-item">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        记忆
+        <span id="nav-facts" class="rail-count">0</span>
+      </button>
+      <div class="rail-group">全局设置</div>
+      <button type="button" id="nav-skills" class="rail-item">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+        技能
+        <span id="nav-skills-n" class="rail-count">0</span>
+      </button>
+      <div class="rail-foot" id="rail-foot">Kilo</div>
     </aside>
     <div class="stage">
       <section id="home">
         <div class="home-hero" id="home-hero"></div>
+        <div class="home-toolbar">
+          <button type="button" id="project-new" class="new-line-btn">新建项目</button>
+        </div>
         <div class="card-grid" id="card-grid"></div>
       </section>
-      <section id="reader" hidden>
-        <nav id="crumb" class="crumb-bar" aria-label="路径"></nav>
-        <iframe id="doc" title="markdown"></iframe>
+      <section id="sessions-page" hidden>
+        <div class="sessions-head">
+          <h1>会话</h1>
+          <p id="sessions-sub">Orca 里正在跑或仍挂着的 agent。</p>
+          <div id="sessions-filters" class="sessions-filters"></div>
+        </div>
+        <div id="running" class="running"></div>
       </section>
+      <section id="memory-page" hidden>
+        <div class="sessions-head">
+          <h1>记忆</h1>
+        </div>
+        <div id="memory-list" class="memory-list"></div>
+      </section>
+      <section id="skills-page" hidden>
+        <div class="skills-head">
+          <div class="skills-title-row">
+            <h1>技能</h1>
+            <span id="skills-n" class="skills-n"></span>
+          </div>
+          <label class="skill-search-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16.5 16.5L20 20"/></svg>
+            <input id="skill-search" class="skill-search" type="search" placeholder="搜索 skill" />
+          </label>
+          <div id="skill-filters" class="sessions-filters"></div>
+        </div>
+        <div id="skill-list" class="skill-list"></div>
+      </section>
+      <section id="reader" hidden>
+        <div class="detail">
+          <aside class="line-rail">
+            <div class="line-rail-top">
+              <button type="button" id="top-home" class="home-btn">
+                <svg class="home-mark" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" rx="4" fill="currentColor"/></svg>
+                首页
+              </button>
+              <button type="button" id="line-new" class="new-line-btn">新建 Line</button>
+            </div>
+            <label class="line-search-wrap">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16.5 16.5L20 20"/></svg>
+              <input id="line-search" class="line-search" type="search" placeholder="搜索 line..." />
+            </label>
+            <div id="line-list" class="line-list"></div>
+          </aside>
+          <div class="detail-main">
+            <div class="detail-head">
+              <div class="detail-hero">
+                <div class="detail-copy">
+                  <button type="button" id="detail-project" class="detail-project" hidden></button>
+                  <h1 id="detail-title"></h1>
+                  <p id="detail-id" class="detail-id" hidden></p>
+                  <p id="detail-desc" class="detail-desc"></p>
+                </div>
+                <div id="detail-stats" class="stat-grid"></div>
+              </div>
+            </div>
+            <div id="detail-tabs" class="detail-tabs"></div>
+            <div class="doc-frame">
+              <iframe id="doc" title="markdown"></iframe>
+              <div id="session-view" class="session-view" hidden></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div id="line-new-modal" class="modal" hidden>
+    <form id="line-new-form" class="modal-card">
+      <h2>新建 line</h2>
+      <p class="session-muted">会开一个 Orca 会话跑 <code>/kilo new</code>。标题可用中文，短名留空则由 agent 起英文 id。</p>
+      <label>标题 <input id="line-new-title" required placeholder="查询问题修复" /></label>
+      <label>短名 <input id="line-new-name" placeholder="可空，例如 query-fix" /></label>
+      <label>Agent
+        <div class="agent-picks" id="line-new-agent">
+          <button type="button" class="agent-pick" data-agent="grok">Grok</button>
+          <button type="button" class="agent-pick" data-agent="codex">Codex</button>
+          <button type="button" class="agent-pick" data-agent="cursor" title="cursor-agent">Cursor</button>
+        </div>
+      </label>
+      <div class="modal-actions">
+        <button type="button" id="line-new-cancel" class="running-link">取消</button>
+        <button type="submit" class="running-jump">创建并开会话</button>
+      </div>
+      <p id="line-new-msg" class="session-muted"></p>
+    </form>
+  </div>
+  <div id="alias-modal" class="modal" hidden>
+    <form id="alias-form" class="modal-card">
+      <h2>重命名</h2>
+      <p class="session-muted">只改显示名，文件夹编号不变。</p>
+      <label>名称 <input id="alias-input" required /></label>
+      <div class="modal-actions">
+        <button type="button" id="alias-cancel" class="running-link">取消</button>
+        <button type="submit" class="running-jump">保存</button>
+      </div>
+      <p id="alias-msg" class="session-muted"></p>
+    </form>
+  </div>
+  <div id="project-new-modal" class="modal" hidden>
+    <div class="modal-card">
+      <h2>新建项目</h2>
+      <p id="project-new-msg" class="session-muted"></p>
+      <div class="modal-actions">
+        <button type="button" id="project-new-cancel" class="running-link">关闭</button>
+      </div>
+    </div>
+  </div>
+  <div id="delete-modal" class="modal" hidden>
+    <form id="delete-form" class="modal-card">
+      <h2>删除项目</h2>
+      <p class="session-muted" id="delete-hint"></p>
+      <label>输入名称确认 <input id="delete-input" required autocomplete="off" /></label>
+      <div class="modal-actions">
+        <button type="button" id="delete-cancel" class="running-link">取消</button>
+        <button type="submit" class="running-jump danger">移到回收站</button>
+      </div>
+      <p id="delete-msg" class="session-muted"></p>
+    </form>
+  </div>
+  <div id="skill-del-modal" class="modal" hidden>
+    <form id="skill-del-form" class="modal-card">
+      <h2>删除 skill</h2>
+      <p class="session-muted" id="skill-del-hint"></p>
+      <label>输入名称确认 <input id="skill-del-input" required autocomplete="off" /></label>
+      <div class="modal-actions">
+        <button type="button" id="skill-del-cancel" class="running-link">取消</button>
+        <button type="submit" class="running-jump danger">删除</button>
+      </div>
+      <p id="skill-del-msg" class="session-muted"></p>
+    </form>
+  </div>
+  <div id="line-busy-modal" class="modal" hidden>
+    <div class="modal-card">
+      <h2>还不能关闭</h2>
+      <p id="line-busy-hint" class="session-muted"></p>
+      <div class="modal-actions">
+        <button type="button" id="line-busy-cancel" class="running-link">取消</button>
+        <button type="button" id="line-busy-go" class="running-jump">去会话</button>
+      </div>
     </div>
   </div>
   <script src="/static/app.js"></script>
