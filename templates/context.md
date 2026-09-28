@@ -29,9 +29,9 @@
 
 ## Gotchas
 
-<!-- Full text lives here, line-local. If a trap reaches sibling lines: first try to
-     mechanize it (test/lint/type); if impossible, add one pointer line to
-     project.md ## Gotcha Index. Never copy this text upward. -->
+<!-- One-liners or pointers. Long recipes go in optional ops.md.
+     If a trap reaches sibling lines: mechanize first; else one pointer in
+     project.md ## Gotcha Index to ops.md or this file — never spec.md. -->
 
 ## Key Decisions
 

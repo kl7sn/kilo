@@ -43,6 +43,7 @@ Project container for `/kilo`. Create with `/kilo init`.
 ## Gotcha Index
 
 <!-- Pointers, not copies. One line per topic:
-     - <topic>: <one-line conclusion> → [[01.03-slug/context]]
+     - <topic>: <one-line conclusion> → [[01.03-slug/ops]] or [[01.03-slug/context]]
+     Never point at spec.md.
      Add an entry only when the trap cannot be mechanized as a test/lint/type rule.
      Disproved a conclusion? Rewrite or delete the line in the same turn. -->

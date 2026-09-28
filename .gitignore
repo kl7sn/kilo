@@ -8,3 +8,7 @@
 .worktrees/
 .kilo-state
 .run-state
+view/build/
+view/dist/
+view/__pycache__/
+**/__pycache__/

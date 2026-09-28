@@ -58,12 +58,15 @@ Acceptance is per line and versioned. Appending in-scope work (finding fixes, te
 
 Project level stores **facts and pointers, never copies**, because "every new line must read the project gotcha list" just relocates context bloat instead of removing it.
 
+- `Projects/_facts.md` — optional workspace Stable Facts + Gotcha Index (no env names). Read on every recover before project facts.
 - `project.md` `## Stable Facts` — long-lived verifiable facts (build/run commands, directory conventions, external-system contracts). Read on every explore.
-- `project.md` `## Gotcha Index` — one pointer line per topic (`- <topic>: <conclusion> → [[01.03-slug/context]]`). Followed only when the topic touches the current line.
-- `context.md` `## Gotchas` — full text, stays with the line that learned it.
+- `project.md` `## Gotcha Index` — one pointer line per topic (`- <topic>: <conclusion> → [[01.03-slug/ops]]` or `context`, never `spec`). Followed only when the topic touches the current line.
+- `ops.md` — optional line runbook; created only when that line has recipes.
+- `context.md` `## Gotchas` — one-liners or pointers; long recipes stay in `ops.md`.
 - `context.md` `## Key Decisions` — line-local, **not** inherited; queried on demand.
+- `spec.md` — design contract, not a running log or runbook.
 
-Promotion order: mechanize first (test / lint / type / CI beats prose, because a document entry depends on an agent remembering to read it), else one `Stable Facts` line, else one `Gotcha Index` pointer, else keep it local. Uncertainty defaults to *not* promoting. Both project sections are pruned on expiry — a stale entry is worse than a missing one, since agents obey it.
+Promotion order: mechanize first, else `ops.md` + one `Stable Facts` line or one `Gotcha Index` pointer, else keep it local. `/kilo up` classifies a conversation into project / workspace / skill (existing skills first; do not default to a `kilo-` prefix). Uncertainty defaults to *not* promoting. Stale entries are worse than missing ones, since agents obey them.
 
 **Fact drift.** A landed fact is current truth, not settled history; later requirements will contradict it. When a line invalidates an entry it must record the conflict as accountable work, ask the user first if a sibling line is `active`/`smoke_pending` on the old truth, update the entry in place at close, and put the reason in its own `## Key Decisions`. If the invalidated fact was referenced by the frozen Acceptance, the bar is revised (`version+1`) rather than reinterpreted. A line cannot close leaving a known contradiction in `project.md`.
 

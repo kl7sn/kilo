@@ -15,7 +15,7 @@ Always show `/kilo` and `/kilo <subcommand>` in prompts, status lines, examples,
 
 1. **No ad-hoc engineering on a bound repo.** Recover the binding, map the request to a task row, claim it, then edit code/config.
 2. **Closed lines stay closed.** If the binding points to a completed/archived line, create `/kilo new <name>` under its parent or bind an active sibling; never reopen it.
-3. **One session ↔ one line ↔ one primary worktree.** Never advance multiple lines in one session. Ambiguous candidates require an interactive bind. Subagent isolation worktrees are allowed; they are not the primary binding.
+3. **One session ↔ one line ↔ one primary worktree.** Never advance multiple lines in one session. Ambiguous candidates require an interactive bind. Subagent isolation worktrees are allowed; they are not the primary binding. **One git repo may have many concurrent sessions and worktrees.** `.kilo-state` `projects[]` is a list of bindings keyed by `session_id` + `worktree_path`, not a repo-wide mutex. Never treat a single `status: current|active` row as “this entire clone is on that line.”
 4. **New session requires explicit bind.** No matching `session_id` → hard stop; require `/kilo bind` or `/kilo new`; never auto-bind the sole active line. Do this before recover advance.
 5. **Parent is the workspace writer.** Subagents may edit isolated code, but only the parent updates `.kilo-state` (session index), `tasks.md`, `context.md`, and `review.md`.
 6. **Fail closed on workspace resolution.** Use `.kilo-state` `workspace:` first; else legacy `.run-state`; then non-empty `KILO_WORKSPACE`, else legacy `RUN_WORKSPACE`; if none resolve, stop before creating directories or durable state. Never silently use `~/run-workspace`. On the next successful session write, persist `.kilo-state`.
@@ -43,6 +43,7 @@ Always show `/kilo` and `/kilo <subcommand>` in prompts, status lines, examples,
 | `/kilo new <line>` | Create a numbered line under a project |
 | `/kilo bind` | Interactively switch to an active line/project |
 | `/kilo adopt <path>` | Register an existing git worktree as this line's primary (only if missing/none/pruned) |
+| `/kilo up` | Classify this conversation into project facts, workspace facts, or an existing skill; list first, then write |
 | `/kilo lang [en\|zh]` | Show or set durable document language |
 
 Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.md), [execute.md](protocols/execute.md), [auto.md](protocols/auto.md), [reference.md](protocols/reference.md).
@@ -50,11 +51,11 @@ Details: [workspace.md](protocols/workspace.md), [recover.md](protocols/recover.
 ## Startup route
 
 1. Read repo `.kilo-state` and resolve the workspace; unresolved means hard stop.
-2. Handle an explicit subcommand before normal phase detection (`/kilo bind` / `/kilo new` / `/kilo adopt` / `/kilo auto` / `/kilo review` / `/kilo accept` / `/kilo lang` / `/kilo init`).
+2. Handle an explicit subcommand before normal phase detection (`/kilo bind` / `/kilo new` / `/kilo adopt` / `/kilo up` / `/kilo auto` / `/kilo review` / `/kilo accept` / `/kilo lang` / `/kilo init`).
 3. Resolve `lang`: open Handoff → `.kilo-state` → `KILO_LANG` → `en`.
-4. Match `CODEX_THREAD_ID`/session id in `.kilo-state projects[]`. **If no `session_id` match → emit the new-session bind prompt (`/kilo bind` or `/kilo new`) and stop** before recover advance; never auto-bind the sole active line.
+4. Match this session in `.kilo-state projects[]` in this order: (1) `session_id` **and** cwd/`worktree_path` agree, (2) unique `session_id` match, (3) several `session_id` rows → pick the row whose `worktree_path` is cwd, else list and ask. **Never bind this cwd to another checkout’s row just because that row is `status: current` or top-level `project:`.** **If no `session_id` match → emit the new-session bind prompt (`/kilo bind` or `/kilo new`) and stop** before recover advance; never auto-bind the sole active line.
 5. After bind, run bidirectional worktree audit (orphan + missing) before fit check or task mapping. `missing` is a hard stop (recreate / `/kilo adopt <path>` / close then `/kilo new`).
-6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Gotchas / log, plus `project.md` `## Stable Facts` / `## Gotcha Index` (short, inherited). Open `review.md` only for freeze/revise, review, triage, or a review-history question.
+6. Read the bound homepage, `tasks.md`, and bounded `context.md` Handoff / Gotchas / log, plus `Projects/_facts.md` (if present) then `project.md` `## Stable Facts` / `## Gotcha Index` (short, inherited). Open `review.md` only for freeze/revise, review, triage, or a review-history question. Follow a Gotcha Index pointer into `ops.md` or `context.md` only when the topic touches this line — never into `spec.md`.
 7. If the line is closed and this turn needs durable landing, stop recover and create/bind an active line.
 8. Strict line-fit before mapping or adding tasks: non-continuation → set `binding_decision: pending` and stop for continue-current / `/kilo bind` / `/kilo new <name>`.
 9. Map the current request to an existing task or add a task row only after the binding decision is resolved.
@@ -87,9 +88,9 @@ Do not guess, create, select, or write a fallback directory.
 - Tasks: rows in the line `tasks.md` (`todo`, `ready`, `doing`, `blocked`, `done`).
 - Runtime truth: the line `context.md` `## Handoff` block.
 - Acceptance and review truth: the line `review.md` (`## Acceptance`, `## ReviewIndex`, `## Claims`, `## ReviewThread`), mirrored cheaply by Handoff `acceptance_status` / `impl_review_status`.
-- Inherited knowledge: `project.md` `## Stable Facts` (durable facts) and `## Gotcha Index` (pointers, not copies) apply to every line under that project. Gotcha full text and `## Key Decisions` stay line-local in `context.md`; mechanize a constraint before writing it anywhere. Project entries are current truth: a line that invalidates one must update it in place before close, not diverge silently.
+- Inherited knowledge: `Projects/_facts.md` (workspace, optional) then `project.md` `## Stable Facts` / `## Gotcha Index`. Long recipes live in optional line `ops.md` (create only when that line has them). `context.md` `## Gotchas` stay one-liners or pointers. `spec.md` is the design contract, not a runbook. Mechanize a constraint before writing it anywhere. Project/workspace entries are current truth: a line that invalidates one must update it in place before close.
 - Sibling worktrees: the `project.md` lines table carries each line's `Worktree` / `Branch` / `State`.
-- Session index: repo-root `.kilo-state`; one repo may list many lines, but one session advances one.
+- Session index: repo-root `.kilo-state`; one repo may list many lines and many concurrent bindings. One session still advances one line. Each `projects[]` row is one binding (`session_id` + `worktree_path` + line). Bind/new/adopt **upsert this session’s row for the bound line**; do not rewrite other sessions’ rows, and do not collapse this session’s historical rows on other lines. Top-level `project:` is a last-write hint only, never a bind source. See [workspace.md](protocols/workspace.md) **`.kilo-state` identity**.
 
 Number new entities. `NN` is the project number; line `MM` increments under that project. Do not rename unnumbered legacy folders unless requested.
 
@@ -151,7 +152,7 @@ wt=/absolute/path/to/worktree
 
 For session bind, non-continuation fit, and missing-worktree stops, use the three standard prompts in [reference.md](protocols/reference.md) **Binding and code-management prompts** (new-session, non-continuation, missing). Do not invent alternate wording.
 
-At the integration gate (only after impl-review is approved on code lines), proactively present one decision prompt when the current worktree is not explicitly complete:
+At the integration gate (only after impl-review is approved on code lines), first list `/kilo up` findings (no writes), then proactively present one decision prompt when the current worktree is not explicitly complete:
 
 ```text
 当前任务已完成，自动验证与实现审核已通过；worktree 仍为 <status>。
@@ -171,7 +172,7 @@ For user-facing Chinese polish (README, prompts, notes), prefer `kaola-writing`:
 
 ## Progressive disclosure map
 
-- Workspace setup, init/new/bind/adopt, numbering, language: [protocols/workspace.md](protocols/workspace.md)
+- Workspace setup, init/new/bind/adopt/up, numbering, language: [protocols/workspace.md](protocols/workspace.md)
 - Recover, Handoff, and session sticky: [protocols/recover.md](protocols/recover.md)
 - Explore/plan/execute, Acceptance freeze and versioning, `review.md` separation, impl-review, integration gate: [protocols/execute.md](protocols/execute.md)
 - Auto mode, design gates, and impl-review gates: [protocols/auto.md](protocols/auto.md)

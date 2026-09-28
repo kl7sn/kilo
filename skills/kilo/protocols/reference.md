@@ -120,19 +120,23 @@ Project level stores **facts and pointers, never copies**. Full gotcha text stay
 
 | Location | Holds | Read when |
 |---|---|---|
+| `Projects/_facts.md` | workspace Stable Facts + Gotcha Index (optional; no env names) | every recover, before project facts |
 | `project.md` `## Stable Facts` | long-lived verifiable facts every line needs: build/run commands, directory conventions, external-system quirks | every explore/plan, and before the first mutation of a new line |
-| `project.md` `## Gotcha Index` | one pointer line per topic: `- <topic>: <one-line conclusion> → [[01.03-slug/context]]` | same; follow a pointer only when its topic touches this line |
-| `context.md` `## Gotchas` | full text, line-local | every recover |
+| `project.md` `## Gotcha Index` | one pointer line per topic: `- <topic>: <one-line conclusion> → [[01.03-slug/ops]]` or `context` — never `spec` | same; follow a pointer only when its topic touches this line |
+| `ops.md` | optional runbook for this line; create only when recipes exist | when a Gotcha Index or context pointer names it |
+| `context.md` `## Gotchas` | one-liners or pointers, line-local | every recover |
 | `context.md` `## Key Decisions` | this line's decisions | on demand — **not** inherited, not indexed, not required reading |
+| `spec.md` | design contract | explore/plan/review — not a runbook |
 
 ### Promotion order
 
 Before writing anything at project level, try to mechanize:
 
 1. Can it become a test, lint rule, type constraint, or CI check? **Do that instead** and record the check in the execution log. A mechanized constraint needs no document entry.
-2. Not mechanizable, and it is a durable fact (command, convention, external contract)? Add one line to `## Stable Facts`.
-3. Not mechanizable, and it is a trap another line could hit? Add one pointer line to `## Gotcha Index`; leave the detail in the origin `context.md`.
-4. Otherwise it stays line-local. Uncertainty is not a reason to promote — the default is *don't*.
+2. Long env-bound steps: write optional `ops.md` on the origin line; keep `context.md` to a one-line pointer.
+3. Not mechanizable, and it is a durable fact (command, convention, external contract)? Add one line to `project.md` `## Stable Facts`, or to `Projects/_facts.md` if it has no repo/cluster names.
+4. Not mechanizable, and it is a trap another line could hit? Add one pointer line to `## Gotcha Index`; leave the detail in `ops.md` or `context.md`, never `spec.md`.
+5. Otherwise it stays line-local. Uncertainty is not a reason to promote — the default is *don't*. `/kilo up` is the command that classifies a conversation into this order.
 
 Both project-level sections are bounded and pruned: delete a fact the moment it stops being true, and drop an index entry once the codebase enforces it or the origin line is archived. A stale entry is worse than a missing one, because agents obey it.
 
@@ -269,7 +273,9 @@ Record the other worktree's detached/park state in Handoff `notes` so it is not 
 
 ## `.kilo-state` write safety
 
-`.kilo-state` is structured YAML-ish with a `projects:` list plus trailing runtime keys. Never rewrite it with naive line-stripping or regex that can delete the `projects:` body. Prefer surgical field updates (replace one `note:` / `status:` line under a known `project:` block, or append only the trailing `- updated:` / `- next_action:` keys). If the file is corrupted, restore from conversation-known bindings or a backup before continuing `/kilo`.
+`.kilo-state` is structured YAML-ish with a `projects:` list plus trailing runtime keys. Never rewrite it with naive line-stripping or regex that can delete the `projects:` body. Prefer surgical field updates on **this session’s** block (match `session_id`, then `worktree_path` if several rows share the session): replace one `note:` / `status:` / `worktree_path:` line, or append a new `- project:` block. Do not rewrite sibling blocks when this session binds or adopts. If the file is corrupted, restore from conversation-known bindings or a backup before continuing `/kilo`.
+
+Schema reminder: each `projects[]` row is one binding (`session_id` + `worktree_path` + line). `status` on a row is that binding (`active` / `completed` / `archived`), not a mutex for the whole clone. Top-level `project:` is a last-write hint. See [workspace.md](workspace.md) **`.kilo-state` identity**. Read legacy `status: current` as `active` for that row only.
 
 ## Self-review
 
@@ -293,11 +299,12 @@ Stop and ask/escalate for:
 - worktree-missing (`worktree_status: missing` unresolved)
 - `/kilo adopt` when `worktree_status` is `active` / `smoke_pending` / `ready_to_merge`, or when `<path>` is not in this repo's `git worktree list`, or when `<path>` is another line's current primary
 - sole-active silent bind (forbidden — never auto-bind the only active line without explicit `/kilo bind` / user choice)
+- repo-wide current bind (forbidden — never bind this cwd using another checkout’s `status: current`/`active` or top-level `project:` when that row’s `worktree_path` is not this cwd)
 - mutation outside primary worktree
 - Acceptance not frozen on a code line when entering execute, `/kilo review`, or smoke/close
 - unresolved review blockers in `review.md` (`open` high findings, undecided `disagreed`/`deferred`/`ask_user`) when entering smoke/close
 - Acceptance or review rounds inlined into `context.md` instead of `review.md`
-- gotcha text copied into `project.md` instead of a pointer, or a mechanizable constraint written as prose without attempting the test/lint route
+- gotcha text copied into `project.md` instead of a pointer, a Gotcha Index pointer into `spec.md`, or a mechanizable constraint written as prose without attempting the test/lint route
 - a known conflict with a project-level fact or index conclusion left unrecorded and unresolved at close (silent divergence), or shared truth rewritten while a sibling line is `active`/`smoke_pending` without asking the user
 - tasks added or reopened after `impl_review_status: approved` without resetting to `re_review`
 - an appended task that widens the deliverable beyond the frozen Acceptance, without an explicit revise or `/kilo new`
