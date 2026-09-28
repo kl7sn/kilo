@@ -15,11 +15,11 @@
   <a href="README.md">English</a>
 </p>
 
-<p align="center"><strong>给 Coding Agent 用的执行协议。</strong></p>
+<p align="center"><strong>本地工程看板，外加给 Coding Agent 用的流程 skill。</strong></p>
 
 <p align="center">
-  绑一条线，把状态写在 Markdown 里；没有验证依据不标 <code>done</code>；<br />
-  下次从 Handoff 接着做，不用翻旧聊天记录。
+  桌面应用读 <code>Projects/</code> 文件夹。<code>/kilo</code> 把状态写在 Markdown 里，<br />
+  工作可以停下再接着做，不必翻旧聊天。
 </p>
 
 <p align="center">
@@ -79,7 +79,28 @@ GSD、BMAD、Spec-Kit 这类「托管全流程」的方案能用，但常常喧�
 
 ## 快速开始
 
-### 1. 安装
+### 桌面应用（macOS，Apple Silicon）
+
+窗口里列出 project 和 line，显示一年的 Markdown 活动，也可以打开 [Orca](https://www.onorca.dev/docs/install) 会话。Orca 不是必须的：没有它仍能看工作区。
+
+```bash
+pip install -r view/requirements.txt
+python3 view/app.py --root /path/to/Projects
+```
+
+`--root` 选 `Projects/` 文件夹（或它的上一级）。第一次可以弹出选择；空文件夹可以初始化成工作区。
+
+打未公证的 `.app`：
+
+```bash
+pip install -r view/requirements-pack.txt
+python3 view/pack.py
+open "view/dist/Kilo.app"
+```
+
+**未经 Apple 公证**。别人电脑上第一次打开：系统设置 → 隐私与安全性 → 仍要打开。目前没有 Intel 包。
+
+### 给 Agent 用的 skill
 
 ```bash
 npx skills add kl7sn/kilo -g
@@ -112,17 +133,14 @@ npx skills update                           # 之后更新
 /kilo auto               # 无人值守（硬停止条件仍然生效）
 ```
 
-只读看板（不编辑）。浏览器或原生窗口：
+只用浏览器看同一套文件（不配原生窗口）：
 
 ```bash
-python3 view/serve.py --root "$KILO_WORKSPACE"
+python3 view/serve.py --root /path/to/Projects
 # 打开 http://127.0.0.1:8765
-
-pip install -r view/requirements.txt
-python3 view/app.py --root "$KILO_WORKSPACE"
 ```
 
-每次推进时，回复**末尾**空一行，再出状态行，再空一行，再单独写 `wt`（Markdown 否则会把两行收成一段）：
+每次推进 `/kilo` 时，回复**末尾**空一行，再出状态行，再空一行，再单独写 `wt`（Markdown 否则会把两行收成一段）：
 
 ```text
 [/kilo · lang=zh · auto=off · line=01-demo/01.01-hello · ready: 写 hello 示例]
@@ -202,7 +220,7 @@ repo: .
 
 只要某一个端：`npx skills add kl7sn/kilo -g -a <agent>`。
 
-## /kilo 不是什么
+## Kilo 不是什么
 
 | | |
 | --- | --- |
@@ -228,6 +246,8 @@ repo: .
 | [`skills/kilo/SKILL.md`](skills/kilo/SKILL.md) | 入口；细节见 [`protocols/`](skills/kilo/protocols/) |
 | [`docs/design.md`](docs/design.md) | 设计取舍 |
 | [`README.md`](README.md) | English |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | 怎么跑桌面、怎么提改动 |
+| [`docs/github-release.md`](docs/github-release.md) | GitHub Release 说明模板 |
 
 ## 从 `run` 迁移
 

@@ -15,11 +15,11 @@
   <a href="README_CN.md">中文</a>
 </p>
 
-<p align="center"><strong>Durable execution for coding agents.</strong></p>
+<p align="center"><strong>A local board for project / line work, plus a process skill for coding agents.</strong></p>
 
 <p align="center">
-  Bind a line, keep state docs in Markdown, no <code>done</code> without evidence,<br />
-  and continue from Handoff — not from old chat history.
+  The desktop app reads a <code>Projects/</code> folder. The <code>/kilo</code> skill keeps<br />
+  state in Markdown so work can pause and resume without old chat history.
 </p>
 
 <p align="center">
@@ -78,7 +78,28 @@ Full-process frameworks (GSD, BMAD, Spec-Kit, …) can help, but they often take
 
 ## Quick start
 
-### 1. Install
+### Desktop (macOS, Apple Silicon)
+
+The window lists projects and lines, shows a year of Markdown activity, and can open [Orca](https://www.onorca.dev/docs/install) sessions. Orca is optional: without it you can still browse the workspace.
+
+```bash
+pip install -r view/requirements.txt
+python3 view/app.py --root /path/to/Projects
+```
+
+`--root` is the `Projects/` folder (or its parent). First launch can pick a folder; an empty folder can be initialized as a workspace.
+
+Build an unsigned `.app`:
+
+```bash
+pip install -r view/requirements-pack.txt
+python3 view/pack.py
+open "view/dist/Kilo.app"
+```
+
+The app is **not notarized**. On another Mac: System Settings → Privacy & Security → Open Anyway. Intel Macs are not built yet.
+
+### Skill for agents
 
 ```bash
 npx skills add kl7sn/kilo -g
@@ -111,17 +132,14 @@ State docs go under the vault (`KILO_WORKSPACE` or `.kilo-state` `workspace:`). 
 /kilo auto               # unattended (hard stops still apply)
 ```
 
-Read-only workspace board (no editor). Browser or a native window:
+Browser-only board (same files, no native window):
 
 ```bash
-python3 view/serve.py --root "$KILO_WORKSPACE"
+python3 view/serve.py --root /path/to/Projects
 # open http://127.0.0.1:8765
-
-pip install -r view/requirements.txt
-python3 view/app.py --root "$KILO_WORKSPACE"
 ```
 
-Every advancing reply ends with a blank line, then the status line, then another blank line, then `wt` alone (Markdown otherwise joins them):
+Every advancing `/kilo` reply ends with a blank line, then the status line, then another blank line, then `wt` alone (Markdown otherwise joins them):
 
 ```text
 [/kilo · lang=en · auto=off · line=01-demo/01.01-hello · ready: write the hello example]
@@ -201,7 +219,7 @@ repo: .
 
 One agent only: `npx skills add kl7sn/kilo -g -a <agent>`.
 
-## What /kilo is not
+## What Kilo is not
 
 | | |
 | --- | --- |
@@ -227,6 +245,8 @@ See [`skills/kilo/SKILL.md`](skills/kilo/SKILL.md) → *Companion skills*.
 | [`skills/kilo/SKILL.md`](skills/kilo/SKILL.md) | Entrypoint; details in [`skills/kilo/protocols/`](skills/kilo/protocols/) |
 | [`docs/design.md`](docs/design.md) | Design notes and tradeoffs |
 | [`README_CN.md`](README_CN.md) | 中文说明 |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to run the app and send changes |
+| [`docs/github-release.md`](docs/github-release.md) | GitHub Release notes template |
 
 ## Migration from `run`
 
